@@ -5,25 +5,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using S3DE.Maths;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
-    public sealed class OpenGL_Material : Renderer_Material
+    internal sealed class OpenGL_Material : Renderer_Material
     {
         OpenGL_ShaderProgram prog;
 
+        ShaderSource VertexShader, FragmentShader;
+
         protected override void Compile()
         {
-            //Create the individual shaders from the shadersources.
-            //Link the shaders to the shaderprogram.
-
-            //compile the shaderprogram.
-            throw new NotImplementedException();
+            prog = new OpenGL_ShaderProgram(OpenGL_Shader.Create(VertexShader), OpenGL_Shader.Create(FragmentShader));
+            prog.Compile();
         }
 
-        protected override void SetSource(ShaderStage stage, ShaderSource source)
+        internal OpenGL_Material()
         {
-            throw new NotImplementedException();
+            
+        }
+
+        protected override void SetProjectionMatrix(Matrix4x4 m)
+        {
+            //throw new NotImplementedException();
+        }
+
+        protected override void SetSource(ShaderSource source)
+        {
+            switch (source.Stage)
+            {
+                case ShaderStage.Vertex:
+                    {
+                        VertexShader = source;
+                        break;
+                    }
+                case ShaderStage.Fragment:
+                    {
+                        FragmentShader = source;
+                        break;
+                    }
+                default:
+                    {
+                        throw new NotImplementedException(source.Stage + " is not yet implemented/supported");
+                    }
+            }
+        }
+
+        protected override void SetTransformMatrix(Matrix4x4 m)
+        {
+            //SetUniform("transform",m);
+            //throw new NotImplementedException();
         }
 
         protected override void SetUniform(string uniformName, float[] value)
@@ -41,9 +73,14 @@ namespace SampleGame.Sample_OGL_Renderer
             throw new NotImplementedException();
         }
 
+        protected override void SetViewMatrix(Matrix4x4 m)
+        {
+            //throw new NotImplementedException();
+        }
+
         protected override void UseMaterial()
         {
-            throw new NotImplementedException();
+            prog.UseProgram();
         }
     }
 }

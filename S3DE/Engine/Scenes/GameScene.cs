@@ -9,8 +9,10 @@ namespace S3DE.Engine.Scenes
 {
     public abstract class GameScene
     {
-        List<GameEntity> activeEntities;
-        List<GameEntity> inActiveEntities;
+        List<GameEntity> activeEntities = new List<GameEntity>();
+        List<GameEntity> inActiveEntities = new List<GameEntity>();
+
+        GameEntity[] frameStageEntities;
 
         internal void AddEntity(GameEntity ge)
         {
@@ -28,11 +30,76 @@ namespace S3DE.Engine.Scenes
                 inActiveEntities.Remove(ge);
         }
 
+        internal void InitFrameStage() => frameStageEntities = activeEntities.ToArray();
+
+        internal void EarlyUpdate()
+        {
+            InitFrameStage();
+
+            foreach (GameEntity ge in frameStageEntities)
+            {
+                ge.InitComponents();
+                ge.StartComponents();
+                ge.EarlyUpdate();
+            }
+        }
+
+        internal void Update()
+        {
+            InitFrameStage();
+            foreach (GameEntity ge in frameStageEntities)
+                ge.Update();
+        }
+
+        internal void LateUpdate()
+        {
+            InitFrameStage();
+            foreach (GameEntity ge in frameStageEntities)
+                ge.LateUpdate();
+        }
+
+        internal void Draw()
+        {
+            InitFrameStage();
+            foreach (GameEntity ge in frameStageEntities)
+                ge.Draw();
+        }
+
+        internal void PostDraw()
+        {
+            InitFrameStage();
+            foreach (GameEntity ge in frameStageEntities)
+                ge.PostDraw();
+        }
+
+        internal void Run(bool canDraw)
+        {
+
+            EarlyUpdate();
+            Update();
+            LateUpdate();
+
+            if (canDraw)
+            {
+                Draw();
+                PostDraw();
+            }
+        }
+
+        internal void ReloadScene()
+        {
+            //Dispose the scene. (call Dispose() and dispose all entities and their components).
+            //Load the scene.
+        }
         protected abstract void LoadScene();
         protected abstract void UnloadScene();
 
         internal GameEntity _createGameEntity() => CreateGameEntity();
-        protected GameEntity CreateGameEntity() => GameEntity.Create(this);
+        protected GameEntity CreateGameEntity() {
+            GameEntity ge = GameEntity.Create(this);
+            AddEntity(ge);
+            return ge;
+        }
 
         internal void Load_Internal() => LoadScene();
         internal void Unload_Internal() => UnloadScene();

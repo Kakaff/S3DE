@@ -1,0 +1,12 @@
+﻿Transform: (Copy from java project, everything should be the same anyways)
+SetRotation(World/Local)
+SetScale(World/Local)
+SetParent
+Update direction vectors.
+
+Transform should be done now 21/01/2018
+
+Camera: (Copy from java project?)
+Update View and Projection matrices.
+Pretty much matrix stuff.
+Set fov.

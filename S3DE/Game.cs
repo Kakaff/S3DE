@@ -12,11 +12,7 @@ namespace S3DE
 {
     public abstract class Game
     {
-        private GameScene startScene;
-
-        internal GameScene StartScene => startScene;
-
-        protected void SetStartScene<T>() where T : GameScene => startScene = InstanceCreator.CreateInstance<T>();
+        protected void SetStartScene<T>() where T : GameScene => SceneHandler.SetMainScene<T>();
         
         protected void SetTargetRenderer<T>() where T : Renderer => Renderer.SetTargetRenderer<T>();
 
@@ -26,6 +22,11 @@ namespace S3DE
 
         internal void InitGame() => InitializeGame();
 
+        internal void SetRenderer_Internal() => SetRenderer();
+        internal void SetClock_Internal() => SetClock();
+
+        protected abstract void SetRenderer();
+        protected abstract void SetClock();
         private void InitializeGame()
         {
             Initialize();
@@ -36,7 +37,10 @@ namespace S3DE
 
         protected abstract void OnGameExit();
 
-
         internal void exitGame() => OnGameExit();
+
+        public static void Exit(int exitCode) {
+            EngineMain.StopEngine(exitCode);
+        }
     }
 }

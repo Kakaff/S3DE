@@ -8,27 +8,42 @@ using System.Threading.Tasks;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
-    public sealed class OpenGL_Shader
+    internal sealed class OpenGL_Shader
     {
         static Dictionary<Type, OpenGL_Shader> loadedShaders = new Dictionary<Type, OpenGL_Shader>();
 
         string source;
         ShaderStage shaderStage;
         uint pointer;
+        bool isCompiled;
 
         internal ShaderStage Stage => shaderStage;
         internal string Source => source;
         internal uint Pointer => pointer;
+        internal bool IsCompiled => isCompiled;
 
         bool isFreed = false;
 
         private OpenGL_Shader()
         {
-
+            isCompiled = false;
         }
 
         void SetSource(string source) => this.source = source;
         void SetStage(ShaderStage stage) => this.shaderStage = stage;
+
+        internal bool Compile()
+        {
+            Gl.CompileShader(pointer);
+
+            int compileStatus;
+            Gl.GetShader(pointer, ShaderParameterName.CompileStatus, out compileStatus);
+            
+            if (compileStatus != Gl.TRUE)
+                throw new Exception("Failed to compile Shader");
+            else
+                return true;
+        }
 
         public static OpenGL_Shader Create(ShaderSource shadersource)
         {
@@ -48,6 +63,7 @@ namespace SampleGame.Sample_OGL_Renderer
                 case ShaderStage.Fragment:
                     {
                         pointer = Gl.CreateShader(ShaderType.FragmentShader);
+                        
                         break;
                     }
                 default:
@@ -57,8 +73,7 @@ namespace SampleGame.Sample_OGL_Renderer
             }
 
             shad.pointer = pointer;
-            Gl.ShaderSource(pointer, new string[] {shad.Source});
-
+            Gl.ShaderSource(shad.pointer,new string[] { shad.source });
             return shad;
         }
 
@@ -68,11 +83,7 @@ namespace SampleGame.Sample_OGL_Renderer
             {
                 Gl.DeleteShader(pointer);
                 source = null;
-
                 isFreed = true;
-            } else
-            {
-                throw new ObjectDisposedException("Shader is already freed!");
             }
         }
     }

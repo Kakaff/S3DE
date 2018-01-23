@@ -9,6 +9,14 @@ namespace S3DE.Engine.Graphics
 {
     public sealed class Mesh
     {
+        public Mesh()
+        {
+            vertices = new Vector3[0];
+            indicies = new int[0];
+            uvs = new Vector2[0];
+            normals = new Vector3[0];
+            dynamic = false;
+        }
         Vector3[] vertices;
         int[] indicies;
         Vector2[] uvs;

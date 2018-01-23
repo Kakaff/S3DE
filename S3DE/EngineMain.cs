@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using S3DE.Engine;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Scenes;
 
 namespace S3DE
 {
@@ -20,26 +21,31 @@ namespace S3DE
 
         public static void RunGame(Game game)
         {
-            game.InitGame();
+            game.SetRenderer_Internal();
+            game.SetClock_Internal();
+
             Time.Start();
             while (Time.TimeSinceStart < TimeSpan.TicksPerSecond * 0.25)
                 Thread.Yield();
 
             Renderer.Init();
             Glfw.Init();
+            
             window = new Engine.Graphics.Window((int)Renderer.Resolution.x,
                                                 (int)Renderer.Resolution.y,
                                                 game.GameName());
+            window.MakeCurrentContext();
 
             FrameSync fs = new FrameSync();
+            game.InitGame();
 
             isRunning = true;
-
-            game.StartScene.Load_Internal();
 
             while (!window.IsCloseRequested)
             {
                 Renderer.Clear();
+                SceneHandler.RunScenes();
+                
                 fs.WaitForTargetFPS();
                 window.SwapBuffer();
                 window.PollEvents();

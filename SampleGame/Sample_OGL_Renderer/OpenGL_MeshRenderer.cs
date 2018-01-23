@@ -7,19 +7,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using S3DE.Maths;
+using S3DE.Engine.Graphics;
 
-namespace S3DE.Engine.Graphics.OGL
+namespace SampleGame.Sample_OGL_Renderer
 {
-    public sealed class OGL_MeshRenderer : Renderer_MeshRenderer
+    internal sealed class OpenGL_MeshRenderer : Renderer_MeshRenderer
     {
+        OpenGL_Mesh mesh;
+        Mesh m;
+
+        bool hasChanged = false;
+
         protected override void Render()
         {
-            throw new NotImplementedException();
+            if (hasChanged)
+            {
+                //Validate the mesh.
+                if (mesh == null)
+                    mesh = new OpenGL_Mesh();
+
+                mesh.SetData(m);
+                hasChanged = false;
+            }
+
+            mesh.Bind();
+            Gl.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            //Gl.DrawElements(PrimitiveType.Triangles, mesh.Indicies, DrawElementsType.UnsignedShort, 0);
         }
 
         protected override void SetMesh(Mesh m)
         {
-            throw new NotImplementedException();
+            this.m = m;
+            hasChanged = true;
         }
     }
 }

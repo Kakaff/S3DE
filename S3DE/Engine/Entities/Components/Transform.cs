@@ -10,7 +10,6 @@ namespace S3DE.Engine.Entities.Components
 {
     public class Transform : EntityComponent
     {
-
         Transform parent;
         List<Transform> children;
 
@@ -23,16 +22,19 @@ namespace S3DE.Engine.Entities.Components
         public Quaternion Rotation
         {
             get => worldQuatRotation;
+            set => SetRotation(value, Space.World);
         }
 
         public Vector3 Scale
         {
             get => worldScale;
+            set => SetScale(value, Space.World);
         }
 
         public Vector3 LocalScale
         {
             get => localScale;
+            set => SetScale(value, Space.Local);
         }
 
         public Vector3 LocalPosition
@@ -44,11 +46,21 @@ namespace S3DE.Engine.Entities.Components
         public Quaternion LocalRotation
         {
             get => localQuatRotation;
+            set => SetRotation(value, Space.Local);
         }
+
+        public Vector3 Forward => forward;
+        public Vector3 Right => right;
+        public Vector3 Up => up;
+        public Vector3 Backward => -Forward;
+        public Vector3 Left => -Right;
+        public Vector3 Down => -Up;
 
         Vector3 worldPosition, localPosition;
         Quaternion worldQuatRotation, localQuatRotation;
         Vector3 worldScale, localScale;
+
+        Vector3 forward, up, right;
 
         Matrix4x4 worldTranslationMatrix, worldRotMatrix, worldScaleMatrix, worldTransformMatrix;
         
@@ -84,19 +96,52 @@ namespace S3DE.Engine.Entities.Components
                         break;
                     }
             }
+
+            UpdateWorldPosition();
+            UpdateChildren();
+        }
+
+        public void SetRotation(Quaternion quat, Space space)
+        {
+            switch (space)
+            {
+                case Space.World:
+                    {
+                        localQuatRotation = (parent == null) ? quat : parent.worldQuatRotation.conjugate * quat;
+                        break;
+                    }
+                case Space.Local:
+                    {
+                        localQuatRotation = quat;
+                        break;
+                    }
+            }
+
+            UpdateWorldRotation();
+            UpdateChildren();
+        }
+
+        public void SetScale(Vector3 scale, Space space)
+        {
+            localScale = scale;
+
+            UpdateWorldScale();
+            UpdateChildren();
         }
 
         public void SetParent(Transform nParent)
         {
-            if (nParent != this && nParent != parent)
+            if (nParent != null && nParent != this && nParent != parent)
             {
                 //Should probably add a check to make sure that
                 //we don't set a transform to have it's grandchild or child as its parent.
                 if (parent != null)
                     parent.RemoveChild(this);
 
-                if (nParent != null)
-                    nParent.AddChild(this);
+                nParent.AddChild(this);
+            } else if (nParent == null && parent != null)
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -125,20 +170,72 @@ namespace S3DE.Engine.Entities.Components
 
         }
 
+
+        private void UpdateWorldPosition()
+        {
+            Matrix4x4 transMatrix = Matrix4x4.CreateTranslationMatrix(localPosition);
+            worldTranslationMatrix = (parent == null) ? transMatrix : transMatrix * parent.worldTranslationMatrix;
+            UpdateWorldTransform();
+            worldPosition = Vector3.Zero * worldTransformMatrix;
+
+        }
+
+        private void UpdateWorldTransform()
+        {
+            Matrix4x4 transformMatrix = Matrix4x4.CreateTransformMatrix(localPosition, localScale, localQuatRotation);
+            worldTransformMatrix = (parent == null) ? transformMatrix : transformMatrix * parent.worldTransformMatrix;
+        }
+        private void UpdateWorldRotation()
+        {
+            worldQuatRotation = (parent == null) ? localQuatRotation : localQuatRotation * parent.worldQuatRotation;
+            worldRotMatrix = Matrix4x4.CreateRotationMatrix(worldQuatRotation);
+
+            right = Vector3.Right * worldQuatRotation;
+            up = Vector3.Up * worldQuatRotation;
+            forward = Vector3.Forward * worldQuatRotation;
+
+            UpdateWorldTransform();
+        }
+
+        private void UpdateWorldScale()
+        {
+            Matrix4x4 m = Matrix4x4.CreateScaleMatrix(localScale);
+            worldScaleMatrix = (parent == null) ? m : parent.WorldScaleMatrix * m;
+            worldScale = Vector3.One * worldScaleMatrix;
+
+            UpdateWorldTransform();
+        }
+
+        private void UpdateChildren()
+        {
+            foreach (Transform child in children)
+                child.RecalculateMatrices();
+        }
+
+        private void RecalculateMatrices()
+        {
+            UpdateWorldScale();
+            UpdateWorldRotation();
+            UpdateWorldPosition();
+
+            UpdateChildren();
+        }
+
         protected override void OnCreation()
         {
+            children = new List<Transform>();
+
             worldTranslationMatrix = new Matrix4x4().SetIdentity();
             worldRotMatrix = Quaternion.Identity.ToRotationMatrix();
-            worldScaleMatrix = Matrix4x4.CreateScaleMatrix(new Vector3(1, 1, 1));
+            worldScaleMatrix = Matrix4x4.CreateScaleMatrix(Vector3.One);
 
-            worldScale = Vector3.One;
-            localScale = Vector3.One;
+            Scale = Vector3.One;
+            Position = Vector3.Zero;
+            Rotation = Quaternion.Identity;
 
-            worldPosition = Vector3.Zero;
-            localPosition = Vector3.Zero;
-
-            worldQuatRotation = Quaternion.Identity;
-            localQuatRotation = Quaternion.Identity;
+            forward = Vector3.Forward;
+            up = Vector3.Up;
+            right = Vector3.Right;
         }
     }
 }

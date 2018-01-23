@@ -9,10 +9,10 @@ namespace S3DE.Engine.Graphics
 {
     public abstract class ShaderSource
     {
-        string source;
+        string @source;
         ShaderStage stage;
 
-        public string Source => source;
+        public string @Source => source;
         public ShaderStage Stage => stage;
 
         protected void SetStage(ShaderStage stage) => this.stage = stage;

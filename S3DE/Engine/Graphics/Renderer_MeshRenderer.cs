@@ -1,4 +1,5 @@
-﻿using System;
+﻿using S3DE.Engine.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace S3DE.Engine.Graphics
     {
         internal void Render_Internal() => Render();
         internal void SetMesh_Internal(Mesh m) => SetMesh(m);
+
         protected abstract void Render();
         protected abstract void SetMesh(Mesh m);
         

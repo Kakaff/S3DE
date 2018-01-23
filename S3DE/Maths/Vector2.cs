@@ -23,7 +23,7 @@ namespace S3DE.Maths
             set => _y = value;
         }
 
-        public float[] ToFloatArray() => new float[] { _x, _y };
+        public float[] ToArray() => new float[] { _x, _y };
 
         public Vector2(float x, float y)
         {

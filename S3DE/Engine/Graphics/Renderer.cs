@@ -13,18 +13,20 @@ namespace S3DE.Engine.Graphics
     {
         private Vector2 resolution;
 
+        private static Renderer activeRenderer;
+
         protected abstract void init();
         protected abstract Renderer_MeshRenderer createMeshRenderer();
         protected abstract Renderer_Material createMaterial(Type materialType);
 
         protected abstract void clear();
 
-        internal static Renderer ActiveRenderer;
+        internal static Renderer ActiveRenderer => activeRenderer;
         
         internal static T SetTargetRenderer<T>() where T : Renderer
         {
             if (ActiveRenderer == null)
-                ActiveRenderer = InstanceCreator.CreateInstance<T>();
+                activeRenderer = InstanceCreator.CreateInstance<T>();
 
             ActiveRenderer.resolution = new Vector2(1280, 720);
             return (T)ActiveRenderer;
@@ -56,13 +58,6 @@ namespace S3DE.Engine.Graphics
             //Trigger OnResolutionChanged();
         }
 
-        internal static Vector2 Resolution
-        {
-            get
-            {
-                return ActiveRenderer.resolution;
-            }
-        }
-
+        internal static Vector2 Resolution => ActiveRenderer.resolution;
     }
 }

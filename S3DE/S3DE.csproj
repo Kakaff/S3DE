@@ -64,6 +64,7 @@
     <Compile Include="Engine\Graphics\Material.cs" />
     <Compile Include="Engine\Graphics\Renderer_Material.cs" />
     <Compile Include="Engine\Graphics\ShaderSource.cs" />
+    <Compile Include="Engine\Scenes\SceneHandler.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\Matrix4x4.cs" />
     <Compile Include="Maths\Quaternion.cs" />
@@ -98,7 +99,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Engine\Graphics\Graphics_Todo.txt" />
+    <Content Include="Engine\Entities\Components\Components_Todo.txt" />
+    <Content Include="Engine\Scenes\Todo_GameScene.txt" />
     <Content Include="glfw3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

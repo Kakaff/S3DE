@@ -21,6 +21,11 @@ namespace S3DE.Engine.Graphics
         Renderer_Material _rMaterial;
         protected abstract ShaderSource GetSource(ShaderStage stage);
 
+        protected Material()
+        {
+            CreateRendererMaterial();
+        }
+
         internal void CreateRendererMaterial()
         {
             _rMaterial = Renderer.CreateMaterial(this.GetType());
@@ -29,31 +34,22 @@ namespace S3DE.Engine.Graphics
 
         public void UseMaterial()
         {
+            if (!_rMaterial.IsCompiled)
+                _rMaterial.Compile_Internal();
+
             UpdateUniforms();
             _rMaterial.UseRendererMaterial();
         }
 
-
         internal void SetSources()
         {
-            _rMaterial.SetSource_Internal(ShaderStage.Vertex, GetSource(ShaderStage.Vertex));
+            _rMaterial.SetSource_Internal(GetSource(ShaderStage.Vertex));
+            _rMaterial.SetSource_Internal(GetSource(ShaderStage.Fragment));
         }
 
-
-        internal void SetTransformMatrix(Matrix4x4 m)
-        {
-
-        }
-
-        internal void SetViewMatrix(Matrix4x4 m)
-        {
-
-        }
-
-        internal void SetProjectionMatrix(Matrix4x4 m)
-        {
-
-        }
+        internal void SetTransformMatrix(Matrix4x4 m) => _rMaterial.SetTransformMatrix_Internal(m);
+        internal void SetViewMatrix(Matrix4x4 m) => _rMaterial.SetViewMatrix_Internal(m);
+        internal void SetProjectionMatrix(Matrix4x4 m) => _rMaterial.SetProjectionMatrix_Internal(m);
 
         protected abstract void UpdateUniforms();
         //Protected method for adding uniforms.

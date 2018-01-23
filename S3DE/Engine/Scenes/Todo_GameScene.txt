@@ -1,0 +1,5 @@
+﻿Add GameScene Handler. Done as of 21/01/2018 needs AsyncLoader though.
+
+Implement scene logic (Frame update/Draw) Done as of 21/01/2018
+
+Implement Entity logic (Frame update/Draw/Starting components) Done as of 21/01/2018

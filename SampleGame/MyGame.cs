@@ -22,14 +22,22 @@ namespace SampleGame
 
         protected override void Initialize()
         {
-            SetEngineClock<S3DE.Engine.StopwatchClock>();
-            SetTargetRenderer<Sample_OGL_Renderer.OpenGL_Renderer>();
             SetStartScene<SampleScene>();
         }
 
         protected override void OnGameExit()
         {
             
+        }
+
+        protected override void SetClock()
+        {
+            SetEngineClock<S3DE.Engine.StopwatchClock>();
+        }
+
+        protected override void SetRenderer()
+        {
+            SetTargetRenderer<Sample_OGL_Renderer.OpenGL_Renderer>();
         }
     }
 }

@@ -14,19 +14,39 @@ namespace S3DE.Engine.Entities
         Mesh m;
 
         Material mat;
+
         public Mesh mesh
         {
-            set => api_mr.SetMesh_Internal(value);
+            set
+            {
+                m = value;
+                api_mr.SetMesh_Internal(m);
+            }
+        }
+
+        public Material material
+        {
+            set => mat = value;
+            get => mat;
+            
         }
 
         protected override void Draw()
         {
-            mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
-            mat.SetViewMatrix(Camera.ActiveCamera.ViewMatrix);
-            mat.SetProjectionMatrix(Camera.ActiveCamera.ProjectionMatrix);
+            if (mat != null && m != null)
+            {
+                mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
+                //mat.SetViewMatrix(Camera.ActiveCamera.ViewMatrix);
+                //mat.SetProjectionMatrix(Camera.ActiveCamera.ProjectionMatrix);
 
-            base.Draw();
+                mat.UseMaterial();
+
+                api_mr.Render_Internal();
+            }
         }
-        protected override void OnCreation() => api_mr = Renderer.CreateMeshRenderer();
+
+        protected override void OnCreation() {
+            api_mr = Renderer.CreateMeshRenderer();
+        }
     }
 }

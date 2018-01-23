@@ -18,6 +18,7 @@ namespace S3DE.Engine.Entities.Components
 
         protected override void OnCreation()
         {
+            //Create viewmatrix from transform position and forward direction.
             throw new NotImplementedException();
         }
     }

@@ -1,4 +1,6 @@
 ﻿using OpenGL;
+using Khronos;
+
 using S3DE.Engine.Entities;
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Utility;
@@ -21,22 +23,29 @@ namespace SampleGame.Sample_OGL_Renderer
 
         protected override Renderer_Material createMaterial(Type materialType)
         {
-            throw new NotImplementedException();
+            return new OpenGL_Material();
         }
 
         protected override Renderer_MeshRenderer createMeshRenderer()
         {
-            throw new NotImplementedException();
+            return new OpenGL_MeshRenderer();
         }
 
         protected override void init()
         {
             Gl.Initialize();
 
-            Gl.Enable(EnableCap.DepthTest);
-            Gl.Enable(EnableCap.CullFace);
-            Gl.CullFace(CullFaceMode.Back);
-            Gl.FrontFace(FrontFaceDirection.Cw);
+            //Gl.Enable(EnableCap.DepthTest);
+            //Gl.Enable(EnableCap.CullFace);
+            //Gl.CullFace(CullFaceMode.Back);
+            //Gl.FrontFace(FrontFaceDirection.Cw);
+        }
+
+        internal static void TestForGLErrors()
+        {
+            ErrorCode err = Gl.GetError();
+            if (err != ErrorCode.NoError)
+                throw new Exception("GL Operation Failed, Error: " + err);
         }
     }
 }

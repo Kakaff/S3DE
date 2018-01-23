@@ -9,31 +9,15 @@ namespace S3DE.Engine.Entities
 {
     public abstract class EntityComponent
     {
-        bool isActive;
+        bool isActive = true,isStarted = false;
         GameEntity entity;
-        
-        public bool IsActive
-        {
-            get
-            {
-                return isActive & entity.IsActive;
-            }
-        }
-        public GameEntity gameEntity
-        {
-            get
-            {
-                return entity;
-            }
-        }
 
-        public Transform transform
-        {
-            get
-            {
-                return entity.transform;
-            }
-        }
+        public bool IsActive => isActive & entity.IsActive;
+        internal bool IsStarted => isStarted;
+
+        public GameEntity gameEntity => entity;
+
+        public Transform transform => entity.transform;
 
         protected abstract void OnCreation();
 
@@ -63,6 +47,7 @@ namespace S3DE.Engine.Entities
         internal void Start_Internal()
         {
             Start();
+            isStarted = true;
         }
 
         internal void EarlyUpdate_Internal()
