@@ -18,7 +18,7 @@ namespace SampleGame
             GameEntity ge = CreateGameEntity();
             MeshRenderer mr = ge.AddComponent<MeshRenderer>();
             Mesh m = new Mesh();
-            m.Vertices = new Vector3[] { new Vector3(0, 0, 0), new Vector3(0.5f, 0, 0), new Vector3(0.5f, 0.5f, 0) };
+            m.Vertices = new Vector3[] {new Vector3(0, 0, 0), new Vector3(1f, 0, 0), new Vector3(0, 1f, 0)};
             m.Triangles = new int[] {0, 1, 2};
             mr.mesh = m;
             

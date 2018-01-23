@@ -17,8 +17,7 @@ namespace SampleGame.Sample_OGL_Renderer
         protected override void clear()
         {
             Gl.Clear(ClearBufferMask.ColorBufferBit | 
-                     ClearBufferMask.DepthBufferBit |
-                     ClearBufferMask.StencilBufferBit);
+                     ClearBufferMask.DepthBufferBit);
         }
 
         protected override Renderer_Material createMaterial(Type materialType)
@@ -35,6 +34,8 @@ namespace SampleGame.Sample_OGL_Renderer
         {
             Gl.Initialize();
 
+            Gl.FrontFace(FrontFaceDirection.Cw);
+            
             //Gl.Enable(EnableCap.DepthTest);
             //Gl.Enable(EnableCap.CullFace);
             //Gl.CullFace(CullFaceMode.Back);

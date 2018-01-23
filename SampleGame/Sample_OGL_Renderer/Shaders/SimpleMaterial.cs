@@ -28,12 +28,9 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
                 SetSource(
                   "#version 400 " + '\n'
 				+ "layout(location = 0)in vec3 position; " + '\n'
-                + "uniform mat4 transform;" + '\n'
-                + "uniform mat4 projection;" + '\n'
-                + "uniform mat4 view;" + '\n'
                 + "void main() " + '\n'
                 + "{ " + '\n'
-                + "gl_Position = (view * projection) * transform * vec4(position,1.0); " + '\n'
+                + "gl_Position = vec4(position,1.0); " + '\n'
                 + "}");
             }
         }

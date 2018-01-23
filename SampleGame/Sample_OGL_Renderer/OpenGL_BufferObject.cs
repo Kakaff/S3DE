@@ -22,6 +22,7 @@ namespace SampleGame.Sample_OGL_Renderer
 
         internal void Bind() => Gl.BindBuffer(bufferTarget, id);
 
+        internal void Unbind() => Gl.BindBuffer(bufferTarget, 0);
         internal void Dispose() => Gl.DeleteBuffers(id);
     }
 }

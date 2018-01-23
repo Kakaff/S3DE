@@ -16,24 +16,32 @@ namespace SampleGame.Sample_OGL_Renderer
         OpenGL_BufferObject vbo, ebo;
         OpenGL_VertexArrayObject vao;
 
-        int triangleCount;
+        int indicieCount;
 
-        internal int Indicies => triangleCount;
+        internal int Indicies => indicieCount;
 
         internal OpenGL_Mesh()
         {
-            vbo = new OpenGL_BufferObject(Gl.GenBuffer(),BufferTarget.ArrayBuffer);
-            //ebo = new OpenGL_BufferObject(Gl.GenBuffer(),BufferTarget.ElementArrayBuffer);
             vao = new OpenGL_VertexArrayObject(Gl.GenVertexArray());
+            vao.Bind();
+            vbo = new OpenGL_BufferObject(Gl.GenBuffer(),BufferTarget.ArrayBuffer);
+            vbo.Bind();
+            ebo = new OpenGL_BufferObject(Gl.GenBuffer(),BufferTarget.ElementArrayBuffer);
+            ebo.Bind();
+            vao.SetAttributePointer(0, 3, VertexAttribType.Float, false, 0, 0);
         }
 
         internal void Bind()
         {
-            //ebo.Bind();
             vao.Bind();
-            vbo.Bind();
-
             vao.EnableAttribute(0);
+        }
+        internal void Unbind()
+        {
+            vao.DisableAttribute(0);
+            vao.Unbind();
+            vbo.Unbind();
+            ebo.Unbind();
         }
 
         internal void SetData(Mesh m)
@@ -42,32 +50,26 @@ namespace SampleGame.Sample_OGL_Renderer
             ValidateMesh(m);
             float[] vertData = VerticeDataToFloatArray(m);
             ushort[] indicies = IndiciesToUShortArray(m.Triangles);
-            
+
             //Uploads the vertices to the GPU.
             using (MemoryLock ml = new MemoryLock(vertData))
             Gl.BufferData(BufferTarget.ArrayBuffer,
                 (uint)(sizeof(float) * vertData.Length),
                 ml.Address,
                 (m.IsDynamic) ? BufferUsage.DynamicDraw : BufferUsage.StaticDraw);
-            triangleCount = m.Triangles.Length;
-
+            indicieCount = indicies.Length;
             TestForGLErrors();
-
-            /*
             //Crashes for some odd reason 
             //Uploads the indicies to the GPU
+            uint indicesSize = (uint)(2 * indicies.Length);
+
             using (MemoryLock ml = new MemoryLock(indicies))
                 Gl.BufferData(BufferTarget.ElementArrayBuffer,
-                    (uint)(sizeof(ushort) * indicies.Length),
+                    indicesSize,
                     ml.Address,
                     (m.IsDynamic) ? BufferUsage.DynamicDraw : BufferUsage.StaticDraw);
-            //TestForGLErrors();
-            */
-
-            //Sets up the VAO. For now we only set the positions
-            //In the future, add uvs/normals.
-            vao.SetAttributePointer(0, 3, Gl.FLOAT, false, 0, 0);
             TestForGLErrors();
+            Unbind();
         }
 
         ushort[] IndiciesToUShortArray(int[] arr)

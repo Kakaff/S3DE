@@ -31,8 +31,9 @@ namespace SampleGame.Sample_OGL_Renderer
             }
 
             mesh.Bind();
-            Gl.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            //Gl.DrawElements(PrimitiveType.Triangles, mesh.Indicies, DrawElementsType.UnsignedShort, 0);
+            Gl.DrawElements(PrimitiveType.Triangles, mesh.Indicies, DrawElementsType.UnsignedShort,IntPtr.Zero);
+            OpenGL_Renderer.TestForGLErrors();
+            mesh.Unbind();
         }
 
         protected override void SetMesh(Mesh m)

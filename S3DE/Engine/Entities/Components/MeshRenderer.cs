@@ -20,7 +20,7 @@ namespace S3DE.Engine.Entities
             set
             {
                 m = value;
-                api_mr.SetMesh_Internal(m);
+                api_mr.SetMesh_Internal(value);
             }
         }
 

@@ -43,10 +43,9 @@ namespace S3DE
 
             while (!window.IsCloseRequested)
             {
+                fs.WaitForTargetFPS();
                 Renderer.Clear();
                 SceneHandler.RunScenes();
-                
-                fs.WaitForTargetFPS();
                 window.SwapBuffer();
                 window.PollEvents();
             }

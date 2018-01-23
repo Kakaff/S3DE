@@ -17,12 +17,9 @@ namespace SampleGame.Sample_OGL_Renderer
 
         internal void DisableAttribute(uint attribute) => Gl.DisableVertexAttribArray(attribute);
 
-        internal void SetAttributePointer(uint location,int size, int attribType,bool normalized,int stride,int offset)
+        internal void SetAttributePointer(uint location,int size, VertexAttribType attribType,bool normalized,int stride,int offset)
         {
-            
-            Bind();
-            Gl.VertexAttribPointer(location, size, (VertexAttribType)attribType, normalized, stride, (IntPtr)offset);
-            Unbind();
+            Gl.VertexAttribPointer(location, size, attribType, normalized, stride, (IntPtr)offset);
         }
 
         internal void Bind() => Gl.BindVertexArray(id);

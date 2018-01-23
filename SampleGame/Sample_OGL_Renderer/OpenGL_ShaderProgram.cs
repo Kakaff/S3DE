@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SampleGame.Sample_OGL_Renderer.OpenGL_Renderer;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
@@ -34,10 +35,6 @@ namespace SampleGame.Sample_OGL_Renderer
 
             Gl.AttachShader(pointer, vertexShader.Pointer);
             Gl.AttachShader(pointer, fragmentShader.Pointer);
-
-            Gl.BindAttribLocation(pointer, 0, "pos");
-            //Gl.BindAttribLocation(pointer, 1, "uv");
-            //Gl.BindAttribLocation(pointer, 2, "normal");
 
             Gl.LinkProgram(pointer);
         }
