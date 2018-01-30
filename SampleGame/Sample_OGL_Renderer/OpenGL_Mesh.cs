@@ -48,7 +48,7 @@ namespace SampleGame.Sample_OGL_Renderer
         {
             Bind();
             ValidateMesh(m);
-            float[] vertData = VerticeDataToFloatArray(m);
+            float[] vertData = Vector3.ToArray(m.Vertices);
             ushort[] indicies = IndiciesToUShortArray(m.Triangles);
 
             //Uploads the vertices to the GPU.
@@ -59,8 +59,7 @@ namespace SampleGame.Sample_OGL_Renderer
                 (m.IsDynamic) ? BufferUsage.DynamicDraw : BufferUsage.StaticDraw);
             indicieCount = indicies.Length;
             TestForGLErrors();
-            //Crashes for some odd reason 
-            //Uploads the indicies to the GPU
+
             uint indicesSize = (uint)(2 * indicies.Length);
 
             using (MemoryLock ml = new MemoryLock(indicies))
@@ -82,25 +81,12 @@ namespace SampleGame.Sample_OGL_Renderer
                 else
                     throw new ArgumentOutOfRangeException($"A mesh may not have more than {ushort.MaxValue} vertices!");
 
-
             return res.ToArray();
-        }
-        float[] VerticeDataToFloatArray(Mesh m)
-        {
-            List<float> vertData = new List<float>();
-            //Add uv and normals later.
-            for (int i = 0; i < m.Vertices.Length; i++)
-            {
-                vertData.AddRange(m.Vertices[i].ToArray());
-            }
-            
-            return vertData.ToArray();
         }
 
         void ValidateMesh(Mesh m)
         {
-            //If the number of normals or uvs is the same as the vertices or 0 then it's valid.
-            //Check to see if all indicies are refering to valid vertices aswell.
+            //Should probably implement this at some point.
         }
 
 

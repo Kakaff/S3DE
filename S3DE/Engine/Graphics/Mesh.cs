@@ -39,5 +39,30 @@ namespace S3DE.Engine.Graphics
         {
 
         }
+
+        public static Mesh CreateCube(Vector3 scale)
+        {
+            Mesh m = new Mesh();
+
+            float x = 0.5f * scale.x;
+            float y = 0.5f * scale.y;
+            float z = 0.5f * scale.z;
+
+            Vector3[] verts = new Vector3[] {new Vector3(-x,y,-z), new Vector3(x,y,-z),new Vector3(x,-y,-z), new Vector3(-x,-y,-z)
+                                            ,new Vector3(x,y,z), new Vector3(-x,y,z),new Vector3(-x,-y,z), new Vector3(x,-y,z)};
+
+            int[] triangles = new int[] {0,1,2, //zNeg 1
+                                         0,2,3, //zNeg 2
+                                         4,5,6, //zpos 1
+                                         4,6,7,  //zpos 2
+                                         1,4,7,
+                                         1,7,2
+                                };
+
+            m.Vertices = verts;
+            m.Triangles = triangles;
+            
+            return m;
+        }
     }
 }

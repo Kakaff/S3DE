@@ -15,7 +15,6 @@ namespace S3DE
     class EngineMain
     {
         static bool isRunning;
-        static Engine.Graphics.Window window;
 
         public static bool IsRunning => isRunning;
 
@@ -30,24 +29,23 @@ namespace S3DE
 
             Renderer.Init();
             Glfw.Init();
-            
-            window = new Engine.Graphics.Window((int)Renderer.Resolution.x,
-                                                (int)Renderer.Resolution.y,
-                                                game.GameName());
-            window.MakeCurrentContext();
 
-            FrameSync fs = new FrameSync();
+            Engine.Graphics.Window.CreateWindow((int)Renderer.Resolution.x, (int)Renderer.Resolution.y, game.GameName());
+            Engine.Graphics.Window.MakeCurrentContext();
+            Renderer.SetCapabilities_Internal();
+            game.SetFrameSync_Internal();
             game.InitGame();
-
             isRunning = true;
+            Time.UpdateDeltaTime(Time.CurrentTick);
 
-            while (!window.IsCloseRequested)
+            while (!Engine.Graphics.Window.IsCloseRequested)
             {
-                fs.WaitForTargetFPS();
                 Renderer.Clear();
                 SceneHandler.RunScenes();
-                window.SwapBuffer();
-                window.PollEvents();
+                Engine.Graphics.Window.SwapBuffer();
+                Engine.Graphics.Window.PollEvents();
+                FrameSync.WaitForTargetFPS();
+                Time.UpdateDeltaTime(Time.CurrentTick);
             }
 
         }

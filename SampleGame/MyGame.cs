@@ -22,7 +22,9 @@ namespace SampleGame
 
         protected override void Initialize()
         {
+            SetTargetFPS(60);
             SetStartScene<SampleScene>();
+
         }
 
         protected override void OnGameExit()
@@ -32,7 +34,12 @@ namespace SampleGame
 
         protected override void SetClock()
         {
-            SetEngineClock<S3DE.Engine.StopwatchClock>();
+            SetEngineClock<S3DE.Engine.HighResClock>();
+        }
+
+        protected override void SetFrameSync()
+        {
+            SetEngineFrameSync<SampleFrameSync>();
         }
 
         protected override void SetRenderer()

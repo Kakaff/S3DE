@@ -14,6 +14,7 @@ namespace SampleGame.Sample_OGL_Renderer
         OpenGL_ShaderProgram prog;
 
         ShaderSource VertexShader, FragmentShader;
+        Dictionary<string, int> Uniforms;
 
         protected override void Compile()
         {
@@ -23,12 +24,7 @@ namespace SampleGame.Sample_OGL_Renderer
 
         internal OpenGL_Material()
         {
-            
-        }
-
-        protected override void SetProjectionMatrix(Matrix4x4 m)
-        {
-            //throw new NotImplementedException();
+            Uniforms = new Dictionary<string, int>();
         }
 
         protected override void SetSource(ShaderSource source)
@@ -52,35 +48,16 @@ namespace SampleGame.Sample_OGL_Renderer
             }
         }
 
-        protected override void SetTransformMatrix(Matrix4x4 m)
-        {
-            //SetUniform("transform",m);
-            //throw new NotImplementedException();
-        }
+        protected override void SetUniformf(string uniformName, float[] value) => prog.SetUniformf(uniformName, value);
 
-        protected override void SetUniform(string uniformName, float[] value)
-        {
-            throw new NotImplementedException();
-        }
+        protected override void SetUniformf(string uniformName, float value) => prog.SetUniformf(uniformName, value);
 
-        protected override void SetUniformf(string uniformName, float value)
-        {
-            throw new NotImplementedException();
-        }
+        protected override void SetUniformi(string uniformName, int value) => prog.SetUniformi(uniformName, value);
 
-        protected override void SetUniformi(string uniformName, int value)
-        {
-            throw new NotImplementedException();
-        }
+        protected override void SetUniform(string uniformName, Matrix4x4 m) => prog.SetUniform(uniformName, m);
 
-        protected override void SetViewMatrix(Matrix4x4 m)
-        {
-            //throw new NotImplementedException();
-        }
+        protected override void UseMaterial() => prog.UseProgram();
 
-        protected override void UseMaterial()
-        {
-            prog.UseProgram();
-        }
+        protected override void AddUniform(string uniformName) => prog.AddUniform(uniformName);
     }
 }

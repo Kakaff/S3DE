@@ -31,15 +31,19 @@ namespace S3DE.Engine.Entities
             
         }
 
+        protected override void PreDraw() => api_mr.Prepare_Internal();
+
         protected override void Draw()
         {
             if (mat != null && m != null)
             {
-                mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
-                //mat.SetViewMatrix(Camera.ActiveCamera.ViewMatrix);
-                //mat.SetProjectionMatrix(Camera.ActiveCamera.ProjectionMatrix);
-
                 mat.UseMaterial();
+                if (mat.UsesTransformMatrix)
+                    mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
+                if (mat.UsesViewMatrix)
+                    mat.SetViewMatrix(Camera.ActiveCamera.ViewMatrix);
+                if (mat.UsesProjectionMatrix)
+                    mat.SetProjectionMatrix(Camera.ActiveCamera.ProjectionMatrix);
 
                 api_mr.Render_Internal();
             }

@@ -13,6 +13,11 @@ namespace S3DE.Engine
         static long deltaTicks;
         static float deltaTime;
         static long startTick;
+        static long prevTicks;
+
+        public static float DeltaTime => deltaTime;
+
+        public static long DeltaTicks => deltaTicks;
 
         public static long CurrentTick => clock.CurrentTick;
 
@@ -22,13 +27,20 @@ namespace S3DE.Engine
         {
             clock = InstanceCreator.CreateInstance<T>();
             clock.OnCreation_Internal();
-
         }
 
         internal static void Start()
         {
             clock.StartClock_Internal();
             startTick = clock.CurrentTick;
+            prevTicks = startTick;
+        }
+
+        internal static void UpdateDeltaTime(long tick)
+        {
+            deltaTicks = tick - prevTicks;
+            deltaTime = (float)((double)deltaTicks / (double)TimeSpan.TicksPerSecond);
+            prevTicks = tick;
         }
     }
 }

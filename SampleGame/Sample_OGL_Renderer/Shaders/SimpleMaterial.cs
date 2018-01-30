@@ -11,15 +11,6 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
     {
         ShaderSource VertexSource, FragmentSource;
 
-        /*
-            TODO:
-            Add proper shadersources (With actual code).
-            Fix setting Matrices.
-            Fix the camera class
-            Try to draw a cube. without indicies at first
-            Then try to draw the cube with indicies.
-        */
-
         private class SimpleVertSource : ShaderSource
         {
             public SimpleVertSource()
@@ -28,9 +19,12 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
                 SetSource(
                   "#version 400 " + '\n'
 				+ "layout(location = 0)in vec3 position; " + '\n'
+                + "uniform mat4 view; " + '\n'
+                + "uniform mat4 projection; " + '\n'
+                + "uniform mat4 transform; " + '\n'
                 + "void main() " + '\n'
                 + "{ " + '\n'
-                + "gl_Position = vec4(position,1.0); " + '\n'
+                + "gl_Position = (projection * view) * transform * vec4(position,1.0); " + '\n'
                 + "}");
             }
         }
@@ -53,6 +47,10 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
         {
             VertexSource = new SimpleVertSource();
             FragmentSource = new SimpleFragSource();
+
+            UsesProjectionMatrix = true;
+            UsesViewMatrix = true;
+            UsesTransformMatrix = true;
         }
 
         protected override ShaderSource GetSource(ShaderStage stage)

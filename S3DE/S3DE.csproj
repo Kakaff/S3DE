@@ -64,6 +64,7 @@
     <Compile Include="Engine\Graphics\Material.cs" />
     <Compile Include="Engine\Graphics\Renderer_Material.cs" />
     <Compile Include="Engine\Graphics\ShaderSource.cs" />
+    <Compile Include="Engine\HighResClock.cs" />
     <Compile Include="Engine\Scenes\SceneHandler.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\Matrix4x4.cs" />
@@ -71,7 +72,6 @@
     <Compile Include="Maths\Vector2.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Engine\Graphics\Window.cs" />
-    <Compile Include="Engine\StopwatchClock.cs" />
     <Compile Include="Engine\EngineClock.cs" />
     <Compile Include="Engine\Entities\Components\Camera.cs" />
     <Compile Include="Engine\Entities\Components\EntityComponent.cs" />
@@ -99,8 +99,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Engine\Entities\Components\Components_Todo.txt" />
-    <Content Include="Engine\Scenes\Todo_GameScene.txt" />
+    <Content Include="Engine\Debug\Todo.txt" />
     <Content Include="glfw3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

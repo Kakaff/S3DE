@@ -16,7 +16,11 @@ namespace S3DE.Maths
             set => mV[x, y] = value;
         }
 
-        public Matrix4x4() => mV = new float[4, 4];
+        public Matrix4x4()
+        {
+            mV = new float[4, 4];
+            SetIdentity();
+        }
 
         public Matrix4x4 SetIdentity()
         {
@@ -32,14 +36,14 @@ namespace S3DE.Maths
         {
             Matrix4x4 m = new Matrix4x4();
 
-            float t = (float)Math.Tan(Constants.ToRadians * (fov * 0.5d));
+            float t = (float)Math.Tan(Constants.ToRadians * (fov / 2d));
             float r = zNear - zFar;
 
             m[0, 0] = 1f / (t * aspect);
             m[1, 1] = 1f / t;
             m[2, 2] = (-zNear - zFar) / r;
-            m[2, 3] = 2f * zFar * zNear / r;
-            m[3, 2] = 1f;
+            m[3, 2] = 2f * zFar * zNear / r;
+            m[2, 3] = 1f;
             m[3, 3] = 0;
             return m;
         }
@@ -47,11 +51,10 @@ namespace S3DE.Maths
         public static Matrix4x4 CreateViewMatrix(Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraUp)
         {
             Matrix4x4 m = new Matrix4x4();
-
             Matrix4x4 tm = CreateTranslationMatrix(-cameraPosition);
-            Matrix4x4 rm = Quaternion.CreateLookAt(cameraPosition, cameraForward, cameraUp).conjugate.ToRotationMatrix();
+            Matrix4x4 rm = Quaternion.CreateLookAt(Vector3.Zero, cameraForward, cameraUp).conjugate.ToRotationMatrix();
 
-            return rm * tm;
+            return tm * rm;
         }
         
 
@@ -66,11 +69,11 @@ namespace S3DE.Maths
         {
             Matrix4x4 m = new Matrix4x4();
             m[0, 0] = 1;
-            m[0, 3] = translation.x;
+            m[3, 0] = translation.x;
             m[1, 1] = 1;
-            m[1, 3] = translation.y;
+            m[3, 1] = translation.y;
             m[2, 2] = 1;
-            m[2, 3] = translation.z;
+            m[3, 2] = translation.z;
             m[3, 3] = 1;
 
             return m;
@@ -106,15 +109,15 @@ namespace S3DE.Maths
             float zw = 2.0f * (q.z * q.w);
 
             m[0, 0] = 1.0f - yy - zz;
-            m[0, 1] = xy - zw;
-            m[0, 2] = xz + yw;
+            m[1, 0] = xy - zw;
+            m[2, 0] = xz + yw;
 
-            m[1, 0] = xy + zw;
+            m[0, 1] = xy + zw;
             m[1, 1] = 1f - xx - zz;
-            m[1, 2] = yz - xw;
+            m[2, 1] = yz - xw;
 
-            m[2, 0] = xz - yw;
-            m[2, 1] = yz + xw;
+            m[0, 2] = xz - yw;
+            m[1, 2] = yz + xw;
             m[2, 2] = 1.0f - xx - yy;
 
             m[3, 3] = 1;
@@ -138,5 +141,15 @@ namespace S3DE.Maths
         }
 
         public static Matrix4x4 operator *(Matrix4x4 m, Quaternion q) => m * q.ToRotationMatrix();
+
+        public float[] ToArray()
+        {
+            List<float> values = new List<float>();
+            for (int x = 0; x < 4; x++)
+                for (int y = 0; y < 4; y++)
+                    values.Add(mV[x, y]);
+
+            return values.ToArray();
+        }
     }
 }

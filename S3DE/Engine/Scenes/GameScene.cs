@@ -58,20 +58,37 @@ namespace S3DE.Engine.Scenes
                 ge.LateUpdate();
         }
 
+        /// <summary>
+        /// Gets called before GameScene.Draw() and is mainly used to setup everything to be ready for drawing.
+        /// </summary>
+        internal void PreDraw()
+        {
+            InitFrameStage();
+            foreach (GameEntity ge in frameStageEntities)
+                ge.PreDraw();
+        }
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
         internal void Draw()
         {
             InitFrameStage();
             foreach (GameEntity ge in frameStageEntities)
                 ge.Draw();
         }
-
+        /// <summary>
+        /// Is called after GameScene.Draw() and is mainly used to cleanup from drawing and to ready the next frame.
+        /// </summary>
         internal void PostDraw()
         {
             InitFrameStage();
             foreach (GameEntity ge in frameStageEntities)
                 ge.PostDraw();
         }
-
+        /// <summary>
+        /// Updates this GameScene 1 frame.
+        /// </summary>
+        /// <param name="canDraw">Specifies wether or not this scene will be drawn</param>
         internal void Run(bool canDraw)
         {
 
@@ -81,6 +98,7 @@ namespace S3DE.Engine.Scenes
 
             if (canDraw)
             {
+                PreDraw();
                 Draw();
                 PostDraw();
             }
@@ -91,10 +109,12 @@ namespace S3DE.Engine.Scenes
             //Dispose the scene. (call Dispose() and dispose all entities and their components).
             //Load the scene.
         }
+
         protected abstract void LoadScene();
         protected abstract void UnloadScene();
 
-        internal GameEntity _createGameEntity() => CreateGameEntity();
+        internal GameEntity CreateEntityInternal() => CreateGameEntity();
+
         protected GameEntity CreateGameEntity() {
             GameEntity ge = GameEntity.Create(this);
             AddEntity(ge);

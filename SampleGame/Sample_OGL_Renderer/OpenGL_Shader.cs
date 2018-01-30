@@ -73,7 +73,7 @@ namespace SampleGame.Sample_OGL_Renderer
             }
 
             shad.pointer = pointer;
-            Gl.ShaderSource(shad.pointer,new string[] { shad.source });
+            Gl.ShaderSource(shad.pointer,new string[] {shad.source});
             return shad;
         }
 

@@ -15,6 +15,7 @@ namespace S3DE.Engine.Graphics
 
         private static Renderer activeRenderer;
 
+        protected abstract void SetCapabilities();
         protected abstract void init();
         protected abstract Renderer_MeshRenderer createMeshRenderer();
         protected abstract Renderer_Material createMaterial(Type materialType);
@@ -42,6 +43,8 @@ namespace S3DE.Engine.Graphics
             return ActiveRenderer.createMaterial(materialType);
         }
 
+        internal static void SetCapabilities_Internal() => ActiveRenderer.SetCapabilities();
+
         internal static void Init()
         {
             ActiveRenderer.init();
@@ -55,7 +58,7 @@ namespace S3DE.Engine.Graphics
         internal static void SetResolution(Vector2 res)
         {
             ActiveRenderer.resolution = res;
-            //Trigger OnResolutionChanged();
+            //Trigger OnResolutionChanged(); Which isn't even implemented yet.
         }
 
         internal static Vector2 Resolution => ActiveRenderer.resolution;

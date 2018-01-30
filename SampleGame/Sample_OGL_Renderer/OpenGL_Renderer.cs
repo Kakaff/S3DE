@@ -33,20 +33,29 @@ namespace SampleGame.Sample_OGL_Renderer
         protected override void init()
         {
             Gl.Initialize();
+        }
 
+        protected override void SetCapabilities()
+        {
             Gl.FrontFace(FrontFaceDirection.Cw);
-            
-            //Gl.Enable(EnableCap.DepthTest);
-            //Gl.Enable(EnableCap.CullFace);
-            //Gl.CullFace(CullFaceMode.Back);
-            //Gl.FrontFace(FrontFaceDirection.Cw);
+            TestForGLErrors();
+            Gl.Enable(EnableCap.DepthTest);
+            TestForGLErrors();
+            Gl.CullFace(CullFaceMode.Back);
+            TestForGLErrors();
+            Gl.FrontFace(FrontFaceDirection.Cw);
+            TestForGLErrors();
+            Gl.Enable(EnableCap.CullFace);
+            TestForGLErrors();
         }
 
         internal static void TestForGLErrors()
         {
             ErrorCode err = Gl.GetError();
             if (err != ErrorCode.NoError)
+            {
                 throw new Exception("GL Operation Failed, Error: " + err);
+            }
         }
     }
 }

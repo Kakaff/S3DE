@@ -12,7 +12,20 @@ namespace S3DE.Engine.Entities
         bool isActive = true,isStarted = false;
         GameEntity entity;
 
-        public bool IsActive => isActive & entity.IsActive;
+        protected float DeltaTime => Time.DeltaTime;
+
+        public bool IsActive
+        {
+            get => isActive & entity.IsActive;
+            set
+            {
+                if (isActive != value)
+                    if (value)
+                        OnEnable();
+                    else
+                        OnDisable();
+            }
+        }
         internal bool IsStarted => isStarted;
 
         public GameEntity gameEntity => entity;
@@ -28,21 +41,16 @@ namespace S3DE.Engine.Entities
         protected virtual void Update() { }
         protected virtual void LateUpdate() { }
 
+        protected virtual void PreDraw() { }
         protected virtual void Draw() { }
         protected virtual void PostDraw() { }
 
         protected virtual void OnEnable() { }
         protected virtual void OnDisable() { }
 
-        internal void OnCreation_Internal()
-        {
-            OnCreation();
-        }
+        internal void OnCreation_Internal() => OnCreation();
 
-        internal void Init_Internal()
-        {
-            Init();
-        }
+        internal void Init_Internal() => Init();
 
         internal void Start_Internal()
         {
@@ -50,34 +58,18 @@ namespace S3DE.Engine.Entities
             isStarted = true;
         }
 
-        internal void EarlyUpdate_Internal()
-        {
-            EarlyUpdate();
-        }
+        internal void EarlyUpdate_Internal() => EarlyUpdate();
 
-        internal void Update_Internal()
-        {
-            Update();
-        }
+        internal void Update_Internal() => Update();
 
-        internal void LateUpdate_Internal()
-        {
-            LateUpdate();
-        }
+        internal void LateUpdate_Internal() => LateUpdate();
 
-        internal void Draw_Internal()
-        {
-            Draw();
-        }
-        
-        internal void PostDraw_Internal()
-        {
-            PostDraw();
-        }
+        internal void PreDraw_Internal() => PreDraw();
 
-        internal void SetParentEntity(GameEntity parent)
-        {
-            entity = parent;
-        }
+        internal void Draw_Internal() => Draw();
+
+        internal void PostDraw_Internal() => PostDraw();
+
+        internal void SetParentEntity(GameEntity parent) => entity = parent;
     }
 }

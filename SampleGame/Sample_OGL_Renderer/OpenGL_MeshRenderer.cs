@@ -18,7 +18,7 @@ namespace SampleGame.Sample_OGL_Renderer
 
         bool hasChanged = false;
 
-        protected override void Render()
+        protected override void PrepareRender()
         {
             if (hasChanged)
             {
@@ -29,11 +29,17 @@ namespace SampleGame.Sample_OGL_Renderer
                 mesh.SetData(m);
                 hasChanged = false;
             }
+        }
 
-            mesh.Bind();
-            Gl.DrawElements(PrimitiveType.Triangles, mesh.Indicies, DrawElementsType.UnsignedShort,IntPtr.Zero);
-            OpenGL_Renderer.TestForGLErrors();
-            mesh.Unbind();
+        protected override void Render()
+        {
+            if (mesh != null)
+            {
+                mesh.Bind();
+                Gl.DrawElements(PrimitiveType.Triangles, mesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                OpenGL_Renderer.TestForGLErrors();
+                mesh.Unbind();
+            }
         }
 
         protected override void SetMesh(Mesh m)

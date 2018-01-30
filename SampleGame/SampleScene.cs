@@ -1,7 +1,9 @@
 ﻿using S3DE.Engine.Entities;
+using S3DE.Engine.Entities.Components;
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
 using S3DE.Maths;
+using SampleGame.Sample_Components;
 using SampleGame.Sample_OGL_Renderer.Shaders;
 using System;
 using System.Collections.Generic;
@@ -17,13 +19,13 @@ namespace SampleGame
         {
             GameEntity ge = CreateGameEntity();
             MeshRenderer mr = ge.AddComponent<MeshRenderer>();
-            Mesh m = new Mesh();
-            m.Vertices = new Vector3[] {new Vector3(0, 0, 0), new Vector3(1f, 0, 0), new Vector3(0, 1f, 0)};
-            m.Triangles = new int[] {0, 1, 2};
-            mr.mesh = m;
-            
+            mr.mesh = Mesh.CreateCube(new Vector3(1,1,1));
+            ge.transform.Position = new Vector3(0f, 0f, 2f);
+            ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
             mr.material = mat;
+            Camera.MainCamera.gameEntity.transform.Position = new Vector3(0, 0, 0f);
+
         }
 
         protected override void UnloadScene()

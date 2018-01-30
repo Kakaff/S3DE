@@ -12,6 +12,9 @@ namespace S3DE.Engine.Entities.Components
     {
         Transform parent;
         List<Transform> children;
+        bool hasChanged;
+
+        public bool HasChanged => hasChanged;
 
         public Vector3 Position
         {
@@ -69,6 +72,8 @@ namespace S3DE.Engine.Entities.Components
         public Matrix4x4 WorldScaleMatrix => worldScaleMatrix;
         public Matrix4x4 WorldTransformMatrix => worldTransformMatrix;
 
+        protected override void PostDraw() => hasChanged = false;
+
         public void Translate(Vector3 direction, float distance) => Translate(direction, distance, Space.World);
 
         public void Translate(Vector3 direction, float distance, Space space)
@@ -82,6 +87,7 @@ namespace S3DE.Engine.Entities.Components
 
         public void SetPosition(Vector3 position, Space space)
         {
+            hasChanged = true;
             switch (space)
             {
                 case Space.World:
@@ -103,6 +109,7 @@ namespace S3DE.Engine.Entities.Components
 
         public void SetRotation(Quaternion quat, Space space)
         {
+            hasChanged = true;
             switch (space)
             {
                 case Space.World:
@@ -121,16 +128,24 @@ namespace S3DE.Engine.Entities.Components
             UpdateChildren();
         }
 
+        public void Rotate(Vector3 axis, float angle) => Rotate(axis, angle, Space.World);
+
+        public void Rotate(Vector3 axis, float angle, Space space)
+        {
+            SetRotation((space == Space.World ? worldQuatRotation : localQuatRotation) * Quaternion.CreateFromAxisAngle(axis, angle), space);
+        }
+
         public void SetScale(Vector3 scale, Space space)
         {
             localScale = scale;
-
+            hasChanged = true;
             UpdateWorldScale();
             UpdateChildren();
         }
 
         public void SetParent(Transform nParent)
         {
+            //Remember to recalculate the matrices if we change our parent!
             if (nParent != null && nParent != this && nParent != parent)
             {
                 //Should probably add a check to make sure that
@@ -139,6 +154,7 @@ namespace S3DE.Engine.Entities.Components
                     parent.RemoveChild(this);
 
                 nParent.AddChild(this);
+                
             } else if (nParent == null && parent != null)
             {
                 throw new NotImplementedException();
@@ -193,7 +209,6 @@ namespace S3DE.Engine.Entities.Components
             right = Vector3.Right * worldQuatRotation;
             up = Vector3.Up * worldQuatRotation;
             forward = Vector3.Forward * worldQuatRotation;
-
             UpdateWorldTransform();
         }
 
@@ -214,6 +229,7 @@ namespace S3DE.Engine.Entities.Components
 
         private void RecalculateMatrices()
         {
+            hasChanged = true;
             UpdateWorldScale();
             UpdateWorldRotation();
             UpdateWorldPosition();
@@ -236,6 +252,9 @@ namespace S3DE.Engine.Entities.Components
             forward = Vector3.Forward;
             up = Vector3.Up;
             right = Vector3.Right;
+            hasChanged = true;
+
+            RecalculateMatrices();
         }
     }
 }

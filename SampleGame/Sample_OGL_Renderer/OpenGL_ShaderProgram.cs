@@ -1,7 +1,9 @@
 ﻿using OpenGL;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static SampleGame.Sample_OGL_Renderer.OpenGL_Renderer;
@@ -12,16 +14,16 @@ namespace SampleGame.Sample_OGL_Renderer
     {
         OpenGL_Shader vertexShader;
         OpenGL_Shader fragmentShader;
-
+        Dictionary<string, int> Uniforms;
         uint pointer;
 
-        //Create a collection similar to the shaders later. But take in a material instead.
+        internal uint Pointer => pointer;
 
         internal OpenGL_ShaderProgram(OpenGL_Shader VertexShader, OpenGL_Shader FragmentShader)
         {
             this.vertexShader = VertexShader;
             this.fragmentShader = FragmentShader;
-
+            Uniforms = new Dictionary<string, int>();
             pointer = Gl.CreateProgram();
         }
 
@@ -45,5 +47,48 @@ namespace SampleGame.Sample_OGL_Renderer
         {
             //Free all shaders.
         }
+
+        int GetUniformLocation(string uniformName)
+        {
+            if (Uniforms.TryGetValue(uniformName, out int _loc))
+                return _loc;
+            else
+                throw new ArgumentNullException($"Unknown Uniform '{uniformName}'");
+        }
+
+        internal void SetUniformf(string uniformName, float value) => 
+            Gl.Uniform1(GetUniformLocation(uniformName), value);
+
+        internal void SetUniformf(string uniformName, float[] values) => 
+            Gl.Uniform1(GetUniformLocation(uniformName), values);
+
+        internal void SetUniformi(string uniformName, int value) =>
+            Gl.Uniform1(GetUniformLocation(uniformName), value);
+
+        internal void SetUniformi(string uniformName, int[] value) =>
+            Gl.Uniform1(GetUniformLocation(uniformName), value);
+
+        internal void SetUniform(string uniformName, Matrix4x4 m)
+        {
+            Gl.UniformMatrix4(GetUniformLocation(uniformName),false,m.ToArray());
+            OpenGL_Renderer.TestForGLErrors();
+        }
+        
+        internal void AddUniform(string uniformName)
+        {
+            UseProgram();
+
+            int loc = Gl.GetUniformLocation(Pointer, uniformName);
+            if (loc != -0x1) {
+                Uniforms.Add(uniformName, loc);
+            }
+            else
+                throw new ArgumentException($"Unable to find uniform: {uniformName}");
+
+            Console.WriteLine($"Uniform {uniformName} location = {loc}");
+            OpenGL_Renderer.TestForGLErrors();
+        }
+        
+        
     }
 }

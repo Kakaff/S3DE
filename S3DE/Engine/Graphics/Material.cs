@@ -20,7 +20,25 @@ namespace S3DE.Engine.Graphics
     {
         Renderer_Material _rMaterial;
         protected abstract ShaderSource GetSource(ShaderStage stage);
+        bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix;
 
+        public bool UsesTransformMatrix
+        {
+            get => usesTransMatrix;
+            protected set => usesTransMatrix = value;
+        }
+
+        public bool UsesViewMatrix
+        {
+            get => usesViewMatrix;
+            protected set => usesViewMatrix = value;
+        }
+
+        public bool UsesProjectionMatrix
+        {
+            get => usesProjectionMatrix;
+            protected set => usesProjectionMatrix = value;
+        }
         protected Material()
         {
             CreateRendererMaterial();
@@ -35,9 +53,17 @@ namespace S3DE.Engine.Graphics
         public void UseMaterial()
         {
             if (!_rMaterial.IsCompiled)
+            {
                 _rMaterial.Compile_Internal();
+                if (UsesTransformMatrix)
+                    AddUniform("transform");
+                if (UsesViewMatrix)
+                    AddUniform("view");
+                if (UsesProjectionMatrix)
+                    AddUniform("projection");
+                AddUserDefinedUniforms();
+            }
 
-            UpdateUniforms();
             _rMaterial.UseRendererMaterial();
         }
 
@@ -47,15 +73,36 @@ namespace S3DE.Engine.Graphics
             _rMaterial.SetSource_Internal(GetSource(ShaderStage.Fragment));
         }
 
-        internal void SetTransformMatrix(Matrix4x4 m) => _rMaterial.SetTransformMatrix_Internal(m);
-        internal void SetViewMatrix(Matrix4x4 m) => _rMaterial.SetViewMatrix_Internal(m);
-        internal void SetProjectionMatrix(Matrix4x4 m) => _rMaterial.SetProjectionMatrix_Internal(m);
+        internal void SetTransformMatrix(Matrix4x4 m) => SetUniform("transform", m);
+        internal void SetViewMatrix(Matrix4x4 m) => SetUniform("view", m);
+        internal void SetProjectionMatrix(Matrix4x4 m) => SetUniform("projection", m);
 
         protected abstract void UpdateUniforms();
-        //Protected method for adding uniforms.
+
+        internal void AddUniform(string uniformName)
+        {
+            try
+            {
+                _rMaterial.Internal_AddUniform(uniformName);
+            } catch (Exception ex)
+            {
+                throw new NullReferenceException($"Error getting uniform '{uniformName}' in '{GetType().Name}' | {ex.Message}");
+            }
+        }
+
+        internal void AddUserDefinedUniforms()
+        {
+            string[] uniforms = GetUniforms();
+            foreach (string s in uniforms)
+                AddUniform(s);
+        }
+
+        protected virtual string[] GetUniforms() { return new string[0];}
 
         protected void SetUniform(string uniformName, float value) => _rMaterial.Internal_SetUniformf(uniformName, value);
         protected void SetUniform(string uniformName, int value) => _rMaterial.Internal_SetUniformi(uniformName, value);
-        protected void SetUniform(string uniformName, float[] value) => _rMaterial.Internal_SetUniform(uniformName, value);
+        protected void SetUniform(string uniformName, float[] value) => _rMaterial.Internal_SetUniformf(uniformName, value);
+        protected void SetUniform(string uniformName, Vector3 value) => _rMaterial.Internal_SetUniformf(uniformName, value.ToArray());
+        protected void SetUniform(string uniformName, Matrix4x4 value) => _rMaterial.Internal_SetUniform(uniformName, value);
     }
 }

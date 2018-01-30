@@ -15,21 +15,18 @@ namespace S3DE.Engine.Graphics
 
         protected abstract void UseMaterial();
 
-        protected abstract void SetTransformMatrix(Matrix4x4 m);
-        protected abstract void SetViewMatrix(Matrix4x4 m);
-        protected abstract void SetProjectionMatrix(Matrix4x4 m);
+        protected abstract void AddUniform(string uniformName);
 
         protected abstract void SetUniformf(string uniformName, float value);
         protected abstract void SetUniformi(string uniformName, int value);
-        protected abstract void SetUniform(string uniformName, float[] value);
+        protected abstract void SetUniformf(string uniformName, float[] value);
+        protected abstract void SetUniform(string uniformName, Matrix4x4 m);
 
+        internal void Internal_AddUniform(string uniformName) => AddUniform(uniformName);
         internal void Internal_SetUniformf(string uniformName, float value) => SetUniformf(uniformName, value);
         internal void Internal_SetUniformi(string uniformName, int value) => SetUniformi(uniformName, value);
-        internal void Internal_SetUniform(string uniformName, float[] value) => SetUniform(uniformName, value);
-
-        internal void SetTransformMatrix_Internal(Matrix4x4 m) => SetTransformMatrix(m);
-        internal void SetViewMatrix_Internal(Matrix4x4 m) => SetViewMatrix(m);
-        internal void SetProjectionMatrix_Internal(Matrix4x4 m) => SetProjectionMatrix(m);
+        internal void Internal_SetUniformf(string uniformName, float[] value) => SetUniformf(uniformName, value);
+        internal void Internal_SetUniform(string uniformName, Matrix4x4 m) => SetUniform(uniformName, m);
 
         internal void Compile_Internal() { Compile(); IsCompiled = true;}
         internal void UseRendererMaterial() => UseMaterial();

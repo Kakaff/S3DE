@@ -64,6 +64,13 @@ namespace S3DE.Engine.Entities
                 ec.LateUpdate_Internal();
         }
 
+        internal void PreDraw()
+        {
+            InitStage();
+            foreach (EntityComponent ec in frameStageComponents)
+                ec.PreDraw_Internal();
+        }
+
         internal void Draw()
         {
             InitStage();

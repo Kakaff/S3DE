@@ -12,20 +12,13 @@ namespace S3DE.Engine.Scenes
         //A main scene, the one currently being rendered.
         static GameScene mainScene;
 
-
         static Dictionary<Type, GameScene> loadedScenes = new Dictionary<Type, GameScene>();
 
-        //Scenes to load async
-        static List<GameScene> scenesToLoadAsync = new List<GameScene>();
+        internal static GameScene ActiveScene => mainScene;
 
         internal static void RunScenes()
         {
             mainScene.Run(true);
-            //Check if we have any scenes to load.
-            if (scenesToLoadAsync.Count > 0) { }
-                //Send the scenes to the async scene loader.
-
-            //Check if we have any scenes that have completed loading async.
         }
 
         internal static void LoadScene<T>() where T : GameScene
@@ -38,10 +31,9 @@ namespace S3DE.Engine.Scenes
             else
             {
                 GameScene gs = InstanceCreator.CreateInstance<T>();
-                gs.Load_Internal();
                 mainScene = gs;
+                gs.Load_Internal();
             }
-            //Loads a scene on the mainthread and sets it as the mainscene.
         }
 
         internal static void SetMainScene<T>() where T : GameScene

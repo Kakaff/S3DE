@@ -25,7 +25,7 @@ namespace S3DE.Maths
 
         public float z
         {
-            get => _x;
+            get => _z;
             set => _z = value;
         }
 
@@ -74,9 +74,9 @@ namespace S3DE.Maths
         public Vector3 Transform(Matrix4x4 m)
         {
             return new Vector3(
-                x * m[0, 0] + y * m[0, 1] + z * m[0, 2] + m[0, 3],
-                x * m[1, 0] + y * m[1, 1] + z * m[1, 2] + m[1, 3],
-                x * m[2, 0] + y * m[2, 1] + z * m[2, 2] + m[2, 3]
+                x * m[0, 0] + y * m[1, 0] + z * m[2, 0] + m[3, 0],
+                x * m[0, 1] + y * m[1, 1] + z * m[2, 1] + m[3, 1],
+                x * m[0, 2] + y * m[1, 2] + z * m[2, 2] + m[3, 2]
                 );
         }
 
@@ -130,6 +130,18 @@ namespace S3DE.Maths
         public static Vector3 operator *(Vector3 v, Quaternion q)
         {
             return v.Transform(q);
+        }
+        public override string ToString()
+        {
+            return $"({x},{y},{z})";
+        }
+        public static float[] ToArray(Vector3[] values)
+        {
+            List<float> resList = new List<float>();
+            foreach (Vector3 v in values)
+                resList.AddRange(v.ToArray());
+
+            return resList.ToArray();
         }
 
     }
