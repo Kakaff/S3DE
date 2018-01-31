@@ -20,12 +20,13 @@ namespace SampleGame
             GameEntity ge = CreateGameEntity();
             MeshRenderer mr = ge.AddComponent<MeshRenderer>();
             mr.mesh = Mesh.CreateCube(new Vector3(1,1,1));
-            ge.transform.Position = new Vector3(0f, 0f, 2f);
+            ge.transform.Position = new Vector3(0f, -0.5f,2f);
             ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
             mr.material = mat;
-            Camera.MainCamera.gameEntity.transform.Position = new Vector3(0, 0, 0f);
+            Camera.MainCamera.transform.Position = new Vector3(0f, 0f, 0f);
 
+            Camera.MainCamera.transform.LookAt(ge.transform.Position);
         }
 
         protected override void UnloadScene()

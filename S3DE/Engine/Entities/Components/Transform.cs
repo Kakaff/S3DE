@@ -135,6 +135,9 @@ namespace S3DE.Engine.Entities.Components
             SetRotation((space == Space.World ? worldQuatRotation : localQuatRotation) * Quaternion.CreateFromAxisAngle(axis, angle), space);
         }
 
+        public void LookAt(Vector3 target) => SetRotation(Quaternion.CreateLookAt(transform.Position, target, Vector3.Up), Space.World);
+        
+
         public void SetScale(Vector3 scale, Space space)
         {
             localScale = scale;
@@ -193,7 +196,6 @@ namespace S3DE.Engine.Entities.Components
             worldTranslationMatrix = (parent == null) ? transMatrix : transMatrix * parent.worldTranslationMatrix;
             UpdateWorldTransform();
             worldPosition = Vector3.Zero * worldTransformMatrix;
-
         }
 
         private void UpdateWorldTransform()
@@ -206,9 +208,9 @@ namespace S3DE.Engine.Entities.Components
             worldQuatRotation = (parent == null) ? localQuatRotation : localQuatRotation * parent.worldQuatRotation;
             worldRotMatrix = Matrix4x4.CreateRotationMatrix(worldQuatRotation);
 
-            right = Vector3.Right * worldQuatRotation;
-            up = Vector3.Up * worldQuatRotation;
-            forward = Vector3.Forward * worldQuatRotation;
+            right = Vector3.Right * worldRotMatrix;
+            up = Vector3.Up * worldRotMatrix;
+            forward = Vector3.Forward * worldRotMatrix;
             UpdateWorldTransform();
         }
 

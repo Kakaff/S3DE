@@ -58,16 +58,15 @@ namespace S3DE.Maths
 
         public static float Dot(Vector3 v1, Vector3 v2) => v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 
-        public static Vector3 Cross(Vector3 v1, Vector3 v2)
-        {
-            return new Vector3(v1.y * v2.z - v1.z * v2.y,
-                               v1.z * v2.x - v1.x * v2.z,
-                               v1.x * v2.y - v1.y * v2.x);
-        }
+        public Vector3 Cross(Vector3 v) => new Vector3(y * v.z - z * v.y,
+                                                       z * v.x - x * v.z,
+                                                       x * v.y - y * v.x);
+
+        public static Vector3 Cross(Vector3 v1, Vector3 v2) => v1.Cross(v2);
 
         public static float Length(Vector3 v) => (float)Math.Sqrt(LengthSquared(v));
 
-        public static float LengthSquared(Vector3 v) => v.x * v.x + v.y * v.y + v.z * v.z;
+        public static float LengthSquared(Vector3 v) => (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
 
         public static Vector3 Normalized(Vector3 v) => v / Length(v);
 
@@ -82,7 +81,8 @@ namespace S3DE.Maths
 
         public Vector3 Transform(Quaternion q)
         {
-            Quaternion r = q * this * q.conjugate;
+            Quaternion c = q.normalized;
+            Quaternion r = (c * this) * c.conjugate;
 
             return new Vector3(r.x,r.y,r.z);
         }

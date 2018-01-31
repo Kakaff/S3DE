@@ -17,17 +17,6 @@ namespace SampleGame.Sample_Components
 
         protected override void Update()
         {
-            t += DeltaTime;
-
-            if (t >= 1f)
-            {
-                t -= 1f;
-                Console.WriteLine($"[{System.DateTime.Now}]FPS: {count}");
-                count = 0;
-            }
-
-            count++;
-
             transform.Rotate(Vector3.Up, 45f * DeltaTime);
         }
     }

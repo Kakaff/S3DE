@@ -70,8 +70,9 @@ namespace S3DE.Maths
                     axis = Vector3.Cross(Vector3.Right, start);
 
                 axis = axis.normalized;
-                return Quaternion.CreateFromAxisAngle(axis, 180);
+                return CreateFromAxisAngle(axis, 180f);
             }
+
             axis = Vector3.Cross(start, target);
             float s = (float)Math.Sqrt((1f + cosTheta) * 2f);
             float invs = 1f / s;
@@ -81,6 +82,7 @@ namespace S3DE.Maths
 
         public static Quaternion CreateLookAt(Vector3 position, Vector3 target, Vector3 up)
         {
+
             Vector3 dir = Vector3.DirectionTo(position, target);
 
             Quaternion q1 = RotationBetweenVectors(Vector3.Forward, dir);
@@ -88,8 +90,7 @@ namespace S3DE.Maths
 
             Vector3 newUp = Vector3.Up * q1;
             Quaternion q2 = RotationBetweenVectors(newUp, Vector3.Cross(right, dir));
-
-            return q2 * q1;
+            return q1 * q2;
         }
 
         public static Quaternion CreateFromAxisAngle(Vector3 axis, float angle)
@@ -118,20 +119,21 @@ namespace S3DE.Maths
         public static Quaternion operator * (Quaternion q1, Quaternion q2)
         {
             return new Quaternion(
-                q1.x * q2.w + q1.w * q2.x + q1.y * q2.z + q1.z * q2.y,
-                q1.y * q2.w + q1.w * q2.y + q1.z * q2.x + q1.x * q2.z,
-                q1.z * q2.w + q1.w * q2.z + q1.x * q2.y + q1.y * q2.x,
+                q1.x * q2.w + q1.w * q2.x + q1.y * q2.z - q1.z * q2.y,
+                q1.y * q2.w + q1.w * q2.y + q1.z * q2.x - q1.x * q2.z,
+                q1.z * q2.w + q1.w * q2.z + q1.x * q2.y - q1.y * q2.x,
                 q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
         }
 
         public static Quaternion operator * (Quaternion q, Vector3 v)
         {
-            return new Quaternion(
-                q.w * v.x + q.y * v.z - q.z * v.y,
-                q.w * v.y + q.z * v.x - q.x * v.z,
-                q.w * v.z + q.x * v.y - q.y * v.x,
-                -q.x * v.x - q.y * v.y - q.z * v.z
-                );
+            float x, y, z, w;
+
+            x =  q.w * v.x + q.y * v.z - q.z * v.y;
+            y =  q.w * v.y + q.z * v.x - q.x * v.z;
+            z =  q.w * v.z + q.x * v.y - q.y * v.x;
+            w = -q.x * v.x - q.y * v.y - q.z * v.z;
+            return new Quaternion(x,y,z,w);
         }
         
     }

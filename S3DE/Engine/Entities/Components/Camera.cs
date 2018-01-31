@@ -70,20 +70,16 @@ namespace S3DE.Engine.Entities.Components
         protected override void PreDraw()
         {
             if (gameEntity.transform.HasChanged)
-            {
-                Console.WriteLine("Camera has moved, new position is now: " + transform.Position);
                 RecalculateViewMatrix();
-            }
+            
         }
 
         static Camera GetMainCamera()
         {
 
             if (mc == null)
-            {
-                Console.WriteLine("Creating new maincamera");
                 mc = SceneHandler.ActiveScene.CreateEntityInternal().AddComponent<Camera>();
-            }
+            
 
             return mc;
         }
@@ -93,7 +89,8 @@ namespace S3DE.Engine.Entities.Components
             RecalculateViewMatrix();
             RecalculateProjectionMatrix();
         }
-        void RecalculateViewMatrix() => viewMatrix = Matrix4x4.CreateViewMatrix(transform.Position, transform.Forward, transform.Up);
+
+        void RecalculateViewMatrix() => viewMatrix = Matrix4x4.CreateViewMatrix(transform.Position,transform.Forward,transform.Up);
 
         void RecalculateProjectionMatrix() => projMatrix = Matrix4x4.CreateProjectionMatrix_FoV(fov, zNear, zFar, Window.AspectRatio);
 
