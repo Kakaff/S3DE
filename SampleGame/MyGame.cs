@@ -1,4 +1,6 @@
 ﻿using S3DE;
+using S3DE.Engine;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,8 @@ namespace SampleGame
         {
             SetTargetFPS(60);
             SetStartScene<SampleScene>();
+            Input.HideCursor();
+            Resolution = new Vector2(1280, 720);
 
         }
 

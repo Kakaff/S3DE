@@ -59,7 +59,10 @@ namespace S3DE.Engine.Graphics
                                          1,7,2, //x pos 2
                                          5,0,3, //x neg 1
                                          5,3,6, //x neg 2
-                                         5,4,1,
+                                         5,4,1, // y pos 1
+                                         5,1,0, // y pos 2
+                                         3,2,7,
+                                         3,7,6
                                 };
 
             m.Vertices = verts;

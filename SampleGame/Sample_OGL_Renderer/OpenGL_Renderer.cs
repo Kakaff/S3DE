@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using S3DE;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
@@ -56,6 +57,11 @@ namespace SampleGame.Sample_OGL_Renderer
             {
                 throw new Exception("GL Operation Failed, Error: " + err);
             }
+        }
+
+        protected override void OnWindowResized()
+        {
+            Gl.Viewport(0, 0, (int)Game.Resolution.x, (int)Game.Resolution.y);
         }
     }
 }

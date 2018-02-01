@@ -2,6 +2,7 @@
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
 using S3DE.Engine.Utility;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,17 @@ namespace S3DE
 {
     public abstract class Game
     {
+        public static bool IsFocused => Window.IsFocused;
+        public static bool RegainedFocus => Window.RegainedFocus;
+        public static bool LostFocus => Window.LostFocus;
+
+        public static Vector2 Resolution {
+           get => Renderer.Resolution;
+           set => Renderer.SetResolution(value);
+        }
+
+        public static bool ResolutionChanged => EngineMain.ResolutionChanged;
+
         protected void SetStartScene<T>() where T : GameScene => SceneHandler.SetMainScene<T>();
         
         protected void SetTargetRenderer<T>() where T : Renderer => Renderer.SetTargetRenderer<T>();
@@ -30,6 +42,7 @@ namespace S3DE
         protected abstract void SetFrameSync();
         protected abstract void SetRenderer();
         protected abstract void SetClock();
+
         private void InitializeGame()
         {
             Initialize();

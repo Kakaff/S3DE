@@ -23,12 +23,19 @@ namespace S3DE.Maths
             set => _y = value;
         }
 
+        public static Vector2 Zero => new Vector2(0, 0);
+
         public float[] ToArray() => new float[] { _x, _y };
 
         public Vector2(float x, float y)
         {
             _x = x;
             _y = y;
+        }
+
+        public override string ToString()
+        {
+            return $"({x},{y})";
         }
     }
 }

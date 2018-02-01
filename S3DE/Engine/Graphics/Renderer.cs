@@ -19,8 +19,9 @@ namespace S3DE.Engine.Graphics
         protected abstract void init();
         protected abstract Renderer_MeshRenderer createMeshRenderer();
         protected abstract Renderer_Material createMaterial(Type materialType);
-
+        
         protected abstract void clear();
+        protected abstract void OnWindowResized();
 
         internal static Renderer ActiveRenderer => activeRenderer;
         
@@ -58,8 +59,10 @@ namespace S3DE.Engine.Graphics
         internal static void SetResolution(Vector2 res)
         {
             ActiveRenderer.resolution = res;
-            //Trigger OnResolutionChanged(); Which isn't even implemented yet.
+            EngineMain.ChangeResolution = true;
         }
+
+        internal static void OnWindowResized_Internal() => ActiveRenderer.OnWindowResized();
 
         internal static Vector2 Resolution => ActiveRenderer.resolution;
     }

@@ -38,7 +38,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
                 "#version 400" + '\n'
 			  + "out vec4 fragColor; " + '\n'
               + "void main() { " + '\n'
-              + "fragColor = vec4(1.0f,1.0,1.0f,1.0f);" + '\n'
+              + "fragColor = vec4(1,1,1,1);" + '\n'
               + "} " + '\n');
             }
         }

@@ -151,16 +151,15 @@ namespace S3DE.Engine.Entities.Components
             //Remember to recalculate the matrices if we change our parent!
             if (nParent != null && nParent != this && nParent != parent)
             {
-                //Should probably add a check to make sure that
-                //we don't set a transform to have it's grandchild or child as its parent.
                 if (parent != null)
                     parent.RemoveChild(this);
 
                 nParent.AddChild(this);
-                
-            } else if (nParent == null && parent != null)
+            }
+            else if (nParent == null && parent != null)
             {
-                throw new NotImplementedException();
+                //Set worldpos/rot/scale as local pos/rot/scale.
+                parent.RemoveChild(this);
             }
         }
 
@@ -179,14 +178,25 @@ namespace S3DE.Engine.Entities.Components
                     p = p.parent;
                 }
             }
-
-            //children.add(c);
-            //bla bla bla, cache scale,rot and pos and reset them and bla bla bla...
+            children.Add(c);
+            c.parent = this;
+            c.RecalculateMatrices();
         }
 
         private void RemoveChild(Transform c)
         {
+            children.Remove(c);
 
+            Vector3 pos = c.Position;
+            Quaternion rot = c.Rotation;
+            Vector3 scale = c.Scale;
+
+            c.parent = null;
+
+            c.localPosition = pos;
+            c.localQuatRotation = rot;
+            c.localScale = scale;
+            c.RecalculateMatrices();
         }
 
 

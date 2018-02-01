@@ -71,6 +71,9 @@ namespace S3DE.Engine.Entities.Components
         {
             if (gameEntity.transform.HasChanged)
                 RecalculateViewMatrix();
+
+            if (Game.ResolutionChanged)
+                RecalculateProjectionMatrix();
             
         }
 

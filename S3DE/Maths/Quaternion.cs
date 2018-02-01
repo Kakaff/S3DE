@@ -63,10 +63,10 @@ namespace S3DE.Maths
             float cosTheta = Vector3.Dot(start, target);
             Vector3 axis;
 
-            if (cosTheta < -1f + 0.00001f)
+            if (cosTheta < -1f + 0.0001f)
             {
                 axis = Vector3.Cross(Vector3.Forward, start);
-                if (axis.lengthSquared < 0.0001f)
+                if (axis.lengthSquared < 0.001f)
                     axis = Vector3.Cross(Vector3.Right, start);
 
                 axis = axis.normalized;

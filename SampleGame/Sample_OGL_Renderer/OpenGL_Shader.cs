@@ -38,9 +38,13 @@ namespace SampleGame.Sample_OGL_Renderer
 
             int compileStatus;
             Gl.GetShader(pointer, ShaderParameterName.CompileStatus, out compileStatus);
-            
             if (compileStatus != Gl.TRUE)
-                throw new Exception("Failed to compile Shader");
+            {
+                Gl.GetShader(pointer, ShaderParameterName.InfoLogLength, out int logLength);
+                StringBuilder sb = new StringBuilder(logLength);
+                Gl.GetShaderInfoLog(pointer, logLength, out int l, sb);
+                throw new Exception("Failed to compile Shader | " + sb.ToString());
+            }
             else
                 return true;
         }

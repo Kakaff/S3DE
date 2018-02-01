@@ -65,6 +65,7 @@
     <Compile Include="Engine\Graphics\Renderer_Material.cs" />
     <Compile Include="Engine\Graphics\ShaderSource.cs" />
     <Compile Include="Engine\HighResClock.cs" />
+    <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\Scenes\SceneHandler.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\Matrix4x4.cs" />

@@ -15,40 +15,73 @@ namespace S3DE
     class EngineMain
     {
         static bool isRunning;
+        static bool changeRes = false;
+        static bool resChanged = false;
+
+        static Game game;
+
+        internal static bool ResolutionChanged
+        {
+            get => resChanged;
+        }
+
+        internal static bool ChangeResolution
+        {
+            get => changeRes;
+            set => changeRes = value;
+        }
 
         public static bool IsRunning => isRunning;
 
         public static void RunGame(Game game)
         {
-            game.SetRenderer_Internal();
-            game.SetClock_Internal();
+            EngineMain.game = game;
+            EngineMain.game.SetRenderer_Internal();
+            EngineMain.game.SetClock_Internal();
 
             Time.Start();
-            while (Time.TimeSinceStart < TimeSpan.TicksPerSecond * 0.25)
-                Thread.Yield();
-
             Renderer.Init();
             Glfw.Init();
 
-            Engine.Graphics.Window.CreateWindow((int)Renderer.Resolution.x, (int)Renderer.Resolution.y, game.GameName());
+            Engine.Graphics.Window.SetResolution(640, 480);
+            Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
+
             Renderer.SetCapabilities_Internal();
-            game.SetFrameSync_Internal();
-            game.InitGame();
+            EngineMain.game.SetFrameSync_Internal();
+            EngineMain.game.InitGame();
             isRunning = true;
             Time.UpdateDeltaTime(Time.CurrentTick);
 
-            while (!Engine.Graphics.Window.IsCloseRequested)
+            MainLoop();
+
+        }
+
+        private static void MainLoop()
+        {
+            while (!Engine.Graphics.Window.IsCloseRequested && !changeRes)
             {
+                Input.PollInput();
                 Renderer.Clear();
                 SceneHandler.RunScenes();
                 Engine.Graphics.Window.SwapBuffer();
-                Engine.Graphics.Window.PollEvents();
                 FrameSync.WaitForTargetFPS();
                 Time.UpdateDeltaTime(Time.CurrentTick);
+                Engine.Graphics.Window.PollEvents();
+
+                if (resChanged)
+                    resChanged = false;
             }
 
+            if (changeRes)
+            {
+                changeRes = false;
+                resChanged = true;
+                Engine.Graphics.Window.ResizeWindow();
+                MainLoop();
+            }
         }
+
         internal static void StopEngine(int exitCode)
         {
             isRunning = false;
