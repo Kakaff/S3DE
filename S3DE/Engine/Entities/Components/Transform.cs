@@ -128,12 +128,12 @@ namespace S3DE.Engine.Entities.Components
             UpdateChildren();
         }
 
+        public void Rotate(Quaternion q) => Rotate(q, Space.World);
         public void Rotate(Vector3 axis, float angle) => Rotate(axis, angle, Space.World);
 
-        public void Rotate(Vector3 axis, float angle, Space space)
-        {
-            SetRotation((space == Space.World ? worldQuatRotation : localQuatRotation) * Quaternion.CreateFromAxisAngle(axis, angle), space);
-        }
+        public void Rotate(Vector3 axis, float angle, Space space) => Rotate(Quaternion.CreateFromAxisAngle(axis, angle), space);
+
+        public void Rotate(Quaternion q, Space s) => SetRotation((s == Space.World ? worldQuatRotation : localQuatRotation) * q, s);
 
         public void LookAt(Vector3 target) => SetRotation(Quaternion.CreateLookAt(transform.Position, target, Vector3.Up), Space.World);
         

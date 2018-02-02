@@ -26,8 +26,9 @@ namespace SampleGame
         {
             SetTargetFPS(60);
             SetStartScene<SampleScene>();
-            Input.HideCursor();
-            Resolution = new Vector2(1280, 720);
+            //Input.HideCursor();
+            Input.LockCursor();
+            DisplayResolution = new Vector2(1280, 720);
 
         }
 

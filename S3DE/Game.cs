@@ -17,12 +17,18 @@ namespace S3DE
         public static bool RegainedFocus => Window.RegainedFocus;
         public static bool LostFocus => Window.LostFocus;
 
-        public static Vector2 Resolution {
-           get => Renderer.Resolution;
-           set => Renderer.SetResolution(value);
+        public static Vector2 DisplayResolution {
+           get => Renderer.DisplayResolution;
+           set => Renderer.SetDisplayResolution(value);
         }
 
-        public static bool ResolutionChanged => EngineMain.ResolutionChanged;
+        public static Vector2 RenderResolution
+        {
+            get => Renderer.RenderResolution;
+            set => Renderer.SetRenderResolution(value);
+        }
+
+        public static bool ResolutionChanged => EngineMain.WindowResized;
 
         protected void SetStartScene<T>() where T : GameScene => SceneHandler.SetMainScene<T>();
         

@@ -92,33 +92,36 @@ namespace S3DE.Maths
 
         public static Matrix4x4 CreateRotationMatrix(Quaternion quat)
         {
+            
             Matrix4x4 m = new Matrix4x4();
-            Quaternion q = quat.normalized;
+            float sqw = quat.w * quat.w;
+            float sqx = quat.x * quat.x;
+            float sqy = quat.y * quat.y;
+            float sqz = quat.z * quat.z;
 
-            float xx = 2.0f * (q.x * q.x);
-            float yy = 2.0f * (q.y * q.y);
-            float zz = 2.0f * (q.z * q.z);
+            float xy = quat.x * quat.y;
+            float zw = quat.z * quat.w;
 
-            float xy = 2.0f * (q.x * q.y);
-            float xz = 2.0f * (q.x * q.z);
-            float xw = 2.0f * (q.x * q.w);
+            float xz = quat.x * quat.z;
+            float yw = quat.y * quat.w;
 
-            float yz = 2.0f * (q.y * q.z);
-            float yw = 2.0f * (q.y * q.w);
+            float yz = quat.y * quat.z;
+            float xw = quat.x * quat.w;
 
-            float zw = 2.0f * (q.z * q.w);
+            float invs = 1 / (sqx + sqy + sqz + sqw);
 
-            m[0, 0] = 1.0f - yy - zz;
-            m[1, 0] = xy - zw;
-            m[2, 0] = xz + yw;
+            m[0, 0] = (sqx - sqy - sqz + sqw) * invs;
+            m[1, 1] = (-sqx + sqy - sqz + sqw) * invs;
+            m[2, 2] = (-sqx - sqy + sqz + sqw) * invs;
 
-            m[0, 1] = xy + zw;
-            m[1, 1] = 1f - xx - zz;
-            m[2, 1] = yz - xw;
+            m[1, 0] = 2 * (xy - zw) * invs;
+            m[0, 1] = 2 * (xy + zw) * invs;
 
-            m[0, 2] = xz - yw;
-            m[1, 2] = yz + xw;
-            m[2, 2] = 1.0f - xx - yy;
+            m[2, 0] = 2 * (xz + yw) * invs;
+            m[0, 2] = 2 * (xz - yw) * invs;
+
+            m[2, 1] = 2 * (yz - xw) * invs;
+            m[1, 2] = 2 * (yz + xw) * invs;
 
             m[3, 3] = 1;
 

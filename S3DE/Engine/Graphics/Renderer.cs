@@ -11,8 +11,8 @@ namespace S3DE.Engine.Graphics
 {
     public abstract class Renderer
     {
-        private Vector2 resolution;
-
+        private Vector2 displayResolution,renderResolution;
+        
         private static Renderer activeRenderer;
 
         protected abstract void SetCapabilities();
@@ -22,6 +22,7 @@ namespace S3DE.Engine.Graphics
         
         protected abstract void clear();
         protected abstract void OnWindowResized();
+        protected abstract void OnRenderResolutionChanged();
 
         internal static Renderer ActiveRenderer => activeRenderer;
         
@@ -30,7 +31,7 @@ namespace S3DE.Engine.Graphics
             if (ActiveRenderer == null)
                 activeRenderer = InstanceCreator.CreateInstance<T>();
 
-            ActiveRenderer.resolution = new Vector2(1280, 720);
+            ActiveRenderer.displayResolution = new Vector2(640, 480);
             return (T)ActiveRenderer;
         }
 
@@ -56,14 +57,21 @@ namespace S3DE.Engine.Graphics
             ActiveRenderer.clear();
         }
 
-        internal static void SetResolution(Vector2 res)
+        internal static void SetDisplayResolution(Vector2 res)
         {
-            ActiveRenderer.resolution = res;
-            EngineMain.ChangeResolution = true;
+            ActiveRenderer.displayResolution = res;
+            EngineMain.ResizeWindow = true;
+        }
+
+        internal static void SetRenderResolution(Vector2 res)
+        {
+            ActiveRenderer.renderResolution = res;
+            OnRenderResolutionChanged_Internal();
         }
 
         internal static void OnWindowResized_Internal() => ActiveRenderer.OnWindowResized();
-
-        internal static Vector2 Resolution => ActiveRenderer.resolution;
+        internal static void OnRenderResolutionChanged_Internal() => ActiveRenderer.OnRenderResolutionChanged();
+        internal static Vector2 DisplayResolution => ActiveRenderer.displayResolution;
+        internal static Vector2 RenderResolution => ActiveRenderer.renderResolution;
     }
 }

@@ -15,20 +15,20 @@ namespace S3DE
     class EngineMain
     {
         static bool isRunning;
-        static bool changeRes = false;
-        static bool resChanged = false;
+        static bool reziseWindow = false;
+        static bool windowResized = false;
 
         static Game game;
 
-        internal static bool ResolutionChanged
+        internal static bool WindowResized
         {
-            get => resChanged;
+            get => windowResized;
         }
 
-        internal static bool ChangeResolution
+        internal static bool ResizeWindow
         {
-            get => changeRes;
-            set => changeRes = value;
+            get => reziseWindow;
+            set => reziseWindow = value;
         }
 
         public static bool IsRunning => isRunning;
@@ -59,7 +59,7 @@ namespace S3DE
 
         private static void MainLoop()
         {
-            while (!Engine.Graphics.Window.IsCloseRequested && !changeRes)
+            while (!Engine.Graphics.Window.IsCloseRequested && !reziseWindow)
             {
                 Input.PollInput();
                 Renderer.Clear();
@@ -69,14 +69,14 @@ namespace S3DE
                 Time.UpdateDeltaTime(Time.CurrentTick);
                 Engine.Graphics.Window.PollEvents();
 
-                if (resChanged)
-                    resChanged = false;
+                if (windowResized)
+                    windowResized = false;
             }
 
-            if (changeRes)
+            if (reziseWindow)
             {
-                changeRes = false;
-                resChanged = true;
+                reziseWindow = false;
+                windowResized = true;
                 Engine.Graphics.Window.ResizeWindow();
                 MainLoop();
             }

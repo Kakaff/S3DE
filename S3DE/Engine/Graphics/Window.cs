@@ -37,8 +37,8 @@ namespace S3DE.Engine.Graphics
             {
                 Console.WriteLine("Creating new window");
                 instance = new Window();
-                instance.CreateGLFWWindow((int)Game.Resolution.x,(int)Game.Resolution.y, title);
-                instance.aspect = Game.Resolution.x / Game.Resolution.y;
+                instance.CreateGLFWWindow((int)Game.DisplayResolution.x,(int)Game.DisplayResolution.y, title);
+                instance.aspect = Game.DisplayResolution.x / Game.DisplayResolution.y;
             }
         }
 
@@ -74,13 +74,13 @@ namespace S3DE.Engine.Graphics
         
         internal static void SetResolution(int width, int height)
         {
-            Game.Resolution = new Vector2(width, height);
+            Game.DisplayResolution = new Vector2(width, height);
         }
         
         internal static void ResizeWindow()
         {
-            Glfw.SetWindowSize(instance.GLFW_window, (int)Game.Resolution.x, (int)Game.Resolution.y);
-            instance.aspect = Game.Resolution.x / Game.Resolution.y;
+            Glfw.SetWindowSize(instance.GLFW_window, (int)Game.DisplayResolution.x, (int)Game.DisplayResolution.y);
+            instance.aspect = Game.DisplayResolution.x / Game.DisplayResolution.y;
             Renderer.OnWindowResized_Internal();
         }
 

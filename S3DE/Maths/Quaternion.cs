@@ -63,10 +63,10 @@ namespace S3DE.Maths
             float cosTheta = Vector3.Dot(start, target);
             Vector3 axis;
 
-            if (cosTheta < -1f + 0.0001f)
+            if (cosTheta < -1f + 0.00001f)
             {
                 axis = Vector3.Cross(Vector3.Forward, start);
-                if (axis.lengthSquared < 0.001f)
+                if (axis.lengthSquared < 0.0001f)
                     axis = Vector3.Cross(Vector3.Right, start);
 
                 axis = axis.normalized;
@@ -82,7 +82,6 @@ namespace S3DE.Maths
 
         public static Quaternion CreateLookAt(Vector3 position, Vector3 target, Vector3 up)
         {
-
             Vector3 dir = Vector3.DirectionTo(position, target);
 
             Quaternion q1 = RotationBetweenVectors(Vector3.Forward, dir);
@@ -90,7 +89,12 @@ namespace S3DE.Maths
 
             Vector3 newUp = Vector3.Up * q1;
             Quaternion q2 = RotationBetweenVectors(newUp, Vector3.Cross(right, dir));
-            return q1 * q2;
+            return q2 * q1;
+        }
+
+        public static Quaternion CreateLookAt(Vector3 position, Vector3 target)
+        {
+            return Quaternion.Identity;
         }
 
         public static Quaternion CreateFromAxisAngle(Vector3 axis, float angle)

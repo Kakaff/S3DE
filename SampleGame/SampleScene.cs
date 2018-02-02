@@ -25,9 +25,9 @@ namespace SampleGame
             ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
             mr.material = mat;
-            Camera.MainCamera.transform.Position = new Vector3(0,3f,-4);
+            Camera.MainCamera.transform.Position = new Vector3(0,3,-4);
 
-            Camera.MainCamera.transform.LookAt(ge.transform.Position);
+            Camera.MainCamera.transform.LookAt(Vector3.Zero);
 
             GameEntity ge2 = CreateGameEntity();
             MeshRenderer mr2 = ge2.AddComponent<MeshRenderer>();
@@ -46,7 +46,6 @@ namespace SampleGame
             la.Target = ge3.transform.Position;
 
             Camera.MainCamera.gameEntity.AddComponent<Sample_CameraController>();
-            
         }
 
         protected override void UnloadScene()

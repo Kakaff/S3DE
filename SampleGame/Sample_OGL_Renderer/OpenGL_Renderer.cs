@@ -61,7 +61,12 @@ namespace SampleGame.Sample_OGL_Renderer
 
         protected override void OnWindowResized()
         {
-            Gl.Viewport(0, 0, (int)Game.Resolution.x, (int)Game.Resolution.y);
+            Gl.Viewport(0, 0, (int)Game.DisplayResolution.x, (int)Game.DisplayResolution.y);
+        }
+
+        protected override void OnRenderResolutionChanged()
+        {
+            
         }
     }
 }

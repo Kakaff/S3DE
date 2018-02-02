@@ -146,9 +146,16 @@ namespace S3DE.Engine
 
         static bool cursorHidden;
         static bool cursorLocked;
+        static bool cursorHasMoved;
+        static Vector2 mouseDeltaRaw = Vector2.Zero;
+        static Vector2 mouseDelta = Vector2.Zero;
+        static Vector2 mousePos = Vector2.Zero;
+        static Vector2 prevMousePos = Vector2.Zero;
 
-        static Vector2 mouseDelta;
-        static Vector2 mousePos;
+        public static Vector2 MouseDeltaRaw => mouseDeltaRaw;
+        public static Vector2 MouseDelta => mouseDelta;
+
+        public static bool CursorMoved => cursorHasMoved;
 
         public static bool HiddenCursor
         {
@@ -169,23 +176,47 @@ namespace S3DE.Engine
             set
             {
                 cursorLocked = value;
+                if (value)
+                    LockCursor();
+                else
+                    ShowCursor();
             }
         }
 
         internal static void PollInput()
         {
             //Mouse stuff
-
             if (Game.IsFocused)
             {
-                if (Game.RegainedFocus)
+                double x = 0, y = 0;
+                Glfw.GetCursorPos(S3DE.Engine.Graphics.Window.window, ref x, ref y);
+
+                mousePos = new Vector2((float)(x > Game.DisplayResolution.x ? Game.DisplayResolution.x : x < 0 ? 0 : x),
+                                       (float)(y > Game.DisplayResolution.y ? Game.DisplayResolution.y : y < 0 ? 0 : y));
+
+                mouseDeltaRaw = new Vector2((float)x - prevMousePos.x, (float)y - prevMousePos.y);
+                prevMousePos = new Vector2((float)x, (float)y);
+
+                if (!LockedCursor && !CursorIsInsideWindow((int)x, (int)y))
                 {
-                    mouseDelta = Vector2.Zero;
-                    Console.WriteLine($"Game regained focus");
+                    mouseDeltaRaw = Vector2.Zero;
+                    prevMousePos = mousePos;
                 }
-            } else if (Game.LostFocus)
+                
+                //Prevents the game from spazzing out if the user clicks somewhere on screen to get focus on the game again.
+                if (Game.RegainedFocus)
+                    mouseDeltaRaw = Vector2.Zero;
+
+                if (mouseDeltaRaw != Vector2.Zero)
+                    cursorHasMoved = true;
+                else
+                    cursorHasMoved = false;
+
+                mouseDelta = new Vector2(mouseDeltaRaw.x / Game.DisplayResolution.x, mouseDeltaRaw.y / Game.DisplayResolution.y);
+            } else
             {
-                    Console.WriteLine($"Game lost focus");
+                mouseDelta = Vector2.Zero;
+                mouseDeltaRaw = Vector2.Zero;
             }
 
             int[] values = (int[])Enum.GetValues(typeof(KeyCode));
@@ -220,14 +251,19 @@ namespace S3DE.Engine
             }
         }
 
+        /// <summary>
+        /// Locks and Hides the cursor.
+        /// </summary>
         public static void LockCursor()
         {
-            LockedCursor = true;
+            cursorLocked = true;
+            Glfw.SetInputMode(S3DE.Engine.Graphics.Window.window, (int)glfw3.State.Cursor, (int)glfw3.State.CursorDisabled);
         }
 
         public static void ReleaseCursor()
         {
-            LockedCursor = false;
+            cursorLocked = false;
+            ShowCursor();
         }
 
         public static void HideCursor()
@@ -264,19 +300,11 @@ namespace S3DE.Engine
         /// <returns></returns>
         public static bool GetKey(KeyCode key) => Key.TryGetValue(key, out bool tmp);
 
-        internal static void Gen()
+        private static bool CursorIsInsideWindow(int x, int y)
         {
-            //Iterate over each glfw key and generate a Keycode.Name = glfw.key thingie
-            string[] keyNames = Enum.GetNames(typeof(glfw3.Key));
-            int[] keyValues = (int[])Enum.GetValues(typeof(glfw3.Key));
-
-            List<string> result = new List<string>();
-
-            for (int i = 0; i < keyNames.Length; i++)
-                result.Add($"{keyNames[i]} = glfw3.Key.{keyNames[i]},");
-
-            Console.WriteLine($"Found {result.Count} keycodes");
-            File.WriteAllLines(Path.Combine(Environment.CurrentDirectory, "KeyCodes.txt"), result.ToArray());
+            if (x > 0 && x < Game.DisplayResolution.x && y > 0 && y < Game.DisplayResolution.y)
+                return true;
+            return false;
         }
     }
 }
