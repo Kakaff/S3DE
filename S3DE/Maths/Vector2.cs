@@ -24,7 +24,7 @@ namespace S3DE.Maths
         }
 
         public static Vector2 Zero => new Vector2(0, 0);
-
+        public static Vector2 One => new Vector2(1, 1);
         public float[] ToArray() => new float[] { _x, _y };
 
         public Vector2(float x, float y)

@@ -13,5 +13,12 @@ namespace S3DE.Engine
             Local,
             World
         }
+
+        public enum RenderingAPI
+        {
+            OpenGL,
+            Vulkan,
+            DirectX
+        }
     }
 }

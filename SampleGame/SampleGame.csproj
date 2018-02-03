@@ -54,6 +54,7 @@
     <Compile Include="Sample_OGL_Renderer\OpenGL_Shader.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_ShaderProgram.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_BufferObject.cs" />
+    <Compile Include="Sample_OGL_Renderer\OpenGL_Texture2D.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_VertexArrayObject.cs" />
     <Compile Include="Sample_OGL_Renderer\Shaders\SimpleMaterial.cs" />
   </ItemGroup>

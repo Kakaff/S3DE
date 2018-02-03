@@ -17,6 +17,7 @@ namespace SampleGame.Sample_OGL_Renderer
         OpenGL_VertexArrayObject vao;
 
         int indicieCount;
+        bool hasNormals, hasUvs;
 
         internal int Indicies => indicieCount;
 
@@ -28,30 +29,60 @@ namespace SampleGame.Sample_OGL_Renderer
             vbo.Bind();
             ebo = new OpenGL_BufferObject(Gl.GenBuffer(),BufferTarget.ElementArrayBuffer);
             ebo.Bind();
-            vao.SetAttributePointer(0, 3, VertexAttribType.Float, false, 0, 0);
+            //Should probably make it so that the vao can change the attributes depending on if there are any uvs/normals or not.
+            //add Vertices.
+            vao.SetAttributePointer(0, 3, VertexAttribType.Float, false, 32, 0);
+            //Add Uvs
+            vao.SetAttributePointer(1, 2, VertexAttribType.Float, false, 32, 12);
+            //add normals
+            vao.SetAttributePointer(2, 3, VertexAttribType.Float, false, 32, 20);
         }
 
         internal void Bind()
         {
             vao.Bind();
             vao.EnableAttribute(0);
+            vao.EnableAttribute(1);
+            vao.EnableAttribute(2);
         }
+
         internal void Unbind()
         {
             vao.DisableAttribute(0);
+            vao.DisableAttribute(1);
+            vao.DisableAttribute(2);
             vao.Unbind();
             vbo.Unbind();
             ebo.Unbind();
         }
 
+        float[] MeshDataToArray(Vector3[] vertices,Vector2[] uvs, Vector3[] normals)
+        {
+            if (uvs.Length != vertices.Length && normals.Length != vertices.Length)
+            {
+                throw new ArgumentException($"Mesh needs to have the same number of uvs and normals as vertices! " +
+                    $"| Vertices: {vertices.Length} | Uvs: {uvs.Length} | Normals: {normals.Length}");
+            }
+
+            List<float> result = new List<float>();
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                result.AddRange(vertices[i].ToArray());
+                result.AddRange(uvs[i].ToArray());
+                result.AddRange(normals[i].ToArray());
+            }
+
+            return result.ToArray();
+        }
+
         internal void SetData(Mesh m)
         {
             Bind();
-            ValidateMesh(m);
-            float[] vertData = Vector3.ToArray(m.Vertices);
+            float[] vertData = MeshDataToArray(m.Vertices,m.Uvs,m.Normals);
             ushort[] indicies = IndiciesToUShortArray(m.Triangles);
 
-            //Uploads the vertices to the GPU.
+            //Uploads the vertices,uvs and normals to the GPU.
             using (MemoryLock ml = new MemoryLock(vertData))
             Gl.BufferData(BufferTarget.ArrayBuffer,
                 (uint)(sizeof(float) * vertData.Length),
@@ -83,12 +114,5 @@ namespace SampleGame.Sample_OGL_Renderer
 
             return res.ToArray();
         }
-
-        void ValidateMesh(Mesh m)
-        {
-            //Should probably implement this at some point.
-        }
-
-
     }
 }

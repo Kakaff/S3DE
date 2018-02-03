@@ -39,12 +39,12 @@ namespace S3DE.Engine.Graphics
             get => usesProjectionMatrix;
             protected set => usesProjectionMatrix = value;
         }
+
         protected Material()
         {
-            CreateRendererMaterial();
         }
 
-        internal void CreateRendererMaterial()
+        protected void CreateRendererMaterial()
         {
             _rMaterial = Renderer.CreateMaterial(this.GetType());
             SetSources();
@@ -77,6 +77,7 @@ namespace S3DE.Engine.Graphics
         internal void SetViewMatrix(Matrix4x4 m) => SetUniform("view", m);
         internal void SetProjectionMatrix(Matrix4x4 m) => SetUniform("projection", m);
 
+        internal void UpdateUniforms_Internal() => UpdateUniforms();
         protected abstract void UpdateUniforms();
 
         internal void AddUniform(string uniformName)
@@ -104,5 +105,10 @@ namespace S3DE.Engine.Graphics
         protected void SetUniform(string uniformName, float[] value) => _rMaterial.Internal_SetUniformf(uniformName, value);
         protected void SetUniform(string uniformName, Vector3 value) => _rMaterial.Internal_SetUniformf(uniformName, value.ToArray());
         protected void SetUniform(string uniformName, Matrix4x4 value) => _rMaterial.Internal_SetUniform(uniformName, value);
+        protected void SetTexture(string samplerName,int TextureUnit, Texture2D texture)
+        {
+            SetUniform(samplerName, TextureUnit);
+            texture.Bind(TextureUnit);
+        }
     }
 }

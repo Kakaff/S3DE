@@ -10,11 +10,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using S3DE;
+using static S3DE.Engine.Enums;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
     public sealed class OpenGL_Renderer : Renderer
     {
+        public override RenderingAPI GetRenderingAPI() => RenderingAPI.OpenGL;
+
         protected override void clear()
         {
             Gl.Clear(ClearBufferMask.ColorBufferBit | 
@@ -68,5 +71,7 @@ namespace SampleGame.Sample_OGL_Renderer
         {
             
         }
+
+        protected override Texture2D createTexture2D(int width, int height) => new OpenGL_Texture2D(width, height);
     }
 }

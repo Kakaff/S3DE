@@ -45,6 +45,7 @@ namespace S3DE.Engine.Entities
                 if (mat.UsesProjectionMatrix)
                     mat.SetProjectionMatrix(Camera.ActiveCamera.ProjectionMatrix);
 
+                mat.UpdateUniforms_Internal();
                 api_mr.Render_Internal();
             }
         }

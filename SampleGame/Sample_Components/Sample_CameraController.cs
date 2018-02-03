@@ -40,6 +40,9 @@ namespace SampleGame.Sample_Components
                 xRot += Input.MouseDelta.x * 45f;
                 yRot += Input.MouseDelta.y * 45f;
 
+                xRot = EngineMath.Normalize(-180, 180, xRot);
+                yRot = EngineMath.Clamp(-90, 90, yRot);
+
                 Quaternion q1 = Quaternion.CreateFromAxisAngle(Vector3.Up, xRot);
                 Quaternion q2 = Quaternion.CreateFromAxisAngle(Vector3.Right, yRot);
                 
@@ -50,14 +53,6 @@ namespace SampleGame.Sample_Components
         }
 
         float Clamp(float min, float max, float val) => val > max ? max : val < min ? min : val;
-
-        float Normalize(float start, float end, float value)
-        {
-            float width = end - start;
-            float offset = value - start;
-
-            return (float)(offset - (System.Math.Floor(offset / width) * width)) + start;
-        }
 
         protected override void OnCreation()
         {

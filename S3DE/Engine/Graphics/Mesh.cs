@@ -37,7 +37,28 @@ namespace S3DE.Engine.Graphics
 
         public void ReCalculateNormals()
         {
+            Vector3[] newNormals = new Vector3[vertices.Length];
 
+            for (int i = 0; i < indicies.Length; i+= 3)
+            {
+                int i0 = indicies[i];
+                int i1 = indicies[i + 1];
+                int i2 = indicies[i + 2];
+
+                Vector3 v1 = vertices[i1] - vertices[0];
+                Vector3 v2 = vertices[i2] - vertices[0];
+
+                Vector3 norm = v1.Cross(v2).normalized;
+
+                newNormals[i0] += norm;
+                newNormals[i1] += norm;
+                newNormals[i2] += norm;
+            }
+
+            for (int i = 0; i < newNormals.Length; i++)
+                newNormals[i] = newNormals[i].normalized;
+
+            Normals = newNormals;
         }
 
         public static Mesh CreateCube(Vector3 scale)
@@ -50,6 +71,9 @@ namespace S3DE.Engine.Graphics
 
             Vector3[] verts = new Vector3[] {new Vector3(-x,y,-z), new Vector3(x,y,-z),new Vector3(x,-y,-z), new Vector3(-x,-y,-z)
                                             ,new Vector3(x,y,z), new Vector3(-x,y,z),new Vector3(-x,-y,z), new Vector3(x,-y,z)};
+
+            Vector2[] uvs = new Vector2[] {Vector2.Zero,Vector2.Zero,Vector2.Zero,Vector2.Zero,
+                                           Vector2.One,Vector2.One,Vector2.One,Vector2.One};
 
             int[] triangles = new int[] {0,1,2, //zNeg 1
                                          0,2,3, //zNeg 2
@@ -66,8 +90,9 @@ namespace S3DE.Engine.Graphics
                                 };
 
             m.Vertices = verts;
+            m.Uvs = uvs;
             m.Triangles = triangles;
-            
+            m.ReCalculateNormals();
             return m;
         }
     }
