@@ -44,6 +44,7 @@
     <Compile Include="MyGame.cs" />
     <Compile Include="SampleFrameSync.cs" />
     <Compile Include="Sample_Components\Sample_CameraController.cs" />
+    <Compile Include="Sample_Components\Sample_FrameMonitor.cs" />
     <Compile Include="Sample_Components\Sample_LookAt.cs" />
     <Compile Include="Sample_Components\Sample_ObjectRotator.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_Mesh.cs" />

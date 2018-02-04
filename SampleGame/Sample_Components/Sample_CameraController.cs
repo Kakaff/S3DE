@@ -1,4 +1,5 @@
-﻿using S3DE.Engine;
+﻿using S3DE;
+using S3DE.Engine;
 using S3DE.Engine.Entities;
 using S3DE.Maths;
 using System;
@@ -48,6 +49,10 @@ namespace SampleGame.Sample_Components
                 
                 transform.Rotation = q1 * q2;
             }
+
+            if (Input.GetKeyReleased(KeyCode.F11))
+                Game.SetFullScreen(!Game.IsFullScreen);
+            
 
 
         }

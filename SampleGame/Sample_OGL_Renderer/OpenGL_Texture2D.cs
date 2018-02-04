@@ -11,11 +11,18 @@ namespace SampleGame.Sample_OGL_Renderer
 {
     class OpenGL_Texture2D : Texture2D
     {
+        int mipmapCount;
         uint pointer;
         Color[,] pixels;
         Vector2 size;
         FilterMode filterMode;
         AnisotropicSamples samples;
+
+        public override int MipMapLevels
+        {
+            get => mipmapCount;
+            set => SetMipMapCount(value);
+        }
         internal OpenGL_Texture2D(int width, int height)
         {
             size = new Vector2(width, height);
@@ -49,55 +56,88 @@ namespace SampleGame.Sample_OGL_Renderer
             }
 
             Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, ref minfilter);
+            OpenGL_Renderer.TestForGLErrors();
             Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, ref magfilter);
-            
+            OpenGL_Renderer.TestForGLErrors();
 
             float samples = (float)AnisotropicSamples;
             if (samples > aniso)
-                throw new NotSupportedException();
+                throw new NotSupportedException($"The current system only supports a maxium of {aniso} Anisotropic samples.");
             Gl.TexParameterf(TextureTarget.Texture2d, (TextureParameterName)0x84FE, ref samples);
-            Console.WriteLine((TextureParameterName)0x84FE);
-            
+            OpenGL_Renderer.TestForGLErrors();
         }
 
         public override void Apply()
         {
+            Console.WriteLine($"Sending {size.x * size.y * 4} bytes of texture data to GPU");
+
             if (pointer == 0)
                 GenerateHandle();
 
-            int repeat = Gl.REPEAT;
-            
-
-            Gl.BindTexture(TextureTarget.Texture2d, pointer);
-            Gl.TexParameteri(TextureTarget.Texture2d,TextureParameterName.TextureWrapS, ref repeat);
-            Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, ref repeat);
+            if (Renderer.API_Version >= 420)
+                UploadToGPU_TexStorage();
+            else
+                UploadToGPU_Tex();
 
             SetFilterMode();
-            
-
-            OpenGL_Renderer.TestForGLErrors();
-            //Convert pixels to byte array.
-            byte[] byteData = convertToByteArray(pixels, size);
-            Console.WriteLine($"Sending {byteData.Length} bytess of texture data to GPU");
-
-            using (MemoryLock ml = new MemoryLock(byteData))
-            {
-                Gl.TexImage2D(TextureTarget.Texture2d, 0,
-                InternalFormat.Rgba8, (int)Size.x, (int)Size.y, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, ml.Address);
-            }
-
-            OpenGL_Renderer.TestForGLErrors();
-
+            SetWrapMode();
             Gl.GenerateMipmap(TextureTarget.Texture2d);
             OpenGL_Renderer.TestForGLErrors();
-            //Upload the changes to the GPU.
+        }
+
+        void SetMipMapCount(int count)
+        {
+            int MaxMipMaps = CalcMaxNumberMipmaps(size);
+            MaxMipMaps = (MaxMipMaps > Renderer.Max_Mipmap_Levels) ? Renderer.Max_Mipmap_Levels : MaxMipMaps;
+            mipmapCount = (count < MaxMipMaps) ? count : MaxMipMaps;
+        }
+
+        void SetWrapMode()
+        {
+            int repeat = Gl.REPEAT;
+            Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, ref repeat);
+            OpenGL_Renderer.TestForGLErrors();
+            Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, ref repeat);
+            OpenGL_Renderer.TestForGLErrors();
+        }
+
+        void UploadToGPU_Tex()
+        {
+            Gl.BindTexture(TextureTarget.Texture2d, pointer);
+            byte[] pixelData = convertToByteArray(pixels, size);
+            using (MemoryLock ml = new MemoryLock(pixelData))
+            Gl.TexImage2D(TextureTarget.Texture2d, 0, InternalFormat.Rgba8, 
+               (int)size.x, (int)size.y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ml.Address);
+
+            Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureMaxLevel, new int[] {1 + mipmapCount});
+            OpenGL_Renderer.TestForGLErrors();
+        }
+
+        void UploadToGPU_TexStorage()
+        {
+            Gl.BindTexture(TextureTarget.Texture2d, pointer);
+            OpenGL_Renderer.TestForGLErrors();
+
+            byte[] pixelData = convertToByteArray(pixels, size);
+            using (MemoryLock ml = new MemoryLock(pixelData))
+                Gl.TexSubImage2D(TextureTarget.Texture2d, 0, 0, 0, (int)size.x, (int)size.y, 
+                    PixelFormat.Rgba, PixelType.UnsignedByte, ml.Address);
+
+            OpenGL_Renderer.TestForGLErrors();
         }
 
         void GenerateHandle()
         {
             pointer = Gl.GenTexture();
-            OpenGL_Renderer.TestForGLErrors();
+
+            if (Renderer.API_Version >= 420)
+            {
+                Gl.BindTexture(TextureTarget.Texture2d, pointer);
+                Gl.TexStorage2D(TextureTarget.Texture2d,
+                    1 + mipmapCount,
+                    InternalFormat.Rgba8, (int)size.x, (int)size.y);
+            }
+
         }
 
         public override void Bind(int textureunit)

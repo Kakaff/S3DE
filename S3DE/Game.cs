@@ -28,6 +28,17 @@ namespace S3DE
             set => Renderer.SetRenderResolution(value);
         }
 
+        public static int RefreshRate
+        {
+            get => Renderer.RefreshRate;
+            set => Renderer.SetRefreshRate(value);
+        }
+
+        public static bool IsFullScreen
+        {
+            get => Window.IsFullScreen;
+        }
+
         public static bool ResolutionChanged => EngineMain.WindowResized;
 
         protected void SetStartScene<T>() where T : GameScene => SceneHandler.SetMainScene<T>();
@@ -64,5 +75,7 @@ namespace S3DE
         public static void Exit(int exitCode) {
             EngineMain.StopEngine(exitCode);
         }
+
+        public static void SetFullScreen(bool fullscreen) => Window.SetFullScreen(fullscreen);
     }
 }

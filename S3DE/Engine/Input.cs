@@ -212,7 +212,7 @@ namespace S3DE.Engine
                 else
                     cursorHasMoved = false;
 
-                mouseDelta = new Vector2(mouseDeltaRaw.x / Game.DisplayResolution.x, mouseDeltaRaw.y / Game.DisplayResolution.y);
+                mouseDelta = new Vector2(mouseDeltaRaw.x / Game.DisplayResolution.x, mouseDeltaRaw.y / Game.DisplayResolution.x);
             } else
             {
                 mouseDelta = Vector2.Zero;

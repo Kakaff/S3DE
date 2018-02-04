@@ -14,6 +14,7 @@ using static S3DE.Engine.Enums;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
+
     public sealed class OpenGL_Renderer : Renderer
     {
         public override RenderingAPI GetRenderingAPI() => RenderingAPI.OpenGL;
@@ -41,6 +42,12 @@ namespace SampleGame.Sample_OGL_Renderer
 
         protected override void SetCapabilities()
         {
+            Gl.Get(Gl.MINOR_VERSION, out int minor);
+            Gl.Get(Gl.MAJOR_VERSION, out int major);
+                SetApiVersion((major * 100) + (minor * 10));
+
+            Console.WriteLine($"Supported OpenGL Version: " + Renderer.API_Version);
+
             Gl.FrontFace(FrontFaceDirection.Cw);
             TestForGLErrors();
             Gl.Enable(EnableCap.DepthTest);
@@ -74,5 +81,10 @@ namespace SampleGame.Sample_OGL_Renderer
         }
 
         protected override Texture2D createTexture2D(int width, int height) => new OpenGL_Texture2D(width, height);
+
+        protected override void OnRefreshRateChanged()
+        {
+            
+        }
     }
 }

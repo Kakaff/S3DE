@@ -12,17 +12,20 @@ namespace S3DE.Engine.Graphics
     {
         static Window instance;
         
-        internal static glfw3.Window window => instance.GLFW_window;
+        internal static glfw3.GLFWwindow window => instance.GLFW_window;
 
-        glfw3.Window GLFW_window;
+        glfw3.GLFWwindow GLFW_window;
         bool isFocused = false;
         bool regainedFocus = false;
         bool lostFocus = false;
+        bool isFullScreen = false;
         float aspect;
 
         internal static bool IsFocused => instance.isFocused;
         internal static bool RegainedFocus => instance.regainedFocus;
         internal static bool LostFocus => instance.lostFocus;
+        internal static bool IsFullScreen => instance.isFullScreen;
+
         private Window() { }
 
         internal static bool IsCloseRequested => instance.GLFW_window.ShouldClose();
@@ -44,7 +47,7 @@ namespace S3DE.Engine.Graphics
 
         void CreateGLFWWindow(int width, int height, string title)
         {
-            GLFW_window = new glfw3.Window(width, height, title);
+            GLFW_window = Glfw.CreateWindow(width, height, title, null, null);
         }
 
         internal static void PollEvents()
@@ -84,9 +87,11 @@ namespace S3DE.Engine.Graphics
             Renderer.OnWindowResized_Internal();
         }
 
-        internal static void SetFullScreen()
+        internal static void SetFullScreen(bool value)
         {
-
+            instance.isFullScreen = value;
+            Glfw.SetWindowMonitor(instance.GLFW_window, value ? Glfw.GetPrimaryMonitor() : null, 0, 0, 
+                (int)Renderer.DisplayResolution.x, (int)Renderer.DisplayResolution.y, Renderer.RefreshRate);
         }
 
         internal static void SetWindowed()

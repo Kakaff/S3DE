@@ -60,7 +60,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             UsesViewMatrix = true;
             UsesTransformMatrix = true;
             CreateRendererMaterial();
-            texture = createSampleTexture(new Vector2(16, 16));
+            texture = createSampleTexture(new Vector2(32, 32));
         }
 
         Texture2D createSampleTexture(Vector2 resolution)
@@ -75,6 +75,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
 
             tex.FilterMode = FilterMode.Nearest;
             tex.AnisotropicSamples = AnisotropicSamples.x16;
+            tex.CalculateMipMapCount();
             tex.Apply();
             return tex;
         }

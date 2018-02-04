@@ -12,7 +12,6 @@ namespace S3DE.Engine.Graphics
         Nearest,
         Bilinear,
         Trilinear
-        
     }
 
     public enum AnisotropicSamples
@@ -31,6 +30,7 @@ namespace S3DE.Engine.Graphics
 
         public abstract FilterMode FilterMode { get; set; }
         public abstract AnisotropicSamples AnisotropicSamples { get; set;}
+        public abstract int MipMapLevels { get; set; }
         public abstract void Apply();
         
         public abstract void Bind(int textureunit);
@@ -39,8 +39,18 @@ namespace S3DE.Engine.Graphics
 
         public abstract void SetPixel(int x, int y, Color color);
 
+        public virtual void CalculateMipMapCount() => MipMapLevels = CalcMaxNumberMipmaps(Size);
+
         protected Texture2D() { }
 
         public static Texture2D Create(int width, int height) => Renderer.CreateTexture2D(width, height);
+
+        protected int CalcMaxNumberMipmaps(Vector2 size)
+        {
+            //Floor size to power of two.
+            Vector2 floored = new Vector2(EngineMath.FloorToPowerOfTwo((int)size.x), EngineMath.FloorToPowerOfTwo((int)size.y));
+            int smallest = (int)(floored.x > floored.y ? floored.x : floored.y);
+            return (int)Math.Log(smallest, 2);
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace SampleGame
             //Input.HideCursor();
             Input.LockCursor();
             DisplayResolution = new Vector2(1280, 720);
+            RenderResolution = new Vector2(1280, 720);
 
         }
 
