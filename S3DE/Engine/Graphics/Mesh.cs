@@ -61,21 +61,25 @@ namespace S3DE.Engine.Graphics
             Normals = newNormals;
         }
 
-        public static Mesh CreateCube(Vector3 scale)
+        public static Mesh CreateCube(Vector3 scale, bool flatShaded)
         {
             Mesh m = new Mesh();
 
             float x = 0.5f * scale.x;
             float y = 0.5f * scale.y;
             float z = 0.5f * scale.z;
-
-            Vector3[] verts = new Vector3[] {new Vector3(-x,y,-z), new Vector3(x,y,-z),new Vector3(x,-y,-z), new Vector3(-x,-y,-z)
+            Vector3[] verts;
+            Vector2[] uvs;
+            int[] triangles;
+            if (!flatShaded)
+            {
+                verts = new Vector3[] {new Vector3(-x,y,-z), new Vector3(x,y,-z),new Vector3(x,-y,-z), new Vector3(-x,-y,-z)
                                             ,new Vector3(x,y,z), new Vector3(-x,y,z),new Vector3(-x,-y,z), new Vector3(x,-y,z)};
 
-            Vector2[] uvs = new Vector2[] {Vector2.Zero,Vector2.Zero,Vector2.Zero,Vector2.Zero,
+                uvs = new Vector2[] {Vector2.Zero,Vector2.Zero,Vector2.Zero,Vector2.Zero,
                                            Vector2.One,Vector2.One,Vector2.One,Vector2.One};
 
-            int[] triangles = new int[] {0,1,2, //zNeg 1
+                triangles = new int[] {0,1,2, //zNeg 1
                                          0,2,3, //zNeg 2
                                          4,5,6, //zpos 1
                                          4,6,7,  //zpos 2
@@ -88,7 +92,17 @@ namespace S3DE.Engine.Graphics
                                          3,2,7,
                                          3,7,6
                                 };
-
+            } else
+            {
+                verts = new Vector3[] {new Vector3(-x,y,-z),new Vector3(x,y,-z), new Vector3(x,-y,-z), new Vector3(-x,-y,-z),
+                                       new Vector3(-x,y,z), new Vector3(-x,y,-z), new Vector3(-x,-y,-z), new Vector3(-x,-y,z)};
+                uvs = new Vector2[] {new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),
+                                     new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),};
+                triangles = new int[] {0,1,2,
+                                       0,2,3,
+                                       4,5,6,
+                                       4,6,7};
+            }
             m.Vertices = verts;
             m.Uvs = uvs;
             m.Triangles = triangles;

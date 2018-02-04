@@ -51,6 +51,7 @@ namespace SampleGame.Sample_OGL_Renderer
             TestForGLErrors();
             Gl.Enable(EnableCap.CullFace);
             TestForGLErrors();
+            
         }
 
         internal static void TestForGLErrors()

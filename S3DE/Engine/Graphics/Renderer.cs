@@ -26,7 +26,7 @@ namespace S3DE.Engine.Graphics
         protected abstract Renderer_MeshRenderer createMeshRenderer();
         protected abstract Renderer_Material createMaterial(Type materialType);
         protected abstract Texture2D createTexture2D(int width, int height);
-
+        
         protected abstract void clear();
         protected abstract void OnWindowResized();
         protected abstract void OnRenderResolutionChanged();

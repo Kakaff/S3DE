@@ -20,7 +20,7 @@ namespace SampleGame
         {
             GameEntity ge = CreateGameEntity();
             MeshRenderer mr = ge.AddComponent<MeshRenderer>();
-            mr.mesh = Mesh.CreateCube(new Vector3(1,1,1));
+            mr.mesh = Mesh.CreateCube(new Vector3(1,1,1),true);
             ge.transform.Position = new Vector3(0f,0,0f);
             ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
@@ -31,14 +31,14 @@ namespace SampleGame
 
             GameEntity ge2 = CreateGameEntity();
             MeshRenderer mr2 = ge2.AddComponent<MeshRenderer>();
-            mr2.mesh = Mesh.CreateCube(new Vector3(1, 1, 1));
+            mr2.mesh = Mesh.CreateCube(new Vector3(1, 1, 1), true);
             mr2.material = new SimpleMaterial();
             ge2.transform.SetParent(ge.transform);
             ge2.transform.SetPosition(new Vector3(0, 0, 2f), S3DE.Engine.Enums.Space.World);
 
             GameEntity ge3 = CreateGameEntity();
             MeshRenderer mr3 = ge3.AddComponent<MeshRenderer>();
-            mr3.mesh = Mesh.CreateCube(new Vector3(1, 1, 1));
+            mr3.mesh = Mesh.CreateCube(new Vector3(1, 1, 1), true);
             mr3.material = new SimpleMaterial();
             ge3.transform.Position = new Vector3(3, 0, 3);
 

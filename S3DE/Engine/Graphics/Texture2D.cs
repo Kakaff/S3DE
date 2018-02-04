@@ -7,10 +7,30 @@ using S3DE.Maths;
 
 namespace S3DE.Engine.Graphics
 {
+    public enum FilterMode
+    {
+        Nearest,
+        Bilinear,
+        Trilinear
+        
+    }
+
+    public enum AnisotropicSamples
+    {
+        x0 = 1,
+        x2 = 2,
+        x4 = 4,
+        x8 = 8,
+        x16 = 16,
+    }
+
     public abstract class Texture2D
     {
+
         public abstract Vector2 Size { get; }
 
+        public abstract FilterMode FilterMode { get; set; }
+        public abstract AnisotropicSamples AnisotropicSamples { get; set;}
         public abstract void Apply();
         
         public abstract void Bind(int textureunit);

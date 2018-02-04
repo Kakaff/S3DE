@@ -8,6 +8,13 @@ namespace S3DE.Engine
 {
     public static class Enums
     {
+        public enum FilterMode
+        {
+            Nearest,
+            Linear,
+            Anisotropic
+        }
+
         public enum Space
         {
             Local,

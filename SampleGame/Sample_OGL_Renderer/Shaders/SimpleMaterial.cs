@@ -1,4 +1,5 @@
 ﻿using S3DE.Engine.Graphics;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,12 +60,23 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             UsesViewMatrix = true;
             UsesTransformMatrix = true;
             CreateRendererMaterial();
-            texture = Texture2D.Create(2, 2);
-            texture.SetPixel(0, 0, Color.Blue);
-            texture.SetPixel(1, 0, Color.Green);
-            texture.SetPixel(0, 1, Color.Red);
-            texture.SetPixel(1, 1, Color.White);
-            texture.Apply();
+            texture = createSampleTexture(new Vector2(16, 16));
+        }
+
+        Texture2D createSampleTexture(Vector2 resolution)
+        {
+            Texture2D tex = Texture2D.Create((int)resolution.x, (int)resolution.y);
+            float xMod = 255 / resolution.x;
+            float yMod = 255 / resolution.y;
+
+            for (int x = 0; x < resolution.x; x++)
+                for (int y = 0; y < resolution.y; y++)
+                    tex.SetPixel(x, y, new Color((byte)(x * xMod), (byte)(y * yMod), (byte)(((x * xMod) + (y * yMod)) / 2), 255));
+
+            tex.FilterMode = FilterMode.Nearest;
+            tex.AnisotropicSamples = AnisotropicSamples.x16;
+            tex.Apply();
+            return tex;
         }
 
         protected override ShaderSource GetSource(ShaderStage stage)
