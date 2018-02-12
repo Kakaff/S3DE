@@ -225,7 +225,10 @@ namespace S3DE.Engine
                 int v = Glfw.GetKey(S3DE.Engine.Graphics.Window.window, i);
                 bool isDown = GetKey((KeyCode)i);
                 KeyCode key = (KeyCode)i;
-                
+
+                if (GetKeyReleased(key))
+                    keyUp.Remove(key);
+
                 if (v == 1)
                 {
                     if (isDown)
@@ -241,13 +244,15 @@ namespace S3DE.Engine
                 }
                 else if (isDown)
                 {
+                    //Dirty fix for keys not being removed.
+                    if (GetKeyReleased(key))
+                        keyUp.Remove(key);
+
                     keyUp.Add(key, true);
                     Key.Remove(key);
                     if (GetKeyDown(key))
                         keyDown.Remove(key);
                 }
-                else if (GetKeyReleased(key))
-                    keyUp.Remove(key);
             }
         }
 

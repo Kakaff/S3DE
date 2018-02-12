@@ -1,4 +1,5 @@
 ﻿using S3DE.Engine.Entities.Components;
+using S3DE.Engine.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace S3DE.Engine.Entities
     {
         bool isActive = true,isStarted = false;
         GameEntity entity;
+
+        public GameScene Scene => entity.Scene;
 
         protected float DeltaTime => Time.DeltaTime;
 
@@ -40,10 +43,10 @@ namespace S3DE.Engine.Entities
         protected virtual void EarlyUpdate() { }
         protected virtual void Update() { }
         protected virtual void LateUpdate() { }
-
-        protected virtual void PreDraw() { }
-        protected virtual void Draw() { }
-        protected virtual void PostDraw() { }
+        
+        protected virtual void PreRender() { }
+        protected virtual void Render() { }
+        protected virtual void PostRender() { }
 
         protected virtual void OnEnable() { }
         protected virtual void OnDisable() { }
@@ -64,11 +67,11 @@ namespace S3DE.Engine.Entities
 
         internal void LateUpdate_Internal() => LateUpdate();
 
-        internal void PreDraw_Internal() => PreDraw();
+        internal void PreDraw_Internal() => PreRender();
 
-        internal void Draw_Internal() => Draw();
+        internal void Draw_Internal() => Render();
 
-        internal void PostDraw_Internal() => PostDraw();
+        internal void PostDraw_Internal() => PostRender();
 
         internal void SetParentEntity(GameEntity parent) => entity = parent;
     }

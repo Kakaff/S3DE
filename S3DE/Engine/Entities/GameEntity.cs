@@ -14,12 +14,16 @@ namespace S3DE.Engine.Entities
 
         List<EntityComponent> components;
         List<EntityComponent> componentsToStart;
+        List<EntityComponent> inactiveComponents; 
+
         EntityComponent[] frameStageComponents;
         bool isActive;
 
         Transform trans;
 
         GameScene parentScene;
+
+        public GameScene Scene => parentScene;
 
         public Transform transform => trans;
 

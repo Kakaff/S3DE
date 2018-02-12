@@ -94,9 +94,12 @@ namespace S3DE.Engine.Graphics
                 (int)Renderer.DisplayResolution.x, (int)Renderer.DisplayResolution.y, Renderer.RefreshRate);
         }
 
-        internal static void SetWindowed()
+        internal static void SetVSync(bool value)
         {
-
-        }
+            if (value && Game.IsFullScreen)
+                Glfw.SwapInterval(1);
+            else if (!value && Game.IsFullScreen)
+                Glfw.SwapInterval(0);
+        } 
     }
 }

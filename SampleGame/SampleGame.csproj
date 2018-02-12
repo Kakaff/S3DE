@@ -47,15 +47,19 @@
     <Compile Include="Sample_Components\Sample_FrameMonitor.cs" />
     <Compile Include="Sample_Components\Sample_LookAt.cs" />
     <Compile Include="Sample_Components\Sample_ObjectRotator.cs" />
+    <Compile Include="Sample_OGL_Renderer\OpenGL_Framebuffer.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_Mesh.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_Material.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_MeshRenderer.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_Renderer.cs" />
     <Compile Include="SampleScene.cs" />
+    <Compile Include="Sample_OGL_Renderer\OpenGL_RenderTexture2D.cs" />
+    <Compile Include="Sample_OGL_Renderer\OpenGL_ScreenQuad.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_Shader.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_ShaderProgram.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_BufferObject.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_Texture2D.cs" />
+    <Compile Include="Sample_OGL_Renderer\OpenGL_Utility.cs" />
     <Compile Include="Sample_OGL_Renderer\OpenGL_VertexArrayObject.cs" />
     <Compile Include="Sample_OGL_Renderer\Shaders\SimpleMaterial.cs" />
   </ItemGroup>

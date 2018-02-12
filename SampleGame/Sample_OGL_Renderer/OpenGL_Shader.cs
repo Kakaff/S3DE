@@ -49,6 +49,16 @@ namespace SampleGame.Sample_OGL_Renderer
                 return true;
         }
 
+        public static OpenGL_Shader Create(ShaderType shadType,string source)
+        {
+            OpenGL_Shader shad = new OpenGL_Shader();
+
+            shad.SetSource(source);
+            shad.pointer = Gl.CreateShader(shadType);
+            Gl.ShaderSource(shad.pointer, new string[] {source});
+            return shad;
+        }
+        
         public static OpenGL_Shader Create(ShaderSource shadersource)
         {
             OpenGL_Shader shad = new OpenGL_Shader();

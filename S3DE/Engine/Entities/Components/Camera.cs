@@ -11,20 +11,9 @@ namespace S3DE.Engine.Entities.Components
 {
     public sealed class Camera : EntityComponent
     {
-        static Camera mc;
-
-        public static Camera MainCamera
-        {
-            get => GetMainCamera();
-            set => mc = value;
-        }
-
-        public static Camera ActiveCamera => MainCamera;
-
         public Matrix4x4 ViewMatrix => viewMatrix;
 
         public Matrix4x4 ProjectionMatrix => projMatrix;
-
 
         Matrix4x4 viewMatrix, projMatrix;
         float zNear, zFar, fov;
@@ -67,26 +56,15 @@ namespace S3DE.Engine.Entities.Components
             RecalculateProjectionMatrix();
         }
 
-        protected override void PreDraw()
+        protected override void PreRender()
         {
             if (gameEntity.transform.HasChanged)
                 RecalculateViewMatrix();
 
             if (Game.ResolutionChanged)
                 RecalculateProjectionMatrix();
-            
         }
-
-        static Camera GetMainCamera()
-        {
-
-            if (mc == null)
-                mc = SceneHandler.ActiveScene.CreateEntityInternal().AddComponent<Camera>();
-            
-
-            return mc;
-        }
-
+        
         public void RecalculateMatrices()
         {
             RecalculateViewMatrix();

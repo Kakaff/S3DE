@@ -72,7 +72,7 @@ namespace S3DE.Engine.Entities.Components
         public Matrix4x4 WorldScaleMatrix => worldScaleMatrix;
         public Matrix4x4 WorldTransformMatrix => worldTransformMatrix;
 
-        protected override void PostDraw() => hasChanged = false;
+        protected override void PostRender() => hasChanged = false;
 
         public void Translate(Vector3 direction, float distance) => Translate(direction, distance, Space.World);
 

@@ -1,4 +1,5 @@
-﻿using S3DE.Engine;
+﻿using S3DE;
+using S3DE.Engine;
 using S3DE.Engine.Entities;
 using S3DE.Engine.Entities.Components;
 using S3DE.Engine.Graphics;
@@ -24,28 +25,29 @@ namespace SampleGame
             ge.transform.Position = new Vector3(0f,0,0f);
             ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
-            mr.material = mat;
-            Camera.MainCamera.transform.Position = new Vector3(0,3,-4);
+            mr.Material = mat;
+            MainCamera.transform.Position = new Vector3(0,3,-4);
 
-            Camera.MainCamera.transform.LookAt(Vector3.Zero);
+            MainCamera.transform.LookAt(Vector3.Zero);
 
             GameEntity ge2 = CreateGameEntity();
             MeshRenderer mr2 = ge2.AddComponent<MeshRenderer>();
             mr2.mesh = Mesh.CreateCube(new Vector3(1, 1, 1), true);
-            mr2.material = new SimpleMaterial();
+            mr2.Material = new SimpleMaterial();
             ge2.transform.SetParent(ge.transform);
-            ge2.transform.SetPosition(new Vector3(0, 0, 2f), S3DE.Engine.Enums.Space.World);
+            ge2.transform.SetPosition(new Vector3(0, 1, 2f), Enums.Space.World);
 
             GameEntity ge3 = CreateGameEntity();
             MeshRenderer mr3 = ge3.AddComponent<MeshRenderer>();
             mr3.mesh = Mesh.CreateCube(new Vector3(1, 1, 1), true);
-            mr3.material = new SimpleMaterial();
+            mr3.Material = new SimpleMaterial();
             ge3.transform.Position = new Vector3(3, 0, 3);
 
             Sample_LookAt la = ge2.AddComponent<Sample_LookAt>();
             la.Target = ge3.transform.Position;
 
-            Camera.MainCamera.gameEntity.AddComponent<Sample_CameraController>();
+            MainCamera.gameEntity.AddComponent<Sample_CameraController>();
+            //MainCamera.gameEntity.AddComponent<Sample_FrameMonitor>();
         }
 
         protected override void UnloadScene()

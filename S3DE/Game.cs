@@ -49,7 +49,7 @@ namespace S3DE
 
         protected void SetTargetFPS(uint fps) => FrameSync.SetTargetFPS(fps);
         public void Run() => EngineMain.RunGame(this);
-
+        protected void SetVSync(bool value) => Window.SetVSync(value);
         internal void InitGame() => InitializeGame();
 
         internal void SetRenderer_Internal() => SetRenderer();

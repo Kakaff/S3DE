@@ -1,5 +1,6 @@
 ﻿using S3DE;
 using S3DE.Engine;
+using S3DE.Engine.Graphics;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,13 @@ namespace SampleGame
 
         protected override void Initialize()
         {
-            SetTargetFPS(60);
-            SetStartScene<SampleScene>();
-            //Input.HideCursor();
-            Input.LockCursor();
             DisplayResolution = new Vector2(1280, 720);
             RenderResolution = new Vector2(1280, 720);
+            RefreshRate = 60;
 
+            SetTargetFPS(60);
+            SetStartScene<SampleScene>();
+            Input.LockCursor();
         }
 
         protected override void OnGameExit()

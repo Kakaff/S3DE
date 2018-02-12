@@ -45,8 +45,8 @@ namespace S3DE.Engine.Graphics
                 int i1 = indicies[i + 1];
                 int i2 = indicies[i + 2];
 
-                Vector3 v1 = vertices[i1] - vertices[0];
-                Vector3 v2 = vertices[i2] - vertices[0];
+                Vector3 v1 = vertices[i1] - vertices[i0];
+                Vector3 v2 = vertices[i2] - vertices[i0];
 
                 Vector3 norm = v1.Cross(v2).normalized;
 
@@ -70,9 +70,13 @@ namespace S3DE.Engine.Graphics
             float z = 0.5f * scale.z;
             Vector3[] verts;
             Vector2[] uvs;
+            Vector3[] norm = null;
+
             int[] triangles;
             if (!flatShaded)
             {
+                Console.WriteLine("Creating cube with shared edges");
+
                 verts = new Vector3[] {new Vector3(-x,y,-z), new Vector3(x,y,-z),new Vector3(x,-y,-z), new Vector3(-x,-y,-z)
                                             ,new Vector3(x,y,z), new Vector3(-x,y,z),new Vector3(-x,-y,z), new Vector3(x,-y,z)};
 
@@ -94,21 +98,38 @@ namespace S3DE.Engine.Graphics
                                 };
             } else
             {
-                verts = new Vector3[] {new Vector3(-x,y,-z),new Vector3(x,y,-z), new Vector3(x,-y,-z), new Vector3(-x,-y,-z),
-                                       new Vector3(-x,y,z), new Vector3(-x,y,-z), new Vector3(-x,-y,-z), new Vector3(-x,-y,z)};
+                verts = new Vector3[] {new Vector3(-x,y,-z),new Vector3(x,y,-z), new Vector3(x,-y,-z), new Vector3(-x,-y,-z),  //zNeg
+                                       new Vector3(-x,y,z), new Vector3(-x,y,-z), new Vector3(-x,-y,-z), new Vector3(-x,-y,z), //xneg
+                                       new Vector3(x,y,-z),new Vector3(x,y,z), new Vector3(x,-y,z),new Vector3(x,-y,-z),       //xPos
+                                       new Vector3(x,y,z), new Vector3(-x,y,z), new Vector3(-x,-y,z), new Vector3(x,-y,z),     //zPos
+                                       new Vector3(-x,y,z), new Vector3(x,y,z), new Vector3(x,y,-z), new Vector3(-x,y,-z),
+                                       new Vector3(-x,-y,-z),new Vector3(x,-y,-z), new Vector3(x,-y,z), new Vector3(-x,-y,z)};
 
                 uvs = new Vector2[] {new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),
+                                     new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),
+                                     new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),
+                                     new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),
+                                     new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),
                                      new Vector2(0,1),new Vector2(1,1),new Vector2(1,0), new Vector2(0,0),};
-
+                
                 triangles = new int[] {0,1,2,
                                        0,2,3,
                                        4,5,6,
-                                       4,6,7};
+                                       4,6,7,
+                                       8,9,10,
+                                       8,10,11,
+                                       12,13,14,
+                                       12,14,15,
+                                       16,17,18,
+                                       16,18,19,
+                                       20,21,22,
+                                       20,22,23};
             }
             m.Vertices = verts;
             m.Uvs = uvs;
             m.Triangles = triangles;
             m.ReCalculateNormals();
+
             return m;
         }
     }

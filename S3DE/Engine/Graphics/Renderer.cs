@@ -10,8 +10,39 @@ using static S3DE.Engine.Enums;
 
 namespace S3DE.Engine.Graphics
 {
+    public enum RenderPass
+    {
+        //Still in planning phase.
+        ShadowMap = 0x01, //Only operates on objects within range of light.
+        Deferred = 0x02, //Only operates on objects that use deferred rendering.
+        Forward = 0x04, //Only operates on objects that use forward rendering, is sorted from far to near.
+        Blend = 0x08, //Draws the Forward framebuffer onto the deferred framebuffer.
+    }
+
+    public enum AlphaFunction
+    {
+        GreaterThan,
+        LessThan,
+        Never,
+        Always,
+    }
+
+    public enum Function
+    {
+        AlphaTest,
+        DepthTest,
+
+    }
     public abstract class Renderer
     {
+        static RenderPass renderPass = RenderPass.Deferred;
+        static Rendercall mainRenderCall;
+
+        public static RenderPass CurrentRenderPass
+        {
+            get => renderPass;
+            internal set => renderPass = value;
+        }
 
         public abstract RenderingAPI GetRenderingAPI();
 
@@ -21,28 +52,66 @@ namespace S3DE.Engine.Graphics
             get => ActiveRenderer.maxMipMapLevels;
             set => ActiveRenderer.maxMipMapLevels = value;
         }
+
+        public static bool AlphaTesting
+        {
+            get => activeRenderer.alphaTesting;
+            set
+            {
+                if (value)
+                    ActiveRenderer.enable(Function.AlphaTest);
+                else
+                    ActiveRenderer.disable(Function.AlphaTest);
+
+                activeRenderer.alphaTesting = value;
+            }
+        }
+
         public static int API_Version => ActiveRenderer.apiVer;
 
-        private Vector2 displayResolution,renderResolution;
+        public static Vector2 ViewportSize
+        {
+            get => ActiveRenderer.viewportSize;
+            set {
+                ActiveRenderer.SetViewportSize(value);
+                ActiveRenderer.viewportSize = value;
+            }
+        }
+
+        private Vector2 displayResolution,renderResolution,viewportSize;
         private int apiVer,refreshRate;
         private int maxMipMapLevels = 1000;
+        private bool alphaTesting = false;
 
         private static Renderer activeRenderer;
 
         protected abstract void SetCapabilities();
-        protected abstract void init();
-        protected abstract Renderer_MeshRenderer createMeshRenderer();
-        protected abstract Renderer_Material createMaterial(Type materialType);
-        protected abstract Texture2D createTexture2D(int width, int height);
-        
-        protected abstract void clear();
+        protected abstract void Init();
+        protected abstract void SetAlphaFunction(AlphaFunction function, float value);
+        protected abstract Renderer_MeshRenderer CreateMeshRenderer();
+        protected abstract Renderer_Material CreateMaterial(Type materialType);
+        protected abstract Texture2D CreateTexture2D(int width, int height);
+        protected abstract RenderTexture2D CreateRenderTexture2D(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height);
+        protected abstract Framebuffer CreateFrameBuffer(int width, int height);
+        protected abstract ScreenQuad CreateScreenQuad();
+
+        protected abstract void Clear();
         protected abstract void OnWindowResized();
         protected abstract void OnRenderResolutionChanged();
         protected abstract void OnRefreshRateChanged();
-
+        protected abstract void enable(Function func);
+        protected abstract void disable(Function func);
+        protected abstract void SetViewportSize(Vector2 size);
+        protected abstract void UnbindTexUnit(int textureUnit);
+        protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
         protected void SetApiVersion(int version) => apiVer = version;
+
         internal static Renderer ActiveRenderer => activeRenderer;
-        
+        internal static Rendercall MainRenderCall => mainRenderCall;
+
+        public static void Enable(Function func) => ActiveRenderer.enable(func);
+        public static void Disable(Function func) => ActiveRenderer.disable(func);
+
         internal static T SetTargetRenderer<T>() where T : Renderer
         {
             if (ActiveRenderer == null)
@@ -54,31 +123,41 @@ namespace S3DE.Engine.Graphics
             return (T)ActiveRenderer;
         }
 
-        internal static Renderer_MeshRenderer CreateMeshRenderer()
+        internal static Renderer_MeshRenderer CreateMeshRenderer_Internal()
         {
-            return ActiveRenderer.createMeshRenderer();
+            return ActiveRenderer.CreateMeshRenderer();
         }
 
-        internal static Renderer_Material CreateMaterial(Type materialType)
+        internal static Renderer_Material CreateMaterial_Internal(Type materialType)
         {
-            return ActiveRenderer.createMaterial(materialType);
+            return ActiveRenderer.CreateMaterial(materialType);
         }
 
-        internal static Texture2D CreateTexture2D(int width, int height)
+        internal static Texture2D CreateTexture2D_Internal(int width, int height)
         {
-            return ActiveRenderer.createTexture2D(width, height);
+            return ActiveRenderer.CreateTexture2D(width, height);
         }
+
+        internal static RenderTexture2D CreateRenderTexture2D_Internal(InternalFormat internalFormat, 
+            PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height) => 
+            ActiveRenderer.CreateRenderTexture2D(internalFormat,pixelFormat,pixelType,filter,width, height);
+
+        internal static ScreenQuad CreateScreenQuad_Internal() => ActiveRenderer.CreateScreenQuad();
+
+        internal static Framebuffer CreateFramebuffer_Internal(Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.x, (int)size.y);
+        
+        internal static void SetAlphaFunction_Internal(AlphaFunction function, float value) => ActiveRenderer.SetAlphaFunction(function, value);
 
         internal static void SetCapabilities_Internal() => ActiveRenderer.SetCapabilities();
 
-        internal static void Init()
+        internal static void Init_Internal()
         {
-            ActiveRenderer.init();
+            ActiveRenderer.Init();
         }
 
-        internal static void Clear()
+        internal static void Clear_Internal()
         {
-            ActiveRenderer.clear();
+            ActiveRenderer.Clear();
         }
 
         internal static void SetDisplayResolution(Vector2 res)
@@ -93,11 +172,18 @@ namespace S3DE.Engine.Graphics
             OnRenderResolutionChanged_Internal();
         }
 
+        internal static void CreateMainRenderCall()
+        {
+            mainRenderCall = new Rendercall(RenderResolution, RenderPass.Deferred, RenderPass.Forward, RenderPass.Blend);
+        }
+
         internal static void SetRefreshRate(int r)
         {
             ActiveRenderer.refreshRate = r;
             OnRefreshRateChanged_Internal();
         }
+
+        internal static void SetDrawBuffers_Internal(params BufferAttachment[] buffers) => ActiveRenderer.SetDrawBuffers(buffers);
 
         internal static void OnWindowResized_Internal() => ActiveRenderer.OnWindowResized();
         internal static void OnRenderResolutionChanged_Internal() => ActiveRenderer.OnRenderResolutionChanged();
@@ -105,5 +191,6 @@ namespace S3DE.Engine.Graphics
         internal static Vector2 DisplayResolution => ActiveRenderer.displayResolution;
         internal static Vector2 RenderResolution => ActiveRenderer.renderResolution;
         internal static int RefreshRate => ActiveRenderer.refreshRate;
+        public static void UnbindTextureUnit(int textureUnit) => ActiveRenderer.UnbindTexUnit(textureUnit); 
     }
 }

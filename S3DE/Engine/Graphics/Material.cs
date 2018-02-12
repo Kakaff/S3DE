@@ -20,7 +20,7 @@ namespace S3DE.Engine.Graphics
     {
         Renderer_Material _rMaterial;
         protected abstract ShaderSource GetSource(ShaderStage stage);
-        bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix;
+        bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix,usesRotationMatrix;
 
         public bool UsesTransformMatrix
         {
@@ -40,13 +40,19 @@ namespace S3DE.Engine.Graphics
             protected set => usesProjectionMatrix = value;
         }
 
+        public bool UsesRotationMatrix
+        {
+            get => usesRotationMatrix;
+            protected set => usesRotationMatrix = value;
+        }
+
         protected Material()
         {
         }
 
         protected void CreateRendererMaterial()
         {
-            _rMaterial = Renderer.CreateMaterial(this.GetType());
+            _rMaterial = Renderer.CreateMaterial_Internal(this.GetType());
             SetSources();
         }
 
@@ -61,6 +67,8 @@ namespace S3DE.Engine.Graphics
                     AddUniform("view");
                 if (UsesProjectionMatrix)
                     AddUniform("projection");
+                if (UsesRotationMatrix)
+                    AddUniform("rotation");
                 AddUserDefinedUniforms();
             }
 
@@ -76,6 +84,7 @@ namespace S3DE.Engine.Graphics
         internal void SetTransformMatrix(Matrix4x4 m) => SetUniform("transform", m);
         internal void SetViewMatrix(Matrix4x4 m) => SetUniform("view", m);
         internal void SetProjectionMatrix(Matrix4x4 m) => SetUniform("projection", m);
+        internal void SetRotationMatrix(Matrix4x4 m) => SetUniform("rotation", m);
 
         internal void UpdateUniforms_Internal() => UpdateUniforms();
         protected abstract void UpdateUniforms();

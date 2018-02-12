@@ -40,7 +40,7 @@ namespace S3DE
             EngineMain.game.SetClock_Internal();
 
             Time.Start();
-            Renderer.Init();
+            Renderer.Init_Internal();
             Glfw.Init();
 
             Engine.Graphics.Window.SetResolution(640, 480);
@@ -51,8 +51,9 @@ namespace S3DE
             EngineMain.game.SetFrameSync_Internal();
             EngineMain.game.InitGame();
             isRunning = true;
+            Renderer.CreateMainRenderCall();
+            ScreenQuad.Create();
             Time.UpdateDeltaTime(Time.CurrentTick);
-
             MainLoop();
 
         }
@@ -62,7 +63,7 @@ namespace S3DE
             while (!Engine.Graphics.Window.IsCloseRequested && !reziseWindow)
             {
                 Input.PollInput();
-                Renderer.Clear();
+                Renderer.Clear_Internal();
                 SceneHandler.RunScenes();
                 Engine.Graphics.Window.SwapBuffer();
                 FrameSync.WaitForTargetFPS();

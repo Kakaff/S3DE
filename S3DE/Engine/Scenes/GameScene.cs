@@ -1,4 +1,6 @@
 ﻿using S3DE.Engine.Entities;
+using S3DE.Engine.Entities.Components;
+using S3DE.Engine.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,41 @@ namespace S3DE.Engine.Scenes
         List<GameEntity> inActiveEntities = new List<GameEntity>();
 
         GameEntity[] frameStageEntities;
+
+        Camera mainCamera;
+        Camera activeCamera;
+
+        /// <summary>
+        /// The Main camera of this scene.
+        /// </summary>
+        public Camera MainCamera {
+            get => GetMainCamera();
+            set => mainCamera = value;
+        }
+        /// <summary>
+        /// The camera that is currently rendering.
+        /// </summary>
+        public Camera ActiveCamera
+        {
+            get => activeCamera;
+            internal set => activeCamera = value;
+        }
+
+        internal GameEntity[] ActiveEntities
+        {
+            get
+            {
+                InitFrameStage();
+                return frameStageEntities;
+            }
+        }
+
+        Camera GetMainCamera()
+        {
+            if (mainCamera == null)
+                mainCamera = CreateGameEntity().AddComponent<Camera>();
+            return mainCamera;
+        }
 
         internal void AddEntity(GameEntity ge)
         {
@@ -98,9 +135,21 @@ namespace S3DE.Engine.Scenes
 
             if (canDraw)
             {
+                
+                //Queue up a render call for the main camera.
+                ActiveCamera = MainCamera;
                 PreDraw();
-                Draw();
+                RenderPipeline.RenderSceneToRenderCall(this, Renderer.MainRenderCall);
+                //Draw ScreenQuad
+                //Draw Ui
+                //Loop through all queued rendercalls. Then perform the scenes main render call.
+                //Then draw the main render call to a quad and present it on screen.
+                //The draw method is called for each rendercall. (it can in other words be called several times per frame).
+                //So when the rendercall looks at an entity it calls the GameEntity.Draw();
                 PostDraw();
+                
+                ScreenQuad.Render_Internal(Renderer.MainRenderCall.GetNormalMap(RenderPass.Deferred));
+                
             }
         }
 

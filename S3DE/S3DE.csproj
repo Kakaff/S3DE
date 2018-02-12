@@ -60,14 +60,21 @@
     <None Include="WrapperGLFW.dll.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\AutoAdjustingStopWatchClock.cs" />
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\Graphics\Color.cs" />
+    <Compile Include="Engine\Graphics\Framebuffer.cs" />
     <Compile Include="Engine\Graphics\Material.cs" />
+    <Compile Include="Engine\Graphics\RenderPipeline.cs" />
+    <Compile Include="Engine\Graphics\Rendercall.cs" />
     <Compile Include="Engine\Graphics\Renderer_Material.cs" />
+    <Compile Include="Engine\Graphics\RenderTexture2D.cs" />
+    <Compile Include="Engine\Graphics\ScreenQuad.cs" />
     <Compile Include="Engine\Graphics\ShaderSource.cs" />
     <Compile Include="Engine\Graphics\Texture2D.cs" />
     <Compile Include="Engine\HighResClock.cs" />
     <Compile Include="Engine\Input.cs" />
+    <Compile Include="Engine\IO\ImageLoader.cs" />
     <Compile Include="Engine\Scenes\SceneHandler.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\EngineMath.cs" />
@@ -97,12 +104,15 @@
       <HintPath>..\packages\OpenGL.Net.0.7.1\lib\net461\OpenGL.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="WrapperGLFW, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GLFW.NET.0.9.7.1\lib\net45\WrapperGLFW.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Engine\Debug\KnownIssues.txt" />
+    <Content Include="Engine\Debug\RenderPass_Explanation.txt" />
     <Content Include="Engine\Debug\Todo.txt" />
     <Content Include="glfw3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

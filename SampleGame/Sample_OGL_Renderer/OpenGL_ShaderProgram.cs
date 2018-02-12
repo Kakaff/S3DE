@@ -84,8 +84,6 @@ namespace SampleGame.Sample_OGL_Renderer
             }
             else
                 throw new ArgumentException($"Unable to find uniform: {uniformName}");
-
-            Console.WriteLine($"Uniform {uniformName} location = {loc}");
             OpenGL_Renderer.TestForGLErrors();
         }
         
