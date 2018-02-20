@@ -8,6 +8,7 @@ using S3DE.Maths;
 using OpenGL;
 using static S3DE.Engine.Enums;
 using S3DE.Engine;
+using S3DE.Engine.Graphics.Textures;
 
 namespace SampleGame.Sample_OGL_Renderer
 {

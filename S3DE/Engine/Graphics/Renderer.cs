@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static S3DE.Engine.Enums;
+using S3DE.Engine.Graphics.Materials;
+using S3DE.Engine.Graphics.Textures;
 
 namespace S3DE.Engine.Graphics
 {
@@ -16,7 +18,14 @@ namespace S3DE.Engine.Graphics
         ShadowMap = 0x01, //Only operates on objects within range of light.
         Deferred = 0x02, //Only operates on objects that use deferred rendering.
         Forward = 0x04, //Only operates on objects that use forward rendering, is sorted from far to near.
-        Blend = 0x08, //Draws the Forward framebuffer onto the deferred framebuffer.
+    }
+
+    public enum FrameBufferTarget
+    {
+        Deferred_Geometry,
+        Deferred_Light,
+        Forward,
+        Final
     }
 
     public enum AlphaFunction
@@ -36,7 +45,7 @@ namespace S3DE.Engine.Graphics
     public abstract class Renderer
     {
         static RenderPass renderPass = RenderPass.Deferred;
-        static Rendercall mainRenderCall;
+        static RenderCall mainRenderCall;
 
         public static RenderPass CurrentRenderPass
         {
@@ -107,7 +116,7 @@ namespace S3DE.Engine.Graphics
         protected void SetApiVersion(int version) => apiVer = version;
 
         internal static Renderer ActiveRenderer => activeRenderer;
-        internal static Rendercall MainRenderCall => mainRenderCall;
+        internal static RenderCall MainRenderCall => mainRenderCall;
 
         public static void Enable(Function func) => ActiveRenderer.enable(func);
         public static void Disable(Function func) => ActiveRenderer.disable(func);
@@ -146,7 +155,7 @@ namespace S3DE.Engine.Graphics
 
         internal static Framebuffer CreateFramebuffer_Internal(Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.x, (int)size.y);
         
-        internal static void SetAlphaFunction_Internal(AlphaFunction function, float value) => ActiveRenderer.SetAlphaFunction(function, value);
+        public static void AlphaFunction(AlphaFunction function, float value) => ActiveRenderer.SetAlphaFunction(function, value);
 
         internal static void SetCapabilities_Internal() => ActiveRenderer.SetCapabilities();
 
@@ -174,7 +183,7 @@ namespace S3DE.Engine.Graphics
 
         internal static void CreateMainRenderCall()
         {
-            mainRenderCall = new Rendercall(RenderResolution, RenderPass.Deferred, RenderPass.Forward, RenderPass.Blend);
+            mainRenderCall = RenderPipeline.CreateRenderCall_Internal();
         }
 
         internal static void SetRefreshRate(int r)
@@ -192,5 +201,10 @@ namespace S3DE.Engine.Graphics
         internal static Vector2 RenderResolution => ActiveRenderer.renderResolution;
         internal static int RefreshRate => ActiveRenderer.refreshRate;
         public static void UnbindTextureUnit(int textureUnit) => ActiveRenderer.UnbindTexUnit(textureUnit); 
+        public static void UnbindTextureUnit(params int[] textureUnits)
+        {
+            foreach (int i in textureUnits)
+                ActiveRenderer.UnbindTexUnit(i);
+        }
     }
 }

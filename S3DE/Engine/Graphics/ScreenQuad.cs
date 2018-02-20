@@ -12,16 +12,23 @@ namespace S3DE.Engine.Graphics
         static ScreenQuad instance;
         RenderTexture2D prevFrame;
 
-        public static RenderTexture2D Frame => instance.prevFrame;
+        public static RenderTexture2D PreviousFrame => instance.prevFrame;
 
         internal static void Render_Internal(RenderTexture2D frame)
         {
-            instance.prevFrame = frame;
+            Renderer.Disable(Function.DepthTest);
+            Renderer.Disable(Function.AlphaTest);
+            Renderer.Clear_Internal();
+            Renderer.ViewportSize = Renderer.DisplayResolution;
             instance.RenderFrameToScreen(frame);
+            instance.prevFrame = frame;
         }
 
-        protected abstract void RenderFrameToScreen(RenderTexture2D frame);
+        internal static void BindMesh_Internal() => instance.BindMesh();
 
+        protected abstract void RenderFrameToScreen(RenderTexture2D frame);
+        protected abstract void BindMesh();
+        protected abstract void UnbindMesh();
         internal static void Create() => instance = Renderer.CreateScreenQuad_Internal();
     }
 }

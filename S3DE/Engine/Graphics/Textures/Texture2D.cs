@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using S3DE.Maths;
 using static S3DE.Engine.Enums;
 
-namespace S3DE.Engine.Graphics
+namespace S3DE.Engine.Graphics.Textures
 {
     public enum FilterMode
     {
@@ -30,10 +30,10 @@ namespace S3DE.Engine.Graphics
         x16 = 16,
     }
 
-    public abstract class Texture2D
+    public abstract class Texture2D : ITexture2D
     {
 
-        public abstract Vector2 Size { get; }
+        public abstract Vector2 Resolution { get; }
 
         public abstract FilterMode FilterMode { get; set; }
         public abstract AnisotropicSamples AnisotropicSamples { get; set;}
@@ -45,12 +45,14 @@ namespace S3DE.Engine.Graphics
         public abstract void Apply();
         
         public abstract void Bind(int textureunit);
+        public abstract void Bind();
+        public abstract void Unbind();
 
         public abstract Color GetPixel(int x, int y);
 
         public abstract void SetPixel(int x, int y, Color color);
 
-        public virtual void CalculateMipMapCount() => MipMapLevels = CalcMaxNumberMipmaps(Size);
+        public virtual void CalculateMipMapCount() => MipMapLevels = CalcMaxNumberMipmaps(Resolution);
 
         protected Texture2D() { }
 

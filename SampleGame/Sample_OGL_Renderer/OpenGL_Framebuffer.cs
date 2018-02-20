@@ -1,5 +1,6 @@
 ﻿using OpenGL;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Textures;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,20 @@ namespace SampleGame.Sample_OGL_Renderer
             tex.Unbind();
             this.Unbind();
             attachments.Add(attachment, tex);
-            //Do the thing.
+            
+        }
+
+        public override void AddBuffer(RenderTexture2D buffer, BufferAttachment attachment)
+        {
+            this.Bind();
+            buffer.Bind();
+            Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer,
+                OpenGL_Utility.Convert(attachment),
+                TextureTarget.Texture2d,
+                ((OpenGL_RenderTexture2D)buffer).Pointer, 0);
+            buffer.Unbind();
+            this.Unbind();
+            attachments.Add(attachment, (OpenGL_RenderTexture2D)buffer);
         }
 
         public override void Clear()
@@ -93,6 +107,22 @@ namespace SampleGame.Sample_OGL_Renderer
                 return true;
             else
                 throw new Exception("Framebuffer is not complete | " + status);
+        }
+
+        public override void Clear(bool color, bool depth, bool stencil)
+        {
+            int clearBit = 0;
+            if (color)
+                clearBit |= (int)OpenGL.ClearBufferMask.ColorBufferBit;
+            if (depth)
+                clearBit |= (int)OpenGL.ClearBufferMask.DepthBufferBit;
+            if (stencil)
+                clearBit |= (int)OpenGL.ClearBufferMask.StencilBufferBit;
+        }
+
+        public override void Clear(params BufferAttachment[] attachments)
+        {
+            throw new NotImplementedException();
         }
     }
 }

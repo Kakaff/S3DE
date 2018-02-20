@@ -1,11 +1,12 @@
-﻿using S3DE.Maths;
+﻿using S3DE.Engine.Graphics.Textures;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Graphics
+namespace S3DE.Engine.Graphics.Materials
 {
     public enum ShaderStage
     {
@@ -19,7 +20,7 @@ namespace S3DE.Engine.Graphics
     public abstract class Material
     {
         Renderer_Material _rMaterial;
-        protected abstract ShaderSource GetSource(ShaderStage stage);
+        protected abstract MaterialSource GetSource(ShaderStage stage);
         bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix,usesRotationMatrix;
 
         public bool UsesTransformMatrix
@@ -114,10 +115,6 @@ namespace S3DE.Engine.Graphics
         protected void SetUniform(string uniformName, float[] value) => _rMaterial.Internal_SetUniformf(uniformName, value);
         protected void SetUniform(string uniformName, Vector3 value) => _rMaterial.Internal_SetUniformf(uniformName, value.ToArray());
         protected void SetUniform(string uniformName, Matrix4x4 value) => _rMaterial.Internal_SetUniform(uniformName, value);
-        protected void SetTexture(string samplerName,int TextureUnit, Texture2D texture)
-        {
-            SetUniform(samplerName, TextureUnit);
-            texture.Bind(TextureUnit);
-        }
+        protected void SetTexture(string samplerName, int TextureUnit, ITexture texture) => _rMaterial.Internal_SetTexture(samplerName,TextureUnit, texture);
     }
 }

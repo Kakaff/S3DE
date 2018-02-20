@@ -1,5 +1,4 @@
 ﻿using glfw3;
-using OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,26 +35,24 @@ namespace S3DE
         public static void RunGame(Game game)
         {
             EngineMain.game = game;
-            EngineMain.game.SetRenderer_Internal();
-            EngineMain.game.SetClock_Internal();
+
+            game.InitGame();
 
             Time.Start();
             Renderer.Init_Internal();
             Glfw.Init();
-
-            Engine.Graphics.Window.SetResolution(640, 480);
+            
             Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
-
             Renderer.SetCapabilities_Internal();
-            EngineMain.game.SetFrameSync_Internal();
-            EngineMain.game.InitGame();
+            RenderPipeline.Init_Internal();
+            game.StartGame();
             isRunning = true;
+            
             Renderer.CreateMainRenderCall();
             ScreenQuad.Create();
             Time.UpdateDeltaTime(Time.CurrentTick);
             MainLoop();
-
         }
 
         private static void MainLoop()

@@ -1,4 +1,6 @@
 ﻿using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Materials;
+using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.IO;
 using S3DE.Maths;
 using System;
@@ -11,16 +13,16 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
 {
     public class SimpleMaterial : Material
     {
-        ShaderSource VertexSource, FragmentSource;
+        MaterialSource VertexSource, FragmentSource;
         Texture2D texture,normal;
 
-        private class SimpleVertSource : ShaderSource
+        private class SimpleVertSource : MaterialSource
         {
             public SimpleVertSource()
             {
                 SetStage(ShaderStage.Vertex);
                 SetSource(
-                  "#version 400 " + '\n'
+                  "#version 330 core " + '\n'
                 + "layout(location = 0)in vec3 position; " + '\n'
                 + "layout(location = 1)in vec2 uvs;" + '\n'
                 + "layout(location = 2)in vec3 normal;" + '\n'
@@ -41,21 +43,21 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
                 + "frag.pos = (transform * vec4(position,1.0)).xyz;" + '\n'
                 + "frag.uv = uvs;" + '\n'
                 + "frag.TBN = mat3(rotation) * mat3(tangent,bitangent,normal);" + '\n'
-                + "gl_Position = (projection * view) * transform * vec4(position,1.0); " + '\n'
+                + "gl_Position = (projection * view) * vec4(frag.pos,1.0); " + '\n'
                 + "}");
             }
         }
 
-        private class SimpleFragSource : ShaderSource
+        private class SimpleFragSource : MaterialSource
         {
             public SimpleFragSource()
             {
                 SetStage(ShaderStage.Fragment);
                 SetSource(
-                "#version 400" + '\n'
-              + "layout(location = 0) out vec4 gFragColor; " + '\n'
-              + "layout(location = 1) out vec3 gNormal;" + '\n'
-              + "layout(location = 3) out vec3 gPosition;" + '\n'
+                "#version 330 core" + '\n'
+              + "layout(location = 0) out vec3 gFragColor; " + '\n'
+              + "layout(location = 1) out vec4 gNormalSpec;" + '\n'
+              + "layout(location = 2) out vec3 gPosition;" + '\n'
 
               + "in Frag { " + '\n'
               + "vec3 pos;" + '\n'
@@ -66,9 +68,9 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
               + "uniform sampler2D tex;" + '\n'
               + "uniform sampler2D normalMap;" + '\n'
               + "void main() { " + '\n'
-              + "gFragColor = texture(tex,frag.uv);" + '\n'
+              + "gFragColor = vec3(texture(tex,frag.uv).rgb);" + '\n'
               + "gPosition = frag.pos;" + '\n'
-              + "gNormal = frag.TBN * (texture(normalMap,frag.uv).rgb * 2 - 1);" + '\n'
+              + "gNormalSpec = vec4(frag.TBN * (texture(normalMap,frag.uv).rgb * 2 - 1),0);" + '\n'
               + "} " + '\n');
             }
         }
@@ -83,8 +85,8 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             UsesTransformMatrix = true;
             UsesRotationMatrix = true;
             CreateRendererMaterial();
-            normal = ImageLoader.LoadFromFile(@"C:\Users\Kakaf\source\repos\S3DE\SampleGame\bin\Debug\brickwall_normal.jpg");
-            texture = createSampleTexture(new Vector2(8, 8));
+            normal = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall_normal.jpg");
+            texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
         }
 
         Texture2D createSampleTexture(Vector2 resolution)
@@ -105,7 +107,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             return tex;
         }
 
-        protected override ShaderSource GetSource(ShaderStage stage)
+        protected override MaterialSource GetSource(ShaderStage stage)
         {
             switch (stage)
             {

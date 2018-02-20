@@ -18,16 +18,18 @@ namespace S3DE.Engine.Graphics
             dynamic = false;
         }
 
-        Vector3[] vertices;
         int[] indicies;
         Vector2[] uvs;
+        Vector3[] vertices;
         Vector3[] normals;
+        Vector4[] tangents;
         bool dynamic;
 
-        public Vector3[] Vertices { set => vertices = value; get => vertices; }
-        public Vector3[] Normals { set => normals = value; get => normals; }
-        public Vector2[] Uvs { set => uvs = value; get => uvs; }
-        public int[] Triangles { set => indicies = value; get => indicies; }
+        public Vector4[] Tangents { set => tangents = value; get => tangents;}
+        public Vector3[] Vertices { set => vertices = value; get => vertices;}
+        public Vector3[] Normals { set => normals = value; get => normals;}
+        public Vector2[] Uvs { set => uvs = value; get => uvs;}
+        public int[] Indicies { set => indicies = value; get => indicies;}
         public bool IsDynamic { get => dynamic; set => dynamic = value;}
 
         public void CalculateBounds()
@@ -35,9 +37,20 @@ namespace S3DE.Engine.Graphics
 
         }
 
-        public void ReCalculateNormals()
+        public void ReCalculateNormals(bool CalculateTangents)
         {
             Vector3[] newNormals = new Vector3[vertices.Length];
+            Vector4[] newTangents = null;
+            Vector3[] tan1 = null, tan2 = null;
+
+            if (CalculateTangents && uvs.Length != vertices.Length)
+                throw new ArgumentException("The mesh needs to have the same number of uvs as vertices to calculate tangents!");
+            else if (CalculateTangents)
+            {
+                tan1 = new Vector3[vertices.Length];
+                tan2 = new Vector3[vertices.Length];
+                newTangents = new Vector4[vertices.Length];
+            }
 
             for (int i = 0; i < indicies.Length; i+= 3)
             {
@@ -45,23 +58,78 @@ namespace S3DE.Engine.Graphics
                 int i1 = indicies[i + 1];
                 int i2 = indicies[i + 2];
 
-                Vector3 v1 = vertices[i1] - vertices[i0];
-                Vector3 v2 = vertices[i2] - vertices[i0];
+                Vector3 v0 = vertices[i0];
+                Vector3 v1 = vertices[i1];
+                Vector3 v2 = vertices[i2];
 
-                Vector3 norm = v1.Cross(v2).normalized;
+                Vector3 n0 = v1 - v0;
+                Vector3 n1 = v2 - v0;
+
+                Vector3 norm = n0.Cross(n1).normalized;
 
                 newNormals[i0] += norm;
                 newNormals[i1] += norm;
                 newNormals[i2] += norm;
+
+                if (CalculateTangents)
+                {
+                    //Adapted from: Lengyel, Eric. 
+                    //“Computing Tangent Space Basis Vectors for an Arbitrary Mesh”. 
+                    //Terathon Software, 2001.
+                    //http://terathon.com/code/tangent.html
+
+                    Vector2 uv0 = uvs[i0];
+                    Vector2 uv1 = uvs[i1];
+                    Vector2 uv2 = uvs[i2];
+
+                    Vector2 dUv0 = uv1 - uv0; 
+                    Vector2 dUv1 = uv2 - uv0; 
+
+                    float r = 1.0f / (dUv0.x * dUv1.y - dUv1.x * dUv0.y);
+
+                    Vector3 sDir = new Vector3(
+                        dUv1.y * n0.x - dUv0.y * n1.x,
+                        dUv1.y * n0.y - dUv0.y * n1.y,
+                        dUv1.y * n0.z - dUv0.y * n1.z) * r;
+
+                    Vector3 tDir = new Vector3(
+                        dUv0.x * n1.x - dUv1.x * n0.x,
+                        dUv0.x * n1.y - dUv1.x * n0.y,
+                        dUv0.x * n1.z - dUv1.x * n0.z) * r;
+
+                    tan1[i0] += sDir;
+                    tan1[i1] += sDir;
+                    tan1[i2] += sDir;
+
+                    tan2[i0] += tDir;
+                    tan2[i1] += tDir;
+                    tan2[i2] += tDir;
+                }
             }
 
-            for (int i = 0; i < newNormals.Length; i++)
+            for (int i = 0; i < vertices.Length; i++)
+            {
                 newNormals[i] = newNormals[i].normalized;
+                if (CalculateTangents)
+                {
+                    Vector3 norm = newNormals[i];
+                    Vector3 tan = tan1[i];
+
+                    newTangents[i] = (tan - norm * Vector3.Dot(norm, tan)).normalized;
+                    newTangents[i].w = (Vector3.Dot(Vector3.Cross(norm, tan), tan2[i]) < 0.0f) ? -1 : 1;
+                }
+            }
 
             Normals = newNormals;
+            if (CalculateTangents)
+            {
+                Tangents = newTangents;
+                tan1 = null;
+                tan2 = null;
+            }
         }
 
-        public static Mesh CreateCube(Vector3 scale, bool flatShaded)
+        public static Mesh CreateCube(Vector3 scale)
         {
             Mesh m = new Mesh();
 
@@ -70,34 +138,9 @@ namespace S3DE.Engine.Graphics
             float z = 0.5f * scale.z;
             Vector3[] verts;
             Vector2[] uvs;
-            Vector3[] norm = null;
 
             int[] triangles;
-            if (!flatShaded)
-            {
-                Console.WriteLine("Creating cube with shared edges");
-
-                verts = new Vector3[] {new Vector3(-x,y,-z), new Vector3(x,y,-z),new Vector3(x,-y,-z), new Vector3(-x,-y,-z)
-                                            ,new Vector3(x,y,z), new Vector3(-x,y,z),new Vector3(-x,-y,z), new Vector3(x,-y,z)};
-
-                uvs = new Vector2[] {Vector2.Zero,Vector2.Zero,Vector2.Zero,Vector2.Zero,
-                                           Vector2.One,Vector2.One,Vector2.One,Vector2.One};
-
-                triangles = new int[] {0,1,2, //zNeg 1
-                                         0,2,3, //zNeg 2
-                                         4,5,6, //zpos 1
-                                         4,6,7,  //zpos 2
-                                         1,4,7, //x pos 1
-                                         1,7,2, //x pos 2
-                                         5,0,3, //x neg 1
-                                         5,3,6, //x neg 2
-                                         5,4,1, // y pos 1
-                                         5,1,0, // y pos 2
-                                         3,2,7,
-                                         3,7,6
-                                };
-            } else
-            {
+            
                 verts = new Vector3[] {new Vector3(-x,y,-z),new Vector3(x,y,-z), new Vector3(x,-y,-z), new Vector3(-x,-y,-z),  //zNeg
                                        new Vector3(-x,y,z), new Vector3(-x,y,-z), new Vector3(-x,-y,-z), new Vector3(-x,-y,z), //xneg
                                        new Vector3(x,y,-z),new Vector3(x,y,z), new Vector3(x,-y,z),new Vector3(x,-y,-z),       //xPos
@@ -124,11 +167,11 @@ namespace S3DE.Engine.Graphics
                                        16,18,19,
                                        20,21,22,
                                        20,22,23};
-            }
+            
             m.Vertices = verts;
             m.Uvs = uvs;
-            m.Triangles = triangles;
-            m.ReCalculateNormals();
+            m.Indicies = triangles;
+            m.ReCalculateNormals(true);
 
             return m;
         }

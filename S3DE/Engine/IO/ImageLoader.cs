@@ -1,4 +1,5 @@
 ﻿using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Textures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

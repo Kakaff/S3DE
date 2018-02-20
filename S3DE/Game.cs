@@ -46,26 +46,17 @@ namespace S3DE
         protected void SetTargetRenderer<T>() where T : Renderer => Renderer.SetTargetRenderer<T>();
         protected void SetEngineClock<T>() where T : EngineClock => Time.SetEngineClock<T>();
         protected void SetEngineFrameSync<T>() where T : FrameSync => FrameSync.SetFrameSync = InstanceCreator.CreateInstance<T>();
+        protected void SetTargetRenderPipleline<T>() where T : RenderPipeline => RenderPipeline.CreatePipeline<T>();
 
         protected void SetTargetFPS(uint fps) => FrameSync.SetTargetFPS(fps);
         public void Run() => EngineMain.RunGame(this);
         protected void SetVSync(bool value) => Window.SetVSync(value);
-        internal void InitGame() => InitializeGame();
-
-        internal void SetRenderer_Internal() => SetRenderer();
-        internal void SetClock_Internal() => SetClock();
-        internal void SetFrameSync_Internal() => SetFrameSync();
-
-        protected abstract void SetFrameSync();
-        protected abstract void SetRenderer();
-        protected abstract void SetClock();
-
-        private void InitializeGame()
-        {
-            Initialize();
-        }
+        internal void InitGame() => Initialize();
+        internal void StartGame() => Start();
 
         protected abstract void Initialize();
+        protected abstract void Start();
+
         public abstract String GameName();
 
         protected abstract void OnGameExit();

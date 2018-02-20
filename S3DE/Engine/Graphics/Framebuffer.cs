@@ -1,4 +1,5 @@
-﻿using S3DE.Maths;
+﻿using S3DE.Engine.Graphics.Textures;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,23 +48,65 @@ namespace S3DE.Engine.Graphics
         Color30,
         Color31
     }
+    public enum TargetBuffer
+    {
+        Diffuse = BufferAttachment.Color0,
+        Color = BufferAttachment.Color1,
+        Normal_Specular = BufferAttachment.Color2,
+        Position = BufferAttachment.Color3,
+        Light_Color_Intensity = BufferAttachment.Color4,
+        Depth = BufferAttachment.Depth,
+        Depth_Stencil = BufferAttachment.Depth_Stencil,
+    }
 
     public abstract class Framebuffer
     {
+
+        protected BufferAttachment[] DrawBuffers;
+
         public abstract bool IsComplete { get; }
         public static Framebuffer Create(Vector2 size) => Renderer.CreateFramebuffer_Internal(size);
         public abstract void Bind();
         public abstract void Unbind();
         public abstract void Clear();
+        public abstract void Clear(bool color, bool depth, bool stencil);
+        public abstract void Clear(params BufferAttachment[] attachments);
+
+        public void Clear(params TargetBuffer[] targetBuffers)
+        {
+            BufferAttachment[] attachments = new BufferAttachment[targetBuffers.Length];
+            for (int i = 0; i < targetBuffers.Length; i++)
+                attachments[i] = (BufferAttachment)targetBuffers[i];
+
+            Clear(attachments);
+
+        }
+        public void SetDrawBuffers(params TargetBuffer[] buffers)
+        {
+            BufferAttachment[] attachments = new BufferAttachment[buffers.Length];
+            for (int i = 0; i < buffers.Length; i++)
+                attachments[i] = (BufferAttachment)buffers[i];
+
+            SetDrawBuffers(attachments);
+        }
 
         public void SetDrawBuffers(params BufferAttachment[] attachments)
         {
             Bind();
             Renderer.SetDrawBuffers_Internal(attachments);
+            DrawBuffers = attachments;
             Unbind();
         }
 
+        public RenderTexture2D GetBuffer(TargetBuffer buffer) => GetBuffer((BufferAttachment)buffer);
+        public void AddBuffer(RenderTexture2D buffer, TargetBuffer target) => AddBuffer(buffer, (BufferAttachment)target);
+        public void AddBuffer(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType colorType, FilterMode filter, TargetBuffer target) =>
+            AddBuffer(internalFormat,pixelFormat,colorType,filter, (BufferAttachment)target);
+        public void AddBuffer(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType colorType, FilterMode filter, TargetBuffer target, out RenderTexture2D renderTexture) =>
+            AddBuffer(internalFormat, pixelFormat, colorType, filter, (BufferAttachment)target, out renderTexture);
+
         public abstract RenderTexture2D GetBuffer(BufferAttachment attachment);
+        public abstract void AddBuffer(RenderTexture2D buffer, BufferAttachment attachment);
         public abstract void AddBuffer(InternalFormat internalFormat,PixelFormat pixelFormat, PixelType colorType, FilterMode filter, BufferAttachment attachment);
         public abstract void AddBuffer(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType colorType, FilterMode filter, BufferAttachment attachment, out RenderTexture2D renderTexture);
     }

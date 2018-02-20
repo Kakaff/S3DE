@@ -25,33 +25,26 @@ namespace SampleGame
 
         protected override void Initialize()
         {
+            SetEngineClock<HighResClock>();
+            SetEngineFrameSync<SampleFrameSync>();
+            SetTargetRenderer<Sample_OGL_Renderer.OpenGL_Renderer>();
+            SetTargetRenderPipleline<S3DE.Engine.Graphics.OpenGL.OpenGL_RenderPipeline>();
+
+            SetTargetFPS(60);
+        }
+
+        protected override void Start()
+        {
             DisplayResolution = new Vector2(1280, 720);
             RenderResolution = new Vector2(1280, 720);
             RefreshRate = 60;
-
-            SetTargetFPS(60);
-            SetStartScene<SampleScene>();
             Input.LockCursor();
+            SetStartScene<SampleScene>();
         }
 
         protected override void OnGameExit()
         {
             
-        }
-
-        protected override void SetClock()
-        {
-            SetEngineClock<S3DE.Engine.HighResClock>();
-        }
-
-        protected override void SetFrameSync()
-        {
-            SetEngineFrameSync<SampleFrameSync>();
-        }
-
-        protected override void SetRenderer()
-        {
-            SetTargetRenderer<Sample_OGL_Renderer.OpenGL_Renderer>();
         }
     }
 }

@@ -61,7 +61,7 @@ namespace SampleGame.Sample_OGL_Renderer
             ebo.Unbind();
         }
 
-        float[] MeshDataToArray(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, int[] indicies)
+        float[] MeshDataToArray(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, Vector4[] tangents, int[] indicies)
         {
             if (uvs.Length == vertices.Length)
                 hasUvs = true;
@@ -78,13 +78,10 @@ namespace SampleGame.Sample_OGL_Renderer
                 hasNormals = false;
 
             //If has normals, calc tangents and bitangents.
-            Vector3[] tangents = null,bitangents = null;
+            Vector3[] biTangents = null;
             if (hasNormals)
-            {
-                (Vector3[] Tangents, Vector3[] BiTangents) t = CalculateTangents(vertices, uvs, normals, indicies);
-                tangents = t.Tangents;
-                bitangents = t.BiTangents;
-            }
+                biTangents = CalculateBiTangents(normals, tangents);
+
 
             List<float> result = new List<float>();
 
@@ -96,8 +93,8 @@ namespace SampleGame.Sample_OGL_Renderer
                 if (hasNormals)
                 {
                     result.AddRange(normals[i].ToArray());
-                    result.AddRange(tangents[i].ToArray());
-                    result.AddRange(bitangents[i].ToArray());
+                    result.AddRange(tangents[i].xyz.ToArray());
+                    result.AddRange(biTangents[i].ToArray());
                 }
             }
 
@@ -122,12 +119,12 @@ namespace SampleGame.Sample_OGL_Renderer
             }
         }
 
-        
 
-        internal void SetData(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, int[] indicies, bool dynamic)
+
+        internal void SetData(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, Vector4[] tangents, int[] indicies, bool dynamic)
         {
             Bind();
-            float[] vertData = MeshDataToArray(vertices, uvs, normals,indicies);
+            float[] vertData = MeshDataToArray(vertices, uvs, normals,tangents,indicies);
             ushort[] indicieData = IndiciesToUShortArray(indicies);
 
             Console.WriteLine($"Uploading mesh {(vertData.Length * 4) + (indicieData.Length * 2)} bytes to GPU");
@@ -153,7 +150,7 @@ namespace SampleGame.Sample_OGL_Renderer
             Unbind();
         }
 
-        internal void SetData(Mesh m) => SetData(m.Vertices, m.Uvs, m.Normals, m.Triangles, m.IsDynamic);
+        internal void SetData(Mesh m) => SetData(m.Vertices, m.Uvs, m.Normals,m.Tangents, m.Indicies, m.IsDynamic);
 
         ushort[] IndiciesToUShortArray(int[] arr)
         {
@@ -169,56 +166,18 @@ namespace SampleGame.Sample_OGL_Renderer
         }
 
 
-        (Vector3[] Tangents, Vector3[] BiTangents) CalculateTangents(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, int[] indicies)
+        Vector3[] CalculateBiTangents(Vector3[] normals,Vector4[] Tangents)
         {
-            Console.WriteLine("Calculating tangents");
-            //Should probably move this into the S3DE.Mesh so it is calculated along with the normals.
-            Vector3[] Tangents = new Vector3[vertices.Length];
-            Vector3[] BiTangents = new Vector3[vertices.Length];
+            if (Tangents.Length != normals.Length)
+                throw new ArgumentException("The mesh needs to have the same number of tangents as normals!");
+            Vector3[] BiTangents = new Vector3[Tangents.Length];
 
-            for (int i = 0; i < indicies.Length; i+= 3)
+            for (int i = 0; i < Tangents.Length; i++)
             {
-                
-                int i0 = indicies[i];
-                int i1 = indicies[i + 1];
-                int i2 = indicies[i + 2];
-                
-                Vector3 v0 = vertices[i0];
-                Vector3 v1 = vertices[i1];
-                Vector3 v2 = vertices[i2];
-
-                Vector2 uv0 = uvs[i0];
-                Vector2 uv1 = uvs[i1];
-                Vector2 uv2 = uvs[i2];
-
-                Vector3 edge1 = v1 - v0;
-                Vector3 edge2 = v2 - v0;
-
-                Vector2 deltaUV0 = uv1 - uv0;
-                Vector2 deltaUV1 = uv2 - uv0;
-
-                float r = 1.0f / (deltaUV0.x * deltaUV1.y - deltaUV1.x * deltaUV0.y);
-
-                Vector3 tang = (edge1 * deltaUV1.y - edge2 * deltaUV0.y) * r;
-                Vector3 bitang = (edge1 * -deltaUV1.x + edge2 * deltaUV0.x) * r;
-
-                Tangents[i0] += tang;
-                Tangents[i1] += tang;
-                Tangents[i2] += tang;
-
-                BiTangents[i0] += bitang;
-                BiTangents[i1] += bitang;
-                BiTangents[i2] += bitang;
+                BiTangents[i] = Vector3.Cross(normals[i], Tangents[i].xyz) * Tangents[i].w;
             }
 
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                Tangents[i] = Tangents[i].normalized;
-                BiTangents[i] = BiTangents[i].normalized;
-            }
-
-            //Normalize all tangents and bitangents.
-            return (Tangents,BiTangents);
+            return BiTangents;
         }
     }
 }

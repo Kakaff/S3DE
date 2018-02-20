@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using S3DE.Maths;
 using S3DE.Engine;
+using S3DE.Engine.Graphics.Textures;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
@@ -37,7 +38,7 @@ namespace SampleGame.Sample_OGL_Renderer
             pixelType = Enums.PixelType.UByte;
         }
 
-        public override Vector2 Size => size;
+        public override Vector2 Resolution => size;
 
         public override FilterMode FilterMode { get => filterMode; set => filterMode = value;}
         public override AnisotropicSamples AnisotropicSamples { get => samples; set => samples = value; }
@@ -138,14 +139,23 @@ namespace SampleGame.Sample_OGL_Renderer
 
         }
 
+        public override void Bind()
+        {
+            Gl.BindTexture(TextureTarget.Texture2d, pointer);
+        }
+
         public override void Bind(int textureunit)
         {
             if (pointer == 0)
                 GenerateHandle();
             
             Gl.ActiveTexture(TextureUnit.Texture0 + textureunit);
-            Gl.BindTexture(TextureTarget.Texture2d, pointer);
-            
+            Gl.BindTexture(TextureTarget.Texture2d, pointer);   
+        }
+
+        public override void Unbind()
+        {
+            Gl.BindTexture(TextureTarget.Texture2d, 0);
         }
 
         public override Color GetPixel(int x, int y) => pixels[x, y];   

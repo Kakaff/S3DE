@@ -1,5 +1,6 @@
 ﻿using OpenGL;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Materials;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace SampleGame.Sample_OGL_Renderer
             return shad;
         }
         
-        public static OpenGL_Shader Create(ShaderSource shadersource)
+        public static OpenGL_Shader Create(MaterialSource shadersource)
         {
             OpenGL_Shader shad = new OpenGL_Shader();
 

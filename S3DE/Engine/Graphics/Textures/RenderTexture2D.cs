@@ -1,4 +1,5 @@
-﻿using S3DE.Maths;
+﻿using S3DE.Engine.Graphics.Textures;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;

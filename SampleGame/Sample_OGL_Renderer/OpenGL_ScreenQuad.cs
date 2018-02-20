@@ -26,6 +26,7 @@ namespace SampleGame.Sample_OGL_Renderer
                 new Vector2[] {new Vector2(0,1),new Vector2(1,1),
                                 new Vector2(1,0),new Vector2(0,0)}, 
                 new Vector3[] { }, 
+                new Vector4[] {},
                 new int[] {0,1,2,0,2,3},
                 false);
         }
@@ -42,6 +43,9 @@ namespace SampleGame.Sample_OGL_Renderer
             frame.Unbind();
             quadMesh.Unbind();
         }
+
+        protected override void BindMesh() => quadMesh.Bind();
+        protected override void UnbindMesh() => quadMesh.Unbind();
 
         private sealed class ScreenQuadShader
         {
@@ -67,7 +71,7 @@ namespace SampleGame.Sample_OGL_Renderer
               + "out vec4 fragColor; " + '\n'
               + "uniform sampler2D tex;" + '\n'
               + "void main() { " + '\n'
-              + "fragColor = texture(tex,uv);" + '\n'
+              + "fragColor = vec4(texture(tex,uv).rgb,1);" + '\n'
               + "} " + '\n');
 
                 shaderProgram = new OpenGL_ShaderProgram(vertShader, fragShader);

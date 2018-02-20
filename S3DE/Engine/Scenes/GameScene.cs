@@ -1,6 +1,7 @@
 ﻿using S3DE.Engine.Entities;
 using S3DE.Engine.Entities.Components;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Lights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace S3DE.Engine.Scenes
 
         Camera mainCamera;
         Camera activeCamera;
+        AmbientLight ambient;
 
         /// <summary>
         /// The Main camera of this scene.
@@ -42,6 +44,12 @@ namespace S3DE.Engine.Scenes
                 InitFrameStage();
                 return frameStageEntities;
             }
+        }
+
+        public AmbientLight Ambient
+        {
+            get => ambient;
+            set => ambient = value;
         }
 
         Camera GetMainCamera()
@@ -139,7 +147,7 @@ namespace S3DE.Engine.Scenes
                 //Queue up a render call for the main camera.
                 ActiveCamera = MainCamera;
                 PreDraw();
-                RenderPipeline.RenderSceneToRenderCall(this, Renderer.MainRenderCall);
+                RenderPipeline.RenderScene_Internal(this, Renderer.MainRenderCall);
                 //Draw ScreenQuad
                 //Draw Ui
                 //Loop through all queued rendercalls. Then perform the scenes main render call.
@@ -148,7 +156,6 @@ namespace S3DE.Engine.Scenes
                 //So when the rendercall looks at an entity it calls the GameEntity.Draw();
                 PostDraw();
                 
-                ScreenQuad.Render_Internal(Renderer.MainRenderCall.GetNormalMap(RenderPass.Deferred));
                 
             }
         }

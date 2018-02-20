@@ -1,5 +1,6 @@
 ﻿using S3DE.Engine.Entities.Components;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Materials;
 using System;
 using System.Collections.Generic;
 using System.Linq;

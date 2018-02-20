@@ -39,6 +39,7 @@ namespace S3DE.Engine
             RGB8,
             RGB10,
             RGB16F,
+            RGBA16F,
             RGBA,
             RGB5_A1,
             RGB10_A2,

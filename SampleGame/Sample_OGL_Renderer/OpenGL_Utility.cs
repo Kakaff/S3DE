@@ -1,5 +1,6 @@
 ﻿using OpenGL;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,10 @@ namespace SampleGame.Sample_OGL_Renderer
                 case S3DE.Engine.Enums.InternalFormat.RGB10: return OpenGL.InternalFormat.Rgb10;
                 case S3DE.Engine.Enums.InternalFormat.RGB10_A2: return OpenGL.InternalFormat.Rgb10A2;
                 case S3DE.Engine.Enums.InternalFormat.RGB16F: return OpenGL.InternalFormat.Rgb16f;
+                case S3DE.Engine.Enums.InternalFormat.RGBA16F: return OpenGL.InternalFormat.Rgba16f;
                 case S3DE.Engine.Enums.InternalFormat.Depth24_Stencil8: return OpenGL.InternalFormat.Depth24Stencil8;
+                case S3DE.Engine.Enums.InternalFormat.DepthComponent16: return OpenGL.InternalFormat.DepthComponent16;
+                case S3DE.Engine.Enums.InternalFormat.DepthComponent24: return OpenGL.InternalFormat.DepthComponent24;
                 case S3DE.Engine.Enums.InternalFormat.Depth_Component32: return OpenGL.InternalFormat.DepthComponent32f;
             }
             throw new NotSupportedException($"No conversion exists for InternalFormat.{internform} to OpenGL.InternalFormat");

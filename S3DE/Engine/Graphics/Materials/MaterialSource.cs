@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Graphics
+namespace S3DE.Engine.Graphics.Materials
 {
-    public abstract class ShaderSource
+    public abstract class MaterialSource
     {
         string @source;
         ShaderStage stage;

@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using S3DE;
 using static S3DE.Engine.Enums;
 using S3DE.Maths;
+using S3DE.Engine.Graphics.Materials;
+using S3DE.Engine.Graphics.Textures;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
@@ -139,5 +141,6 @@ namespace SampleGame.Sample_OGL_Renderer
             Gl.Disable(OpenGL_Utility.Convert(func));
             TestForGLErrors();
         }
+        
     }
 }

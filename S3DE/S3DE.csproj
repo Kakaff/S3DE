@@ -61,23 +61,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\AutoAdjustingStopWatchClock.cs" />
+    <Compile Include="Engine\Entities\Components\DirectionalLight.cs" />
     <Compile Include="Engine\Enums.cs" />
+    <Compile Include="Engine\Graphics\Lights\AmbientLight.cs" />
     <Compile Include="Engine\Graphics\Color.cs" />
     <Compile Include="Engine\Graphics\Framebuffer.cs" />
-    <Compile Include="Engine\Graphics\Material.cs" />
+    <Compile Include="Engine\Graphics\Lights\IDirectionalLight.cs" />
+    <Compile Include="Engine\Graphics\Lights\ILight.cs" />
+    <Compile Include="Engine\Graphics\Materials\Material.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderPipeline.cs" />
-    <Compile Include="Engine\Graphics\Rendercall.cs" />
-    <Compile Include="Engine\Graphics\Renderer_Material.cs" />
-    <Compile Include="Engine\Graphics\RenderTexture2D.cs" />
+    <Compile Include="Engine\Graphics\RenderCall.cs" />
+    <Compile Include="Engine\Graphics\Materials\Renderer_Material.cs" />
+    <Compile Include="Engine\Graphics\Textures\ITexture.cs" />
+    <Compile Include="Engine\Graphics\Textures\ITexture2D.cs" />
+    <Compile Include="Engine\Graphics\Textures\RenderTexture2D.cs" />
     <Compile Include="Engine\Graphics\ScreenQuad.cs" />
-    <Compile Include="Engine\Graphics\ShaderSource.cs" />
-    <Compile Include="Engine\Graphics\Texture2D.cs" />
+    <Compile Include="Engine\Graphics\Materials\MaterialSource.cs" />
+    <Compile Include="Engine\Graphics\Textures\Texture2D.cs" />
     <Compile Include="Engine\HighResClock.cs" />
     <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\IO\ImageLoader.cs" />
     <Compile Include="Engine\Scenes\SceneHandler.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\EngineMath.cs" />
+    <Compile Include="Maths\Matrix3x3.cs" />
     <Compile Include="Maths\Matrix4x4.cs" />
     <Compile Include="Maths\Quaternion.cs" />
     <Compile Include="Maths\Vector2.cs" />
@@ -97,12 +105,10 @@
     <Compile Include="Maths\Vector3.cs" />
     <Compile Include="Engine\Scenes\GameScene.cs" />
     <Compile Include="Engine\Time.cs" />
+    <Compile Include="Maths\Vector4.cs" />
     <Compile Include="Utility\InstanceCreator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="OpenGL.Net, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenGL.Net.0.7.1\lib\net461\OpenGL.Net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using S3DE.Maths;
+using S3DE.Engine.Graphics.Materials;
+using S3DE.Engine.Graphics.Textures;
 
 namespace SampleGame.Sample_OGL_Renderer
 {
@@ -13,7 +15,7 @@ namespace SampleGame.Sample_OGL_Renderer
     {
         OpenGL_ShaderProgram prog;
 
-        ShaderSource VertexShader, FragmentShader;
+        MaterialSource VertexShader, FragmentShader;
         Dictionary<string, int> Uniforms;
 
         protected override void Compile()
@@ -27,7 +29,7 @@ namespace SampleGame.Sample_OGL_Renderer
             Uniforms = new Dictionary<string, int>();
         }
 
-        protected override void SetSource(ShaderSource source)
+        protected override void SetSource(MaterialSource source)
         {
             switch (source.Stage)
             {
@@ -59,5 +61,11 @@ namespace SampleGame.Sample_OGL_Renderer
         protected override void UseMaterial() => prog.UseProgram();
 
         protected override void AddUniform(string uniformName) => prog.AddUniform(uniformName);
+
+        protected override void SetTexture(string uniformName, int textureUnit, ITexture texture)
+        {
+            texture.Bind(textureUnit);
+            SetUniformi(uniformName, textureUnit);
+        }
     }
 }
