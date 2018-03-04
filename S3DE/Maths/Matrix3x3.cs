@@ -30,13 +30,6 @@ namespace S3DE.Maths
 
         public static Matrix3x3 Identity => new Matrix3x3();
 
-        public static Matrix3x3 Create_TBN_Matrix(Vector4 tangent, Vector3 normal)
-        {
-            //Calculate the bitangent.
-            Vector3 bitangent;
-            return null;
-        }
-
         public float[] ToArray()
         {
             float[] res = new float[9];

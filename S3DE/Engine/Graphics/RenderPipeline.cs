@@ -32,7 +32,7 @@ namespace S3DE.Engine.Graphics
         {
             Renderer.ViewportSize = renderCall.Resolution;
             ActivePipeline.RenderScene(scene, renderCall);
-            ScreenQuad.Render_Internal(renderCall.GetBuffer(FrameBufferTarget.Final, TargetBuffer.Diffuse));
+            ScreenQuad.Present_Frame(renderCall.GetBuffer(FrameBufferTarget.Deferred_Light, TargetBuffer.Diffuse));
         }
 
         protected void DrawScene(GameScene scene) => scene.Draw();

@@ -19,8 +19,7 @@ namespace S3DE.Engine
             if (!IsSupported)
                 throw new InvalidOperationException("High resolution Clock is not supported on this system!");
 
-            long t;
-            GetSystemTimePreciseAsFileTime(out t);
+            GetSystemTimePreciseAsFileTime(out long t);
 
             return t;
         }
@@ -29,10 +28,9 @@ namespace S3DE.Engine
         {
             try
             {
-                long fileTime;
-                GetSystemTimePreciseAsFileTime(out fileTime);
+                GetSystemTimePreciseAsFileTime(out long fileTime);
                 IsSupported = true;
-            } catch (EntryPointNotFoundException ex)
+            } catch (EntryPointNotFoundException)
             {
                 Console.WriteLine("High resolution Clock is not supported on this system!");
                 IsSupported = false;

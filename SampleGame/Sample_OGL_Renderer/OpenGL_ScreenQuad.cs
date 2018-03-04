@@ -33,14 +33,19 @@ namespace SampleGame.Sample_OGL_Renderer
 
         protected override void RenderFrameToScreen(RenderTexture2D frame)
         {
-            Renderer.ViewportSize = Game.DisplayResolution;
-            Renderer.Disable(Function.DepthTest);
             frame.Bind(0);
             shader.Use();
             quadMesh.Bind();
             shader.SetFrameTexture(0);
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
             frame.Unbind();
+            quadMesh.Unbind();
+        }
+
+        protected override void Render()
+        {
+            quadMesh.Bind();
+            Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
             quadMesh.Unbind();
         }
 

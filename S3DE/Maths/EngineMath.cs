@@ -16,6 +16,13 @@ namespace S3DE.Maths
             return (float)(offset - (System.Math.Floor(offset / width) * width)) + start;
         }
 
+        public static long Normalize(long start, long end, long value) {
+            long width = end - start;
+            long offset = value - start;
+
+            return (long)(offset - (Math.Floor((double)offset / (double)width) * width)) + start;
+        }
+
         public static float Clamp(float min, float max, float value) => value > max ? max : value < min ? min : value;
         public static double Clamp(double min, double max, double value) => value > max ? max : value < min ? min : value;
 

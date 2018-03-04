@@ -14,7 +14,9 @@ namespace S3DE.Engine.Graphics
 
         public static RenderTexture2D PreviousFrame => instance.prevFrame;
 
-        internal static void Render_Internal(RenderTexture2D frame)
+        public static void RenderToScreenQuad() => instance.Render();
+
+        internal static void Present_Frame(RenderTexture2D frame)
         {
             Renderer.Disable(Function.DepthTest);
             Renderer.Disable(Function.AlphaTest);
@@ -26,6 +28,7 @@ namespace S3DE.Engine.Graphics
 
         internal static void BindMesh_Internal() => instance.BindMesh();
 
+        protected abstract void Render();
         protected abstract void RenderFrameToScreen(RenderTexture2D frame);
         protected abstract void BindMesh();
         protected abstract void UnbindMesh();

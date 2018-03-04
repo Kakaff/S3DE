@@ -45,44 +45,6 @@ namespace S3DE.Engine.Graphics
 
         public RenderTexture2D GetBuffer(FrameBufferTarget target, TargetBuffer buffer) => GetFrameBuffer(target).GetBuffer(buffer);
 
-        /*
-        internal void GenerateFrameBuffers()
-        {
-            #region Deferred_Framebuffers
-            Framebuffer fb_Deferred = Framebuffer.Create(res);
-            //Diffuse The final texture with light applied.
-            fb_Deferred.AddBuffer(InternalFormat.RGBA, PixelFormat.RGBA, PixelType.UByte, FilterMode.Nearest, TargetBuffer.Diffuse);
-            //Color
-            fb_Deferred.AddBuffer(InternalFormat.RGB8, PixelFormat.RGB, PixelType.UByte, FilterMode.Nearest, TargetBuffer.Color);
-            //Normal & Specular
-            fb_Deferred.AddBuffer(InternalFormat.RGBA16F, PixelFormat.RGBA, PixelType.Float16, FilterMode.Nearest, TargetBuffer.Normal_Specular);
-            //Position
-            fb_Deferred.AddBuffer(InternalFormat.RGB16F, PixelFormat.RGB, PixelType.Float16, FilterMode.Nearest, TargetBuffer.Position);
-            //Light Color & Intensity Alpha = Intensity
-            fb_Deferred.AddBuffer(InternalFormat.RGBA16F, PixelFormat.RGBA, PixelType.Float16, FilterMode.Nearest, TargetBuffer.Light_Color_Intensity);
-            //Depth
-            fb_Deferred.AddBuffer(InternalFormat.DepthComponent16, PixelFormat.Depth, PixelType.Float16, FilterMode.Nearest, TargetBuffer.Depth);
-
-            frameBuffers.Add(FrameBufferTarget.Deferred_Geometry, fb_Deferred);
-            bool complete = fb_Deferred.IsComplete;
-            fb_Deferred.SetDrawBuffers(TargetBuffer.Color,
-                TargetBuffer.Normal_Specular, TargetBuffer.Position,TargetBuffer.Light_Color_Intensity);
-
-            //Deferred_Light
-            Framebuffer fb_DefLight = Framebuffer.Create(res);
-            fb_DefLight.AddBuffer(fb_Deferred.GetBuffer(TargetBuffer.Diffuse), TargetBuffer.Diffuse);
-            fb_DefLight.AddBuffer(fb_Deferred.GetBuffer(TargetBuffer.Color), TargetBuffer.Color);
-            fb_DefLight.AddBuffer(fb_Deferred.GetBuffer(TargetBuffer.Normal_Specular), TargetBuffer.Normal_Specular);
-            fb_DefLight.AddBuffer(fb_Deferred.GetBuffer(TargetBuffer.Position), TargetBuffer.Position);
-            fb_DefLight.AddBuffer(fb_Deferred.GetBuffer(TargetBuffer.Light_Color_Intensity), TargetBuffer.Light_Color_Intensity);
-            fb_DefLight.AddBuffer(fb_Deferred.GetBuffer(TargetBuffer.Depth), TargetBuffer.Depth);
-
-            //Can only write into the Light Color & Intensity Map. (Color4).
-            frameBuffers.Add(FrameBufferTarget.Deferred_Light, fb_DefLight);
-            complete = fb_Deferred.IsComplete;
-            fb_DefLight.SetDrawBuffers(TargetBuffer.Light_Color_Intensity);
-            #endregion
-        }
-        */
+        
     }
 }

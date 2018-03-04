@@ -72,6 +72,9 @@ namespace SampleGame.Sample_OGL_Renderer
             Gl.UniformMatrix4(GetUniformLocation(uniformName),false,m.ToArray());
             OpenGL_Renderer.TestForGLErrors();
         }
+
+        internal void SetUniform(string uniformName,Vector3 v) =>
+            Gl.Uniform3(GetUniformLocation(uniformName), v.ToArray());
         
         internal void AddUniform(string uniformName)
         {

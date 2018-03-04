@@ -57,7 +57,7 @@ namespace S3DE
 
         private static void MainLoop()
         {
-            while (!Engine.Graphics.Window.IsCloseRequested && !reziseWindow)
+            while (!Engine.Graphics.Window.IsCloseRequested)
             {
                 Input.PollInput();
                 Renderer.Clear_Internal();
@@ -67,16 +67,13 @@ namespace S3DE
                 Time.UpdateDeltaTime(Time.CurrentTick);
                 Engine.Graphics.Window.PollEvents();
 
-                if (windowResized)
-                    windowResized = false;
-            }
-
-            if (reziseWindow)
-            {
-                reziseWindow = false;
-                windowResized = true;
-                Engine.Graphics.Window.ResizeWindow();
-                MainLoop();
+                windowResized = false;
+                if (reziseWindow)
+                {
+                    reziseWindow = false;
+                    windowResized = true;
+                    Engine.Graphics.Window.ResizeWindow();
+                }
             }
         }
 

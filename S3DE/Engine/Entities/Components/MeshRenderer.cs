@@ -72,7 +72,7 @@ namespace S3DE.Engine.Entities
                         mat.SetProjectionMatrix(Scene.ActiveCamera.ProjectionMatrix);
                     if (mat.UsesRotationMatrix)
                         mat.SetRotationMatrix(gameEntity.transform.WorldRotationMatrix);
-                    mat.UpdateUniforms_Internal();
+                    //mat.UpdateUniforms_Internal();
                     api_mr.Render_Internal();
                 }
             }

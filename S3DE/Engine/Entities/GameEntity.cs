@@ -102,6 +102,12 @@ namespace S3DE.Engine.Entities
             return ec;
         }
 
+        public void RemoveComponent(EntityComponent ec)
+        {
+            if (components.Contains(ec))
+                components.Remove(ec);
+        }
+
         internal static GameEntity Create(GameScene scene)
         {
             //Create Transform.

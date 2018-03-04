@@ -141,6 +141,5 @@ namespace SampleGame.Sample_OGL_Renderer
             Gl.Disable(OpenGL_Utility.Convert(func));
             TestForGLErrors();
         }
-        
     }
 }

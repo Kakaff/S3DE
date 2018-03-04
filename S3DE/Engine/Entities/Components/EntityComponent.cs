@@ -35,7 +35,8 @@ namespace S3DE.Engine.Entities
 
         public Transform transform => entity.transform;
 
-        protected abstract void OnCreation();
+        protected virtual void OnCreation() { }
+        protected virtual void OnDestruction() { }
 
         protected virtual void Init() { }
         protected virtual void Start() { }
@@ -52,6 +53,21 @@ namespace S3DE.Engine.Entities
         protected virtual void OnDisable() { }
 
         internal void OnCreation_Internal() => OnCreation();
+
+        internal void OnDestruction_Internal()
+        {
+            OnDestruction();
+
+            if (entity != null)
+            {
+                entity.RemoveComponent(this);
+                entity = null;
+            }
+            isActive = false;
+            isStarted = false;
+        }
+
+        public void Destroy() => OnDestruction_Internal();
 
         internal void Init_Internal() => Init();
 
@@ -74,5 +90,10 @@ namespace S3DE.Engine.Entities
         internal void PostDraw_Internal() => PostRender();
 
         internal void SetParentEntity(GameEntity parent) => entity = parent;
+
+        ~EntityComponent()
+        {
+            Destroy();
+        }
     }
 }

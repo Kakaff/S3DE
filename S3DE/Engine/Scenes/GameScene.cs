@@ -19,7 +19,8 @@ namespace S3DE.Engine.Scenes
 
         Camera mainCamera;
         Camera activeCamera;
-        AmbientLight ambient;
+        AmbientLight ambient = new AmbientLight(new Color(0.25f,0.25f,0.25f),1);
+        List<DirectionalLight> directionalLights = new List<DirectionalLight>();
 
         /// <summary>
         /// The Main camera of this scene.

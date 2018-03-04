@@ -14,5 +14,17 @@ namespace S3DE.Engine.Entities.Components
         public Color Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public float Intensity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public Vector3 LightDirection { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        protected override void OnCreation()
+        {
+            //Add to scene.
+            base.OnCreation();
+        }
+
+        protected override void OnDestruction()
+        {
+            //Remove from scene.
+            base.OnDestruction();
+        }
     }
 }

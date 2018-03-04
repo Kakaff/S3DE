@@ -1,4 +1,5 @@
-﻿using System;
+﻿using S3DE.Engine.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,7 +13,6 @@ namespace S3DE.Engine
     {
         long prevUpdate;
         long targetDuration;
-        long timeDelta;
         long waitStartTick;
 
         static FrameSync frameSync;
@@ -23,7 +23,8 @@ namespace S3DE.Engine
         }
 
         protected long WaitStartTick => waitStartTick;
-
+        protected long TargetFrameDuration => targetDuration;
+        
         internal static void SetTargetFPS(uint fps)
         {
             if (fps != 0)

@@ -69,7 +69,7 @@
     <Compile Include="Engine\Graphics\Lights\IDirectionalLight.cs" />
     <Compile Include="Engine\Graphics\Lights\ILight.cs" />
     <Compile Include="Engine\Graphics\Materials\Material.cs" />
-    <Compile Include="Engine\Graphics\OpenGL\OpenGL_RenderPipeline.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\StandardPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderCall.cs" />
     <Compile Include="Engine\Graphics\Materials\Renderer_Material.cs" />

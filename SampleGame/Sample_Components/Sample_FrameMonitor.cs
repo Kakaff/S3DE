@@ -31,6 +31,7 @@ namespace SampleGame.Sample_Components
                 {
                     Console.WriteLine($"FPS: {count} | FrameTimeLow: {low} | FrameTimeHigh: {high}");
                     Console.WriteLine($"DynamicYieldTime: {SampleFrameSync.DynamicYieldTime} | DynamicBreakTime: {SampleFrameSync.DynamicBreakTime}");
+                    Console.WriteLine($"Oversleep: {SampleFrameSync.OverSleep}");
                     t -= 1;
                     high = 0;
                     low = 1;

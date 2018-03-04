@@ -58,6 +58,8 @@ namespace SampleGame.Sample_OGL_Renderer
 
         protected override void SetUniform(string uniformName, Matrix4x4 m) => prog.SetUniform(uniformName, m);
 
+        protected override void SetUniform(string uniformName, Vector3 v) => prog.SetUniform(uniformName, v);
+
         protected override void UseMaterial() => prog.UseProgram();
 
         protected override void AddUniform(string uniformName) => prog.AddUniform(uniformName);

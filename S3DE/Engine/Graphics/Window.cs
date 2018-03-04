@@ -19,12 +19,14 @@ namespace S3DE.Engine.Graphics
         bool regainedFocus = false;
         bool lostFocus = false;
         bool isFullScreen = false;
+        bool vsync = false;
         float aspect;
 
         internal static bool IsFocused => instance.isFocused;
         internal static bool RegainedFocus => instance.regainedFocus;
         internal static bool LostFocus => instance.lostFocus;
         internal static bool IsFullScreen => instance.isFullScreen;
+        internal static bool VSync => instance.vsync;
 
         private Window() { }
 
@@ -96,10 +98,16 @@ namespace S3DE.Engine.Graphics
 
         internal static void SetVSync(bool value)
         {
-            if (value && Game.IsFullScreen)
+            if (value)
+            {
                 Glfw.SwapInterval(1);
-            else if (!value && Game.IsFullScreen)
+                instance.vsync = true;
+            }
+            else if (!value)
+            {
                 Glfw.SwapInterval(0);
+                instance.vsync = false;
+            }
         } 
     }
 }

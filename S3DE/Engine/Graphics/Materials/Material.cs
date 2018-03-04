@@ -1,4 +1,5 @@
-﻿using S3DE.Engine.Graphics.Textures;
+﻿using S3DE.Engine.Graphics.Lights;
+using S3DE.Engine.Graphics.Textures;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,7 @@ namespace S3DE.Engine.Graphics.Materials
 
         protected Material()
         {
+            CreateRendererMaterial();
         }
 
         protected void CreateRendererMaterial()
@@ -74,6 +76,7 @@ namespace S3DE.Engine.Graphics.Materials
             }
 
             _rMaterial.UseRendererMaterial();
+            UpdateUniforms();
         }
 
         internal void SetSources()
@@ -111,6 +114,8 @@ namespace S3DE.Engine.Graphics.Materials
         protected virtual string[] GetUniforms() { return new string[0];}
 
         protected void SetUniform(string uniformName, float value) => _rMaterial.Internal_SetUniformf(uniformName, value);
+        protected void SetUniform(string uniformName, ILight light) => _rMaterial.Internal_SetUniform(uniformName, light);
+        protected void SetUniform(string uniformName, IDirectionalLight directionalLight) => _rMaterial.Internal_SetUniform(uniformName, directionalLight);
         protected void SetUniform(string uniformName, int value) => _rMaterial.Internal_SetUniformi(uniformName, value);
         protected void SetUniform(string uniformName, float[] value) => _rMaterial.Internal_SetUniformf(uniformName, value);
         protected void SetUniform(string uniformName, Vector3 value) => _rMaterial.Internal_SetUniformf(uniformName, value.ToArray());

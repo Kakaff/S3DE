@@ -13,7 +13,6 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
 {
     public class SimpleMaterial : Material
     {
-        MaterialSource VertexSource, FragmentSource;
         Texture2D texture,normal;
 
         private class SimpleVertSource : MaterialSource
@@ -75,16 +74,12 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             }
         }
 
-        public SimpleMaterial()
+        public SimpleMaterial() : base()
         {
-            VertexSource = new SimpleVertSource();
-            FragmentSource = new SimpleFragSource();
-
             UsesProjectionMatrix = true;
             UsesViewMatrix = true;
             UsesTransformMatrix = true;
             UsesRotationMatrix = true;
-            CreateRendererMaterial();
             normal = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall_normal.jpg");
             texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
         }
@@ -113,11 +108,11 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             {
                 case ShaderStage.Vertex:
                     {
-                        return VertexSource;
+                        return new SimpleVertSource();
                     }
                 case ShaderStage.Fragment:
                     {
-                        return FragmentSource;
+                        return new SimpleFragSource();
                     }
                 default:
                     {
