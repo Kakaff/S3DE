@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using S3DE.Maths;
 using S3DE.Engine.Graphics;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal sealed class OpenGL_MeshRenderer : Renderer_MeshRenderer
     {

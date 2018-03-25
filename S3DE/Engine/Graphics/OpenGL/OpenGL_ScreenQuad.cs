@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_ScreenQuad : ScreenQuad
     {
@@ -38,6 +38,7 @@ namespace SampleGame.Sample_OGL_Renderer
             quadMesh.Bind();
             shader.SetFrameTexture(0);
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
+            OpenGL_Renderer.TestForGLErrors();
             frame.Unbind();
             quadMesh.Unbind();
         }
@@ -46,6 +47,7 @@ namespace SampleGame.Sample_OGL_Renderer
         {
             quadMesh.Bind();
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
+            OpenGL_Renderer.TestForGLErrors();
             quadMesh.Unbind();
         }
 

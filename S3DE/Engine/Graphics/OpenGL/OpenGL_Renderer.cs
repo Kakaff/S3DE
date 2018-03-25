@@ -15,7 +15,7 @@ using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
 
     public sealed class OpenGL_Renderer : Renderer
@@ -28,7 +28,7 @@ namespace SampleGame.Sample_OGL_Renderer
                      ClearBufferMask.DepthBufferBit);
         }
 
-        protected override Renderer_Material CreateMaterial(Type materialType)
+        protected override Renderer_Material CreateMaterial(Type materialType,RenderPass pass)
         {
             return new OpenGL_Material();
         }
@@ -82,6 +82,12 @@ namespace SampleGame.Sample_OGL_Renderer
             {
                 throw new Exception("GL Operation Failed, Error: " + err);
             }
+        }
+
+        protected override void Sync()
+        {
+            Gl.Finish();
+            TestForGLErrors();
         }
 
         protected override void OnWindowResized()

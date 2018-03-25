@@ -49,7 +49,7 @@ namespace S3DE.Engine.Entities.Components
         }
         protected override void OnCreation() {
             fov = 75f;
-            zNear = 0.005f;
+            zNear = 0.01f;
             zFar = 2000f;
 
             RecalculateViewMatrix();

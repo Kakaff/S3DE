@@ -61,9 +61,9 @@ namespace S3DE.Engine.Entities
         {
             if (Uses(Renderer.CurrentRenderPass))
             {
-                if (mat != null && m != null)
+                if (mat != null && m != null && mat.SupportsRenderPass(Renderer.CurrentRenderPass))
                 {
-                    mat.UseMaterial();
+                    mat.UseMaterial(Renderer.CurrentRenderPass);
                     if (mat.UsesTransformMatrix)
                         mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
                     if (mat.UsesViewMatrix)
@@ -74,6 +74,10 @@ namespace S3DE.Engine.Entities
                         mat.SetRotationMatrix(gameEntity.transform.WorldRotationMatrix);
                     //mat.UpdateUniforms_Internal();
                     api_mr.Render_Internal();
+                } else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))
+                {
+                    throw new InvalidOperationException($"Material {mat.GetType().Name} does not support " +
+                        $"{Renderer.CurrentRenderPass} but is attached to a MeshRenderer set to use this RenderPass");
                 }
             }
         }

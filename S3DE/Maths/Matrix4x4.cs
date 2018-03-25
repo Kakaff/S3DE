@@ -90,6 +90,11 @@ namespace S3DE.Maths
             return m;
         }
 
+        public static Matrix4x4 Transpose(Matrix4x4 m)
+        {
+            return null;
+        }
+
         public static Matrix4x4 CreateRotationMatrix(Quaternion quat)
         {
             
@@ -143,7 +148,7 @@ namespace S3DE.Maths
             return m;
         }
 
-        public static Matrix4x4 operator *(Matrix4x4 m, Quaternion q) => m * q.ToRotationMatrix();
+        public static Matrix4x4 operator *(Matrix4x4 m, Quaternion q) => m * q.conjugate.ToRotationMatrix();
 
         public float[] ToArray()
         {

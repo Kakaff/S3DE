@@ -9,7 +9,7 @@ using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal sealed class OpenGL_Material : Renderer_Material
     {

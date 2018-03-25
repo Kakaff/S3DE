@@ -10,7 +10,7 @@ using static S3DE.Engine.Enums;
 using S3DE.Engine;
 using S3DE.Engine.Graphics.Textures;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_RenderTexture2D : RenderTexture2D
     {
@@ -54,6 +54,7 @@ namespace SampleGame.Sample_OGL_Renderer
         {
             Gl.ActiveTexture(TextureUnit.Texture0 + textureunit);
             Gl.BindTexture(TextureTarget.Texture2d, pointer);
+            OpenGL_Renderer.TestForGLErrors();
         }
 
         public override void Bind()

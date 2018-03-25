@@ -52,6 +52,7 @@ namespace S3DE
             Renderer.CreateMainRenderCall();
             ScreenQuad.Create();
             Time.UpdateDeltaTime(Time.CurrentTick);
+
             MainLoop();
         }
 
@@ -59,14 +60,16 @@ namespace S3DE
         {
             while (!Engine.Graphics.Window.IsCloseRequested)
             {
+                Engine.Graphics.Window.PollEvents();
                 Input.PollInput();
                 Renderer.Clear_Internal();
                 SceneHandler.RunScenes();
                 Engine.Graphics.Window.SwapBuffer();
                 FrameSync.WaitForTargetFPS();
                 Time.UpdateDeltaTime(Time.CurrentTick);
-                Engine.Graphics.Window.PollEvents();
-
+                
+                
+                
                 windowResized = false;
                 if (reziseWindow)
                 {

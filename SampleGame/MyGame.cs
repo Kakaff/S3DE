@@ -27,8 +27,8 @@ namespace SampleGame
         {
             SetEngineClock<HighResClock>();
             SetEngineFrameSync<SampleFrameSync>();
-            SetTargetRenderer<Sample_OGL_Renderer.OpenGL_Renderer>();
-            SetTargetRenderPipleline<S3DE.Engine.Graphics.OpenGL.StandardPipeline>();
+            SetTargetRenderer<S3DE.Engine.Graphics.OpGL.OpenGL_Renderer>();
+            SetTargetRenderPipleline<S3DE.Engine.Graphics.OpGL.StandardPipeline>();
 
             SetTargetFPS(60);
         }

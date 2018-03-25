@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static S3DE.Engine.Enums;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_Framebuffer : Framebuffer
     {
@@ -118,6 +118,8 @@ namespace SampleGame.Sample_OGL_Renderer
                 clearBit |= (int)OpenGL.ClearBufferMask.DepthBufferBit;
             if (stencil)
                 clearBit |= (int)OpenGL.ClearBufferMask.StencilBufferBit;
+            
+            Gl.Clear((ClearBufferMask)clearBit);
         }
 
         public override void Clear(params BufferAttachment[] attachments)

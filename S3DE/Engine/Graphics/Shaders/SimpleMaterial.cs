@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SampleGame.Sample_OGL_Renderer.Shaders
+namespace S3DE.Engine.Graphics.Shaders
 {
     public class SimpleMaterial : Material
     {
@@ -55,8 +55,9 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
                 SetSource(
                 "#version 330 core" + '\n'
               + "layout(location = 0) out vec3 gFragColor; " + '\n'
-              + "layout(location = 1) out vec4 gNormalSpec;" + '\n'
+              + "layout(location = 1) out vec3 gNormal;" + '\n'
               + "layout(location = 2) out vec3 gPosition;" + '\n'
+              + "layout(location = 3) out vec4 gSpecular;" + '\n'
 
               + "in Frag { " + '\n'
               + "vec3 pos;" + '\n'
@@ -69,7 +70,8 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
               + "void main() { " + '\n'
               + "gFragColor = vec3(texture(tex,frag.uv).rgb);" + '\n'
               + "gPosition = frag.pos;" + '\n'
-              + "gNormalSpec = vec4(frag.TBN * (texture(normalMap,frag.uv).rgb * 2 - 1),0);" + '\n'
+              + "gNormal = frag.TBN * (texture(normalMap,frag.uv).rgb * 2 - 1);" + '\n'
+              + "gSpecular = vec4(vec3(length(gFragColor) * 0.5773502691896258f),0.025f);" + '\n'
               + "} " + '\n');
             }
         }
@@ -80,6 +82,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             UsesViewMatrix = true;
             UsesTransformMatrix = true;
             UsesRotationMatrix = true;
+            SupportsDeferredRendering = true;
             normal = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall_normal.jpg");
             texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
         }
@@ -102,7 +105,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             return tex;
         }
 
-        protected override MaterialSource GetSource(ShaderStage stage)
+        protected override MaterialSource GetSource(ShaderStage stage,RenderPass pass)
         {
             switch (stage)
             {
@@ -126,7 +129,7 @@ namespace SampleGame.Sample_OGL_Renderer.Shaders
             return new string[] {"tex", "normalMap"};
         }
 
-        protected override void UpdateUniforms()
+        protected override void UpdateUniforms(RenderPass pass)
         {
             SetTexture("tex",0,texture);
             SetTexture("normalMap", 1, normal);

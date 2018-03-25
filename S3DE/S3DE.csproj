@@ -70,6 +70,20 @@
     <Compile Include="Engine\Graphics\Lights\ILight.cs" />
     <Compile Include="Engine\Graphics\Materials\Material.cs" />
     <Compile Include="Engine\Graphics\OpenGL\StandardPipeline.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_BufferObject.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Framebuffer.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Material.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Mesh.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_MeshRenderer.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Renderer.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_RenderTexture2D.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_ScreenQuad.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Shader.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_ShaderProgram.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Texture2D.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_Utility.cs" />
+    <Compile Include="Engine\Graphics\OpenGL\OpenGL_VertexArrayObject.cs" />
+    <Compile Include="Engine\Graphics\Shaders\SimpleMaterial.cs" />
     <Compile Include="Engine\Graphics\RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderCall.cs" />
     <Compile Include="Engine\Graphics\Materials\Renderer_Material.cs" />
@@ -109,6 +123,9 @@
     <Compile Include="Utility\InstanceCreator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="OpenGL.Net, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenGL.Net.0.7.1\lib\net461\OpenGL.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />

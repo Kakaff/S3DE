@@ -19,8 +19,8 @@ namespace S3DE.Engine.Scenes
 
         Camera mainCamera;
         Camera activeCamera;
-        AmbientLight ambient = new AmbientLight(new Color(0.25f,0.25f,0.25f),1);
-        List<DirectionalLight> directionalLights = new List<DirectionalLight>();
+        AmbientLight ambient = new AmbientLight(Color.White,0.3f);
+        List<IDirectionalLight> directionalLights = new List<IDirectionalLight>();
 
         /// <summary>
         /// The Main camera of this scene.
@@ -52,6 +52,8 @@ namespace S3DE.Engine.Scenes
             get => ambient;
             set => ambient = value;
         }
+
+        public IDirectionalLight[] DirectionalLights => directionalLights.ToArray();
 
         Camera GetMainCamera()
         {
@@ -180,5 +182,8 @@ namespace S3DE.Engine.Scenes
 
         internal void Load_Internal() => LoadScene();
         internal void Unload_Internal() => UnloadScene();
+
+        public void AddDirectionalLight(IDirectionalLight dirLight) => directionalLights.Add(dirLight);
+        public void RemoveDirectionalLight(IDirectionalLight dirLight) => directionalLights.Remove(dirLight);
     }
 }

@@ -7,7 +7,7 @@ using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Scenes;
 using S3DE.Maths;
 using SampleGame.Sample_Components;
-using SampleGame.Sample_OGL_Renderer.Shaders;
+using S3DE.Engine.Graphics.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +28,9 @@ namespace SampleGame
             ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
             mr.Material = mat;
-            MainCamera.transform.Position = new Vector3(0,3,-4);
-
-            MainCamera.transform.LookAt(Vector3.Zero);
-
+            
+            MainCamera.transform.Position = new Vector3(0,0,-1);
+            
             GameEntity ge2 = CreateGameEntity();
             MeshRenderer mr2 = ge2.AddComponent<MeshRenderer>();
             mr2.mesh = Mesh.CreateCube(new Vector3(1, 1, 1));
@@ -48,8 +47,14 @@ namespace SampleGame
             Sample_LookAt la = ge2.AddComponent<Sample_LookAt>();
             la.Target = ge3.transform.Position;
 
+            GameEntity sun = CreateGameEntity();
+            DirectionalLight sunLight1 = sun.AddComponent<DirectionalLight>();
+
+            sunLight1.LightDirection = new Vector3(1, -1, 0).normalized;
+            
             MainCamera.gameEntity.AddComponent<Sample_CameraController>();
             //MainCamera.gameEntity.AddComponent<Sample_FrameMonitor>();
+
             
         }
 

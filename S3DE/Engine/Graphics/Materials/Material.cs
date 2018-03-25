@@ -20,9 +20,30 @@ namespace S3DE.Engine.Graphics.Materials
 
     public abstract class Material
     {
-        Renderer_Material _rMaterial;
-        protected abstract MaterialSource GetSource(ShaderStage stage);
+        Renderer_Material _rActMaterial,_rDefMaterial,_rForMaterial,_rShadMaterial;
+        protected abstract MaterialSource GetSource(ShaderStage stage,RenderPass pass);
         bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix,usesRotationMatrix;
+        bool supportsDeferred, supportsForward,supportShadow;
+
+        bool isCreated;
+
+        public bool SupportsShadowMapping
+        {
+            get => supportShadow;
+            protected set => supportShadow = value;
+        }
+
+        public bool SupportsDeferredRendering
+        {
+            get => supportsDeferred;
+            protected set => supportsDeferred = value;
+        }
+
+        public bool SupportsForwardRendering
+        {
+            get => supportsForward;
+            protected set => supportsForward = value;
+        }
 
         public bool UsesTransformMatrix
         {
@@ -48,22 +69,50 @@ namespace S3DE.Engine.Graphics.Materials
             protected set => usesRotationMatrix = value;
         }
 
+        public bool SupportsRenderPass(RenderPass pass)
+        {
+            switch (pass)
+            {
+                case RenderPass.Deferred: return SupportsDeferredRendering;
+                case RenderPass.Forward: return SupportsForwardRendering;
+                case RenderPass.ShadowMap: return SupportsShadowMapping;
+                default: return false;
+            }
+        }
         protected Material()
         {
-            CreateRendererMaterial();
+            
         }
 
         protected void CreateRendererMaterial()
         {
-            _rMaterial = Renderer.CreateMaterial_Internal(this.GetType());
+            if (SupportsForwardRendering)
+            {
+                Console.WriteLine($"Created Forward RendererMaterial");
+                _rForMaterial = Renderer.CreateMaterial_Internal(this.GetType(), RenderPass.Forward);
+            }
+            if (SupportsDeferredRendering)
+            {
+                Console.WriteLine($"Created Deferred RendererMaterial");
+                _rDefMaterial = Renderer.CreateMaterial_Internal(this.GetType(), RenderPass.Deferred);
+            }
+
             SetSources();
         }
 
-        public void UseMaterial()
+        public void UseMaterial(RenderPass pass)
         {
-            if (!_rMaterial.IsCompiled)
+            if (!isCreated)
             {
-                _rMaterial.Compile_Internal();
+                Console.WriteLine($"Creating RendererMaterials for {this.GetType().Name} in {this.GetType().Namespace}");
+                CreateRendererMaterial();
+                isCreated = true;
+            }
+
+            SetActiveRenderMaterial(pass);
+            if (!_rActMaterial.IsCompiled)
+            {
+                _rActMaterial.Compile_Internal();
                 if (UsesTransformMatrix)
                     AddUniform("transform");
                 if (UsesViewMatrix)
@@ -75,14 +124,37 @@ namespace S3DE.Engine.Graphics.Materials
                 AddUserDefinedUniforms();
             }
 
-            _rMaterial.UseRendererMaterial();
-            UpdateUniforms();
+            _rActMaterial.UseRendererMaterial();
+            UpdateUniforms(pass);
         }
 
         internal void SetSources()
         {
-            _rMaterial.SetSource_Internal(GetSource(ShaderStage.Vertex));
-            _rMaterial.SetSource_Internal(GetSource(ShaderStage.Fragment));
+            if (SupportsDeferredRendering)
+            {
+                _rDefMaterial.SetSource_Internal(GetSource(ShaderStage.Vertex, RenderPass.Deferred));
+                _rDefMaterial.SetSource_Internal(GetSource(ShaderStage.Fragment, RenderPass.Deferred));
+            }
+
+            if (SupportsForwardRendering)
+            {
+                _rForMaterial.SetSource_Internal(GetSource(ShaderStage.Vertex, RenderPass.Forward));
+                _rForMaterial.SetSource_Internal(GetSource(ShaderStage.Fragment, RenderPass.Forward));
+            }
+        }
+
+        /// <summary>
+        /// Switches the active RenderMaterial to the one supporting the current RenderPass.
+        /// </summary>
+        /// <param name="pass"></param>
+        void SetActiveRenderMaterial(RenderPass pass)
+        {
+            switch (pass)
+            {
+                case RenderPass.Deferred: _rActMaterial = _rDefMaterial; break;
+                case RenderPass.Forward: _rActMaterial = _rForMaterial; break;
+                case RenderPass.ShadowMap: _rActMaterial = _rShadMaterial; break;
+            }
         }
 
         internal void SetTransformMatrix(Matrix4x4 m) => SetUniform("transform", m);
@@ -90,14 +162,14 @@ namespace S3DE.Engine.Graphics.Materials
         internal void SetProjectionMatrix(Matrix4x4 m) => SetUniform("projection", m);
         internal void SetRotationMatrix(Matrix4x4 m) => SetUniform("rotation", m);
 
-        internal void UpdateUniforms_Internal() => UpdateUniforms();
-        protected abstract void UpdateUniforms();
+        internal void UpdateUniforms_Internal(RenderPass pass) => UpdateUniforms(pass);
+        protected abstract void UpdateUniforms(RenderPass pass);
 
         internal void AddUniform(string uniformName)
         {
             try
             {
-                _rMaterial.Internal_AddUniform(uniformName);
+                _rActMaterial.Internal_AddUniform(uniformName);
             } catch (Exception ex)
             {
                 throw new NullReferenceException($"Error getting uniform '{uniformName}' in '{GetType().Name}' | {ex.Message}");
@@ -113,13 +185,13 @@ namespace S3DE.Engine.Graphics.Materials
 
         protected virtual string[] GetUniforms() { return new string[0];}
 
-        protected void SetUniform(string uniformName, float value) => _rMaterial.Internal_SetUniformf(uniformName, value);
-        protected void SetUniform(string uniformName, ILight light) => _rMaterial.Internal_SetUniform(uniformName, light);
-        protected void SetUniform(string uniformName, IDirectionalLight directionalLight) => _rMaterial.Internal_SetUniform(uniformName, directionalLight);
-        protected void SetUniform(string uniformName, int value) => _rMaterial.Internal_SetUniformi(uniformName, value);
-        protected void SetUniform(string uniformName, float[] value) => _rMaterial.Internal_SetUniformf(uniformName, value);
-        protected void SetUniform(string uniformName, Vector3 value) => _rMaterial.Internal_SetUniformf(uniformName, value.ToArray());
-        protected void SetUniform(string uniformName, Matrix4x4 value) => _rMaterial.Internal_SetUniform(uniformName, value);
-        protected void SetTexture(string samplerName, int TextureUnit, ITexture texture) => _rMaterial.Internal_SetTexture(samplerName,TextureUnit, texture);
+        protected void SetUniform(string uniformName, float value) => _rActMaterial.Internal_SetUniformf(uniformName, value);
+        protected void SetUniform(string uniformName, ILight light) => _rActMaterial.Internal_SetUniform(uniformName, light);
+        protected void SetUniform(string uniformName, IDirectionalLight directionalLight) => _rActMaterial.Internal_SetUniform(uniformName, directionalLight);
+        protected void SetUniform(string uniformName, int value) => _rActMaterial.Internal_SetUniformi(uniformName, value);
+        protected void SetUniform(string uniformName, float[] value) => _rActMaterial.Internal_SetUniformf(uniformName, value);
+        protected void SetUniform(string uniformName, Vector3 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
+        protected void SetUniform(string uniformName, Matrix4x4 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
+        protected void SetTexture(string samplerName, int TextureUnit, ITexture texture) => _rActMaterial.Internal_SetTexture(samplerName,TextureUnit, texture);
     }
 }

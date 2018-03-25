@@ -52,9 +52,10 @@ namespace S3DE.Engine.Graphics
     {
         Diffuse = BufferAttachment.Color0,
         Color = BufferAttachment.Color1,
-        Normal_Specular = BufferAttachment.Color2,
+        Normal = BufferAttachment.Color2,
         Position = BufferAttachment.Color3,
-        Light_Color_Intensity = BufferAttachment.Color4,
+        Specular = BufferAttachment.Color4,
+        Light_Color_Intensity = BufferAttachment.Color5,
         Depth = BufferAttachment.Depth,
         Depth_Stencil = BufferAttachment.Depth_Stencil,
     }
@@ -81,7 +82,7 @@ namespace S3DE.Engine.Graphics
             Clear(attachments);
 
         }
-        public void SetDrawBuffers(params TargetBuffer[] buffers)
+        public virtual void SetDrawBuffers(params TargetBuffer[] buffers)
         {
             BufferAttachment[] attachments = new BufferAttachment[buffers.Length];
             for (int i = 0; i < buffers.Length; i++)
@@ -90,7 +91,7 @@ namespace S3DE.Engine.Graphics
             SetDrawBuffers(attachments);
         }
 
-        public void SetDrawBuffers(params BufferAttachment[] attachments)
+        public virtual void SetDrawBuffers(params BufferAttachment[] attachments)
         {
             Bind();
             Renderer.SetDrawBuffers_Internal(attachments);

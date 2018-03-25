@@ -34,21 +34,27 @@ namespace S3DE.Engine
         }
 
         protected abstract void WaitForTargetFrameDuration(long durationToWait);
-
+        protected virtual void OnSkip() { }
         static internal void WaitForTargetFPS() => frameSync._waitForTargetFPS();
 
         internal void _waitForTargetFPS()
         {
-            long target = prevUpdate + targetDuration; //On what tick we should start the next frame.
+            
 
+            long target = prevUpdate + targetDuration; //On what tick we should start the next frame.
+            
             //Adjust for what the time is as of right now.
             long duration = target - Time.CurrentTick;
-
-            duration = duration < 0 ? 0 : duration;
+            
             waitStartTick = Time.CurrentTick;
-            WaitForTargetFrameDuration(duration);
 
+            if (prevUpdate == 0)
+                duration = 0;
+
+            WaitForTargetFrameDuration(duration);
             prevUpdate = Time.CurrentTick;
         }
+
+        
     }
 }

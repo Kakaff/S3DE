@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static SampleGame.Sample_OGL_Renderer.OpenGL_Renderer;
+using static S3DE.Engine.Graphics.OpGL.OpenGL_Renderer;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_Mesh
     {

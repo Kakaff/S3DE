@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal struct OpenGL_VertexArrayObject
     {
@@ -22,7 +22,11 @@ namespace SampleGame.Sample_OGL_Renderer
             Gl.VertexAttribPointer(location, size, attribType, normalized, stride, (IntPtr)offset);
         }
 
-        internal void Bind() => Gl.BindVertexArray(id);
+        internal void Bind()
+        {
+            Gl.BindVertexArray(id);
+            OpenGL_Renderer.TestForGLErrors();
+        }
 
         internal void Unbind() => Gl.BindVertexArray(0);
 

@@ -9,7 +9,7 @@ using S3DE.Maths;
 using S3DE.Engine;
 using S3DE.Engine.Graphics.Textures;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     class OpenGL_Texture2D : Texture2D
     {
@@ -64,8 +64,8 @@ namespace SampleGame.Sample_OGL_Renderer
             int magfilter = 0;
             switch (filterMode) {
                 case FilterMode.Nearest: minfilter = (mipmapCount > 0) ? Gl.NEAREST_MIPMAP_LINEAR : Gl.NEAREST; magfilter = Gl.NEAREST;  break;
-                case FilterMode.Bilinear: minfilter = (mipmapCount > 0) ? Gl.LINEAR_MIPMAP_NEAREST : Gl.NEAREST; magfilter = Gl.NEAREST; break;
-                case FilterMode.Trilinear: minfilter = (mipmapCount > 0) ? Gl.LINEAR_MIPMAP_LINEAR : Gl.LINEAR; magfilter = Gl.NEAREST;  break;
+                case FilterMode.Bilinear: minfilter = (mipmapCount > 0) ? Gl.LINEAR_MIPMAP_NEAREST : Gl.NEAREST; magfilter = Gl.LINEAR; break;
+                case FilterMode.Trilinear: minfilter = (mipmapCount > 0) ? Gl.LINEAR_MIPMAP_LINEAR : Gl.LINEAR; magfilter = Gl.LINEAR;  break;
             }
 
             Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, ref minfilter);

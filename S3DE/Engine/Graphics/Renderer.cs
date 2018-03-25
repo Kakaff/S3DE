@@ -98,7 +98,7 @@ namespace S3DE.Engine.Graphics
         protected abstract void Init();
         protected abstract void SetAlphaFunction(AlphaFunction function, float value);
         protected abstract Renderer_MeshRenderer CreateMeshRenderer();
-        protected abstract Renderer_Material CreateMaterial(Type materialType);
+        protected abstract Renderer_Material CreateMaterial(Type materialType,RenderPass pass);
         protected abstract Texture2D CreateTexture2D(int width, int height);
         protected abstract RenderTexture2D CreateRenderTexture2D(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height);
         protected abstract Framebuffer CreateFrameBuffer(int width, int height);
@@ -113,11 +113,12 @@ namespace S3DE.Engine.Graphics
         protected abstract void SetViewportSize(Vector2 size);
         protected abstract void UnbindTexUnit(int textureUnit);
         protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
+        protected abstract void Sync();
         protected void SetApiVersion(int version) => apiVer = version;
 
         internal static Renderer ActiveRenderer => activeRenderer;
         internal static RenderCall MainRenderCall => mainRenderCall;
-
+        internal static void Sync_Internal() => ActiveRenderer.Sync();
         public static void Enable(Function func) => ActiveRenderer.enable(func);
         public static void Disable(Function func) => ActiveRenderer.disable(func);
 
@@ -137,9 +138,9 @@ namespace S3DE.Engine.Graphics
             return ActiveRenderer.CreateMeshRenderer();
         }
 
-        internal static Renderer_Material CreateMaterial_Internal(Type materialType)
+        internal static Renderer_Material CreateMaterial_Internal(Type materialType,RenderPass pass)
         {
-            return ActiveRenderer.CreateMaterial(materialType);
+            return ActiveRenderer.CreateMaterial(materialType,pass);
         }
 
         internal static Texture2D CreateTexture2D_Internal(int width, int height)

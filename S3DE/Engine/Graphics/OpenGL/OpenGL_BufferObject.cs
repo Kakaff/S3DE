@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal struct OpenGL_BufferObject
     {
@@ -20,7 +20,11 @@ namespace SampleGame.Sample_OGL_Renderer
             this.bufferTarget = bufferTarget;
         }
 
-        internal void Bind() => Gl.BindBuffer(bufferTarget, id);
+        internal void Bind()
+        {
+            Gl.BindBuffer(bufferTarget, id);
+            OpenGL_Renderer.TestForGLErrors();
+        }
 
         internal void Unbind() => Gl.BindBuffer(bufferTarget, 0);   
         internal void Dispose() => Gl.DeleteBuffers(id);

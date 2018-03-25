@@ -46,15 +46,12 @@ namespace SampleGame.Sample_Components
 
                 Quaternion q1 = Quaternion.CreateFromAxisAngle(Vector3.Up, xRot);
                 Quaternion q2 = Quaternion.CreateFromAxisAngle(Vector3.Right, yRot);
-                
-                transform.Rotation = q1 * q2;
+
+                transform.SetRotation(q1 * q2,Space.Local);
             }
 
             if (Input.GetKeyReleased(KeyCode.F11))
                 Game.SetFullScreen(!Game.IsFullScreen);
-            
-
-
         }
 
         float Clamp(float min, float max, float val) => val > max ? max : val < min ? min : val;

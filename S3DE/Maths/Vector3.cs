@@ -29,6 +29,22 @@ namespace S3DE.Maths
             set => _z = value;
         }
 
+        public Vector2 xy => new Vector2(_x, _y);
+        public Vector2 xz => new Vector2(_x, _z);
+        public Vector2 yz => new Vector2(_y, _z);
+        
+        public Vector2 yx => new Vector2(_y, _x);
+        public Vector2 zx => new Vector2(_z, _x);
+        public Vector2 zy => new Vector2(_z, _y);
+
+        public Vector3 xzy => new Vector3(_x, _z, _y);
+
+        public Vector3 zxy => new Vector3(_z, _x, _y);
+        public Vector3 zyx => new Vector3(_z, _y, _x);
+
+        public Vector3 yxz => new Vector3(_y, _x, _z);
+        public Vector3 yzx => new Vector3(_y, _z, _x);
+
         public float[] ToArray() => new float[] {_x,_y,_z};
 
         public float length => Length(this);

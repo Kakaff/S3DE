@@ -44,7 +44,7 @@ namespace S3DE.Engine.Graphics.Materials
         internal void Internal_SetUniform(string uniformName, IDirectionalLight directionalLight)
         {
             SetUniform(uniformName + ".direction", directionalLight.LightDirection);
-            Internal_SetUniform(uniformName, directionalLight);
+            Internal_SetUniform(uniformName, (ILight)directionalLight);
         }
 
         internal void Compile_Internal() { Compile(); IsCompiled = true;}

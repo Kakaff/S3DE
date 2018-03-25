@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static S3DE.Engine.Enums;
 
-namespace SampleGame.Sample_OGL_Renderer
+namespace S3DE.Engine.Graphics.OpGL
 {
     internal static class OpenGL_Utility
     {

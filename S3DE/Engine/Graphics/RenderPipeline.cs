@@ -28,6 +28,9 @@ namespace S3DE.Engine.Graphics
         protected abstract void Init();
 
         internal static void Init_Internal() => ActivePipeline.Init();
+
+        protected void SetCurrentRenderPass(RenderPass pass) => Renderer.CurrentRenderPass = pass;
+
         internal static void RenderScene_Internal(GameScene scene, RenderCall renderCall)
         {
             Renderer.ViewportSize = renderCall.Resolution;

@@ -16,6 +16,7 @@ namespace S3DE.Engine.Entities.Components
 
         public bool HasChanged => hasChanged;
 
+        public Transform Parent => parent;
         public Vector3 Position
         {
             get => worldPosition;
@@ -215,7 +216,7 @@ namespace S3DE.Engine.Entities.Components
         }
         private void UpdateWorldRotation()
         {
-            worldQuatRotation = (parent == null) ? localQuatRotation : localQuatRotation * parent.worldQuatRotation;
+            worldQuatRotation = (parent == null) ? localQuatRotation : parent.worldQuatRotation * localQuatRotation;
             worldRotMatrix = Matrix4x4.CreateRotationMatrix(worldQuatRotation);
 
             right = Vector3.Right * worldRotMatrix;

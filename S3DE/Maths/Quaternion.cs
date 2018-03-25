@@ -83,7 +83,7 @@ namespace S3DE.Maths
         public static Quaternion CreateLookAt(Vector3 position, Vector3 target, Vector3 up)
         {
             Vector3 dir = Vector3.DirectionTo(position, target);
-
+            
             Quaternion q1 = RotationBetweenVectors(Vector3.Forward, dir);
             Vector3 right = Vector3.Cross(dir, up);
 
@@ -112,6 +112,20 @@ namespace S3DE.Maths
         public static float Length(Quaternion q) => (float)Math.Sqrt(LengthSquared(q));
         public static float LengthSquared(Quaternion q) => q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
 
+        public static Quaternion CreateFromRotationMatrix(Matrix4x4 m)
+        {
+            Quaternion quat = Identity;
+            quat.w = (float)(Math.Sqrt(Math.Max(0, 1 + m[0, 0] + m[1, 1] + m[2, 2])) / 2);
+            quat.x = (float)(Math.Sqrt(Math.Max(0, 1 + m[0, 0] - m[1, 1] - m[2, 2])) / 2);
+            quat.y = (float)(Math.Sqrt(Math.Max(0, 1 - m[0, 0] + m[1, 1] - m[2, 2])) / 2);
+            quat.z = (float)(Math.Sqrt(Math.Max(0, 1 - m[0, 0] - m[1, 1] + m[2, 2])) / 2);
+
+            quat.x *= Math.Sign(quat.x * (m[2, 1] - m[1, 2]));
+            quat.y *= Math.Sign(quat.y * (m[0, 2] - m[2, 0]));
+            quat.z *= Math.Sign(quat.z * (m[1, 0] - m[0, 1]));
+            
+            return quat;
+        }
         public static Quaternion Normalized(Quaternion q)
         {
             float l = Length(q);
@@ -139,6 +153,8 @@ namespace S3DE.Maths
             w = -q.x * v.x - q.y * v.y - q.z * v.z;
             return new Quaternion(x,y,z,w);
         }
-        
+
+        public override string ToString() => $"(x:{x}|y:{y}|z:{z}|w:{w})";
+
     }
 }

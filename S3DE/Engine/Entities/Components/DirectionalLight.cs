@@ -9,22 +9,40 @@ using S3DE.Maths;
 
 namespace S3DE.Engine.Entities.Components
 {
-    public abstract class DirectionalLight : EntityComponent, ILight, IDirectionalLight
+    public class DirectionalLight : EntityComponent, ILight, IDirectionalLight
     {
-        public Color Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public float Intensity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Vector3 LightDirection { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color Color { get => lightColor; set => lightColor = value;}
+        public float Intensity { get => intensity; set => intensity = value;}
+        public Vector3 LightDirection { get => lightDir; set => lightDir = value;}
+        public bool CastsShadows { get => shadows; set => shadows = value;}
+
+        Vector3 lightDir;
+        float intensity;
+        Color lightColor;
+        bool shadows;
 
         protected override void OnCreation()
         {
-            //Add to scene.
-            base.OnCreation();
+            Scene.AddDirectionalLight(this as IDirectionalLight);
+            lightDir = Vector3.Down;
+            intensity = 1;
+            lightColor = Color.White;
+            shadows = false;
         }
 
         protected override void OnDestruction()
         {
-            //Remove from scene.
-            base.OnDestruction();
+            Scene.RemoveDirectionalLight(this as IDirectionalLight);
+        }
+
+        protected override void OnEnable()
+        {
+            Scene.AddDirectionalLight(this as IDirectionalLight);
+        }
+
+        protected override void OnDisable()
+        {
+            Scene.RemoveDirectionalLight(this as IDirectionalLight);
         }
     }
 }
