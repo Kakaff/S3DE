@@ -1,6 +1,7 @@
 ﻿using S3DE;
 using S3DE.Engine;
 using S3DE.Engine.Entities;
+using S3DE.Engine.Entities.Components;
 using S3DE.Engine.Graphics.OpGL;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace SampleGame.Sample_Components
 {
-    public class Sample_FrameMonitor : EntityComponent
+    public class Sample_FrameMonitor : EntityComponent, IUpdateLogic
     {
         List<long> frames = new List<long>();
         float t;
         int count;
         float low, high;
 
-        protected override void Update()
+        public void Update()
         {
             
                 count++;
@@ -67,6 +68,10 @@ namespace SampleGame.Sample_Components
             
                 
         }
+
+        public void LateUpdate() { }
+        public void EarlyUpdate() { }
+
         protected override void OnCreation()
         {
         }

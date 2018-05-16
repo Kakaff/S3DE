@@ -32,9 +32,11 @@ namespace S3DE.Engine.Graphics.Textures
 
     public abstract class Texture2D : ITexture2D
     {
-
+        bool isBound;
+        TextureUnit boundTexUnit;
+        
         public abstract Vector2 Resolution { get; }
-
+        public TextureUnit BoundTextureUnit => boundTexUnit;
         public abstract FilterMode FilterMode { get; set; }
         public abstract AnisotropicSamples AnisotropicSamples { get; set;}
         public abstract WrapMode WrapMode {get; set;}
@@ -42,11 +44,25 @@ namespace S3DE.Engine.Graphics.Textures
         public abstract PixelType PixelType { get; set;}
         public abstract InternalFormat InternalFormat {get; set;}
         public abstract int MipMapLevels { get; set; }
+
+        public abstract bool Compare(ITexture tex1);
+
+        public bool IsBound(out TextureUnit texUnit)
+        {
+            texUnit = boundTexUnit;
+            return isBound;
+        }
+        
+        public void SetIsBound(bool value, TextureUnit texUnit)
+        {
+            isBound = value;
+            boundTexUnit = value ? texUnit : TextureUnit.Null;
+        }
+
         public abstract void Apply();
         
-        public abstract void Bind(int textureunit);
-        public abstract void Bind();
-        public abstract void Unbind();
+        public void Bind(TextureUnit tu) => TextureUnits.BindTextureUnit(this, tu);
+        public TextureUnit Bind() => TextureUnits.BindTexture(this);
 
         public abstract Color GetPixel(int x, int y);
 

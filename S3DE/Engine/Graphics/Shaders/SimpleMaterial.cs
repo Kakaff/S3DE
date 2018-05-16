@@ -131,8 +131,8 @@ namespace S3DE.Engine.Graphics.Shaders
 
         protected override void UpdateUniforms(RenderPass pass)
         {
-            SetTexture("tex",0,texture);
-            SetTexture("normalMap", 1, normal);
+            SetTexture("tex",texture);
+            SetTexture("normalMap", normal);
         }
     }
 }

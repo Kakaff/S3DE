@@ -11,7 +11,7 @@ using S3DE.Engine.Graphics.Textures;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
-    class OpenGL_Texture2D : Texture2D
+    class OpenGL_Texture2D : Texture2D, IOpenGL_Texture
     {
         int mipmapCount;
         uint pointer;
@@ -46,6 +46,8 @@ namespace S3DE.Engine.Graphics.OpGL
         public override Enums.InternalFormat InternalFormat { get => internalFormat; set => internalFormat = value; }
         public override Enums.PixelFormat PixelFormat { get => pixelFormat; set => pixelFormat = value;}
         public override Enums.PixelType PixelType { get => pixelType; set => pixelType = value;}
+
+        public uint Pointer { get { if (pointer == 0) GenerateHandle(); return pointer; } }
 
         byte[] convertToByteArray(Color[,] pixels, Vector2 size)
         {
@@ -139,23 +141,9 @@ namespace S3DE.Engine.Graphics.OpGL
 
         }
 
-        public override void Bind()
+        public override bool Compare(ITexture tex1)
         {
-            Gl.BindTexture(TextureTarget.Texture2d, pointer);
-        }
-
-        public override void Bind(int textureunit)
-        {
-            if (pointer == 0)
-                GenerateHandle();
-            
-            Gl.ActiveTexture(TextureUnit.Texture0 + textureunit);
-            Gl.BindTexture(TextureTarget.Texture2d, pointer);   
-        }
-
-        public override void Unbind()
-        {
-            Gl.BindTexture(TextureTarget.Texture2d, 0);
+            return Pointer == ((IOpenGL_Texture)tex1).Pointer;
         }
 
         public override Color GetPixel(int x, int y) => pixels[x, y];   

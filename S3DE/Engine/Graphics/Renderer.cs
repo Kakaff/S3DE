@@ -103,6 +103,7 @@ namespace S3DE.Engine.Graphics
         protected abstract RenderTexture2D CreateRenderTexture2D(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height);
         protected abstract Framebuffer CreateFrameBuffer(int width, int height);
         protected abstract ScreenQuad CreateScreenQuad();
+        protected abstract int MaxSupportedTextureUnits();
 
         protected abstract void Clear();
         protected abstract void OnWindowResized();
@@ -111,9 +112,12 @@ namespace S3DE.Engine.Graphics
         protected abstract void enable(Function func);
         protected abstract void disable(Function func);
         protected abstract void SetViewportSize(Vector2 size);
-        protected abstract void UnbindTexUnit(int textureUnit);
+        protected abstract void BindTexUnit(ITexture tex, TextureUnit tu);
+        protected abstract void UnbindTexUnit(TextureUnit tu);
         protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
         protected abstract void Sync();
+        protected abstract void FinalizePass();
+
         protected void SetApiVersion(int version) => apiVer = version;
 
         internal static Renderer ActiveRenderer => activeRenderer;
@@ -121,11 +125,12 @@ namespace S3DE.Engine.Graphics
         internal static void Sync_Internal() => ActiveRenderer.Sync();
         public static void Enable(Function func) => ActiveRenderer.enable(func);
         public static void Disable(Function func) => ActiveRenderer.disable(func);
+        internal static void FinalizeRenderPass() => ActiveRenderer.FinalizePass(); 
 
         internal static T SetTargetRenderer<T>() where T : Renderer
         {
-            if (ActiveRenderer == null)
-                activeRenderer = InstanceCreator.CreateInstance<T>();
+            Console.WriteLine($"Setting TargetRenderer as {typeof(T).Name}");
+            activeRenderer = InstanceCreator.CreateInstance<T>();
 
             ActiveRenderer.displayResolution = new Vector2(640, 480);
             ActiveRenderer.renderResolution = new Vector2(640, 480);
@@ -201,11 +206,8 @@ namespace S3DE.Engine.Graphics
         internal static Vector2 DisplayResolution => ActiveRenderer.displayResolution;
         internal static Vector2 RenderResolution => ActiveRenderer.renderResolution;
         internal static int RefreshRate => ActiveRenderer.refreshRate;
-        public static void UnbindTextureUnit(int textureUnit) => ActiveRenderer.UnbindTexUnit(textureUnit); 
-        public static void UnbindTextureUnit(params int[] textureUnits)
-        {
-            foreach (int i in textureUnits)
-                ActiveRenderer.UnbindTexUnit(i);
-        }
+        internal static void UnbindTextureUnit(TextureUnit tu) => ActiveRenderer.UnbindTexUnit(tu);
+        internal static void BindTextureUnit(ITexture tex, TextureUnit tu) => ActiveRenderer.BindTexUnit(tex, tu);
+        internal static int TextureUnitCount { get => ActiveRenderer.MaxSupportedTextureUnits(); }
     }
 }

@@ -33,14 +33,12 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void RenderFrameToScreen(RenderTexture2D frame)
         {
-            frame.Bind(0);
+            frame.Bind();
             shader.Use();
             quadMesh.Bind();
-            shader.SetFrameTexture(0);
+            shader.SetFrameTexture((int)frame.BoundTextureUnit);
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
             OpenGL_Renderer.TestForGLErrors();
-            frame.Unbind();
-            quadMesh.Unbind();
         }
 
         protected override void Render()
@@ -48,7 +46,6 @@ namespace S3DE.Engine.Graphics.OpGL
             quadMesh.Bind();
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
             OpenGL_Renderer.TestForGLErrors();
-            quadMesh.Unbind();
         }
 
         protected override void BindMesh() => quadMesh.Bind();

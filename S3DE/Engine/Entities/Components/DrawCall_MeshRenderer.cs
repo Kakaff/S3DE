@@ -1,5 +1,4 @@
-﻿using S3DE.Engine.Entities.Components;
-using S3DE.Engine.Graphics;
+﻿using S3DE.Engine.Graphics;
 using S3DE.Engine.Graphics.Materials;
 using System;
 using System.Collections.Generic;
@@ -7,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Entities
+namespace S3DE.Engine.Entities.Components
 {
-    public class MeshRenderer : EntityComponent
+    public sealed class DrawCall_MeshRenderer : EntityComponent
     {
+
         Renderer_MeshRenderer api_mr;
         Mesh m;
 
@@ -53,7 +53,7 @@ namespace S3DE.Engine.Entities
         {
             set => mat = value;
             get => mat;
-            
+
         }
 
         protected override void PreRender() => api_mr.Prepare_Internal();
@@ -65,17 +65,19 @@ namespace S3DE.Engine.Entities
                 if (mat != null && m != null && mat.SupportsRenderPass(Renderer.CurrentRenderPass))
                 {
                     mat.UseMaterial(Renderer.CurrentRenderPass);
-                    if (mat.UsesTransformMatrix)
-                        mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
-                    if (mat.UsesViewMatrix)
-                        mat.SetViewMatrix(Scene.ActiveCamera.ViewMatrix);
-                    if (mat.UsesProjectionMatrix)
-                        mat.SetProjectionMatrix(Scene.ActiveCamera.ProjectionMatrix);
-                    if (mat.UsesRotationMatrix)
-                        mat.SetRotationMatrix(gameEntity.transform.WorldRotationMatrix);
                     
-                    api_mr.Render_Internal();
-                } else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))
+                    if (mat.UsesTransformMatrix)
+                        //mat.SetTransformMatrix_DC(gameEntity.transform.WorldTransformMatrix);
+                    if (mat.UsesViewMatrix)
+                        //mat.SetViewMatrix_DC(Scene.ActiveCamera.ViewMatrix);
+                    if (mat.UsesProjectionMatrix)
+                        //mat.SetProjectionMatrix_DC(Scene.ActiveCamera.ProjectionMatrix);
+                    if (mat.UsesRotationMatrix)
+                        //mat.SetRotationMatrix_DC(gameEntity.transform.WorldRotationMatrix);
+                    
+                    api_mr.Render_DC_Internal();
+                }
+                else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))
                 {
                     throw new InvalidOperationException($"Material {mat.GetType().Name} does not support " +
                         $"{Renderer.CurrentRenderPass} but is attached to a MeshRenderer set to use this RenderPass");
@@ -83,7 +85,8 @@ namespace S3DE.Engine.Entities
             }
         }
 
-        protected override void OnCreation() {
+        protected override void OnCreation()
+        {
             api_mr = Renderer.CreateMeshRenderer_Internal();
             passes ^= (uint)RenderPass.Deferred;
         }

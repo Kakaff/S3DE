@@ -12,7 +12,7 @@ using S3DE.Engine.Graphics.Textures;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
-    internal class OpenGL_RenderTexture2D : RenderTexture2D
+    internal class OpenGL_RenderTexture2D : RenderTexture2D, IOpenGL_Texture
     {
         Vector2 size;
         uint pointer;
@@ -50,28 +50,12 @@ namespace S3DE.Engine.Graphics.OpGL
         public override Enums.PixelFormat PixelFormat => pixelFormat;
         public override Enums.PixelType PixelType => pixelType;
 
-        public override void Bind(int textureunit)
-        {
-            Gl.ActiveTexture(TextureUnit.Texture0 + textureunit);
-            Gl.BindTexture(TextureTarget.Texture2d, pointer);
-            OpenGL_Renderer.TestForGLErrors();
-        }
-
-        public override void Bind()
-        {
-            Gl.BindTexture(TextureTarget.Texture2d, pointer);
-            OpenGL_Renderer.TestForGLErrors();
-        }
-
-        public override void Unbind()
-        {
-            Gl.BindTexture(TextureTarget.Texture2d, 0);
-        }
+        uint IOpenGL_Texture.Pointer => Pointer;
 
         void GeneratePointer()
         {
             pointer = Gl.GenTexture();
-            Bind();
+            Bind(TextureUnit._0);
 
             (int MinFilter, int MagFilter) t = OpenGL_Utility.Convert(FilterMode, false);
             Gl.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, ref t.MinFilter);
@@ -91,6 +75,11 @@ namespace S3DE.Engine.Graphics.OpGL
         public override Texture2D ToTexture2D()
         {
             throw new NotImplementedException();
+        }
+
+        public override bool Compare(ITexture tex1)
+        {
+            return ((IOpenGL_Texture)tex1).Pointer == Pointer;
         }
     }
 }

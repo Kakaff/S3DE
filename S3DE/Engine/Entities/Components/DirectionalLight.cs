@@ -9,7 +9,7 @@ using S3DE.Maths;
 
 namespace S3DE.Engine.Entities.Components
 {
-    public class DirectionalLight : EntityComponent, ILight, IDirectionalLight
+    public class DirectionalLight : EntityComponent, ILight, IDirectionalLight, IEnableLogic
     {
         public Color Color { get => lightColor; set => lightColor = value;}
         public float Intensity { get => intensity; set => intensity = value;}
@@ -34,15 +34,16 @@ namespace S3DE.Engine.Entities.Components
         {
             Scene.RemoveDirectionalLight(this as IDirectionalLight);
         }
-
-        protected override void OnEnable()
+        
+        public void OnEnable()
         {
             Scene.AddDirectionalLight(this as IDirectionalLight);
         }
 
-        protected override void OnDisable()
+        public void OnDisable()
         {
             Scene.RemoveDirectionalLight(this as IDirectionalLight);
         }
+
     }
 }

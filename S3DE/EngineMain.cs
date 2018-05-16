@@ -19,6 +19,8 @@ namespace S3DE
 
         static Game game;
 
+        internal static Game RunningGame => game;
+
         internal static bool WindowResized
         {
             get => windowResized;
@@ -32,6 +34,13 @@ namespace S3DE
 
         public static bool IsRunning => isRunning;
 
+        static void CheckContext()
+        {
+            if (Engine.Graphics.Window.IsCurrentContext())
+                Console.WriteLine("Renderer has a context");
+            else
+                Console.WriteLine("Renderer does not have a context");
+        }
         public static void RunGame(Game game)
         {
             EngineMain.game = game;
@@ -41,10 +50,12 @@ namespace S3DE
             Time.Start();
             Renderer.Init_Internal();
             Glfw.Init();
-            
+
             Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
+
             Renderer.SetCapabilities_Internal();
+            TextureUnits.Initialize();
             RenderPipeline.Init_Internal();
             game.StartGame();
             isRunning = true;
@@ -52,7 +63,7 @@ namespace S3DE
             Renderer.CreateMainRenderCall();
             ScreenQuad.Create();
             Time.UpdateDeltaTime(Time.CurrentTick);
-
+            
             MainLoop();
         }
 
@@ -68,8 +79,6 @@ namespace S3DE
                 FrameSync.WaitForTargetFPS();
                 Time.UpdateDeltaTime(Time.CurrentTick);
                 
-                
-                
                 windowResized = false;
                 if (reziseWindow)
                 {
@@ -83,6 +92,12 @@ namespace S3DE
         internal static void StopEngine(int exitCode)
         {
             isRunning = false;
+            Environment.Exit(exitCode);
+        }
+        internal static void StopEngine_ConfirmationRequired(int exitCode)
+        {
+            isRunning = false;
+            Console.Read();
             Environment.Exit(exitCode);
         }
     }

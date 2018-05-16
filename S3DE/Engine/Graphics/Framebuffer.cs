@@ -67,6 +67,8 @@ namespace S3DE.Engine.Graphics
 
         public abstract bool IsComplete { get; }
         public static Framebuffer Create(Vector2 size) => Renderer.CreateFramebuffer_Internal(size);
+        public static Framebuffer ActiveFrameBuffer => activeFrameBuffer;
+        static Framebuffer activeFrameBuffer;
         public abstract void Bind();
         public abstract void Unbind();
         public abstract void Clear();
@@ -94,11 +96,13 @@ namespace S3DE.Engine.Graphics
         public virtual void SetDrawBuffers(params BufferAttachment[] attachments)
         {
             Bind();
+            SetAsActive();
             Renderer.SetDrawBuffers_Internal(attachments);
             DrawBuffers = attachments;
             Unbind();
         }
 
+        public void SetAsActive() => activeFrameBuffer = this;
         public RenderTexture2D GetBuffer(TargetBuffer buffer) => GetBuffer((BufferAttachment)buffer);
         public void AddBuffer(RenderTexture2D buffer, TargetBuffer target) => AddBuffer(buffer, (BufferAttachment)target);
         public void AddBuffer(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType colorType, FilterMode filter, TargetBuffer target) =>

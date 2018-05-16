@@ -33,8 +33,17 @@ namespace S3DE.Engine.Graphics
         internal static bool IsCloseRequested => instance.GLFW_window.ShouldClose();
 
         internal static void SwapBuffer() => instance.GLFW_window.SwapBuffers();
+        internal static bool IsCurrentContext()
+        {
+            GLFWwindow w = Glfw.GetCurrentContext();
 
-        internal static void MakeCurrentContext() => Glfw.MakeContextCurrent(instance.GLFW_window);
+            return !(w == null);
+        }
+        internal static void MakeCurrentContext() {
+            Console.WriteLine("Setting GLFW_Window as Current Context");
+            Glfw.MakeContextCurrent(instance.GLFW_window);
+            
+        }
 
         internal static void CreateWindow(string title)
         {
@@ -76,7 +85,11 @@ namespace S3DE.Engine.Graphics
 
         public static float AspectRatio => instance.aspect;
         
-        
+        internal static void SetTitle(string title)
+        {
+            Glfw.SetWindowTitle(window, title);
+        }
+
         internal static void SetResolution(int width, int height)
         {
             Game.DisplayResolution = new Vector2(width, height);
@@ -84,6 +97,7 @@ namespace S3DE.Engine.Graphics
         
         internal static void ResizeWindow()
         {
+            Console.WriteLine($"Setting window size to {(int)Game.DisplayResolution.x}*{(int)Game.DisplayResolution.y}");
             Glfw.SetWindowSize(instance.GLFW_window, (int)Game.DisplayResolution.x, (int)Game.DisplayResolution.y);
             instance.aspect = Game.DisplayResolution.x / Game.DisplayResolution.y;
             Renderer.OnWindowResized_Internal();

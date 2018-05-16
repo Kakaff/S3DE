@@ -102,6 +102,7 @@ namespace S3DE.Engine.Graphics.OpGL
             public override void Bind()
             {
                 fbs[currentBuffer].Bind();
+                fbs[currentBuffer].SetAsActive();
             }
 
             public override void Clear()
@@ -199,10 +200,10 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             SetCurrentRenderPass(RenderPass.Deferred);
             RenderDeferredGeo(scene, renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry));
-            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Color).Bind(1);
-            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Normal).Bind(2);
-            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Position).Bind(4);
-            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Specular).Bind(5);
+            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Color).Bind();
+            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Normal).Bind();
+            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Position).Bind();
+            renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Specular).Bind();
             
             RenderDeferredLight(scene, renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Light));
         }
@@ -210,34 +211,43 @@ namespace S3DE.Engine.Graphics.OpGL
         void RenderDeferredGeo(GameScene scene, Framebuffer fb)
         {
             fb.Bind();
+            fb.SetAsActive();
             fb.Clear();
             Renderer.Enable(Function.DepthTest);
             Renderer.Enable(Function.AlphaTest);
             Renderer.AlphaFunction(AlphaFunction.Never, 0f);
             DrawScene(scene);
-            fb.Unbind();
+            FinalizeRenderPass();
         }
 
         void RenderDeferredLight(GameScene scene, Framebuffer fb)
         {
-            
+            ambientMat.ColorTex = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Color);
+            dirLightMat.Color = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Color);
+            dirLightMat.Normal = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Normal);
+            dirLightMat.Position = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Position);
+            dirLightMat.Specular = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Specular);
             DualFrameBuffer dfb = (DualFrameBuffer)fb;
             dfb.Bind();
+            dfb.SetAsActive();
             dfb.Clear(true,false,false);
             Renderer.Disable(Function.DepthTest);
             Renderer.Disable(Function.AlphaTest);
+             
             ambientMat.UseMaterial(RenderPass.Deferred);
             ScreenQuad.RenderToScreenQuad();
+            FinalizeRenderPass();
             //DirectionalLightPass
             IDirectionalLight[] dirLights = scene.DirectionalLights;
             foreach (IDirectionalLight dl in dirLights)
             {
                 dfb.Swap();
                 dfb.Bind();
-                dfb.GetAlternativeBuffer(TargetBuffer.Diffuse).Bind(3);
+                dirLightMat.Diffuse = dfb.GetAlternativeBuffer(TargetBuffer.Diffuse);
                 dirLightMat.DirectionalLight = dl;
                 dirLightMat.UseMaterial(RenderPass.Deferred);
                 ScreenQuad.RenderToScreenQuad();
+                FinalizeRenderPass();
             }
             
             dfb.Unbind();
@@ -266,6 +276,8 @@ namespace S3DE.Engine.Graphics.OpGL
 
         class Deferred_Ambient_Material : Material
         {
+            public RenderTexture2D ColorTex;
+
             class Deferred_Ambient_Fragment_Source : MaterialSource
             {
                 public Deferred_Ambient_Fragment_Source()
@@ -332,12 +344,14 @@ namespace S3DE.Engine.Graphics.OpGL
             protected override void UpdateUniforms(RenderPass pass)
             {
                 SetUniform("Ambient", SceneHandler.ActiveScene.Ambient);
-                SetUniform("color", 1);
+                SetTexture("color", ColorTex);
             }
         }
 
         class Deferred_Directional_Material : Material
         {
+            public RenderTexture2D Color, Normal, Diffuse, Position, Specular;
+
             class Deferred_Directional_Fragment_Source : MaterialSource
             {
                 public Deferred_Directional_Fragment_Source()
@@ -433,11 +447,11 @@ namespace S3DE.Engine.Graphics.OpGL
 
             protected override void UpdateUniforms(RenderPass pass)
             {
-                SetUniform("color", 1);
-                SetUniform("normal", 2);
-                SetUniform("diffuse", 3);
-                SetUniform("position", 4);
-                SetUniform("specular", 5);
+                SetTexture("color", Color);
+                SetTexture("normal", Normal);
+                SetTexture("diffuse", Diffuse);
+                SetTexture("position", Position);
+                SetTexture("specular", Specular);
                 SetUniform("DirLight", dirLight);
                 SetUniform("camPos", SceneHandler.ActiveScene.ActiveCamera.transform.Position);
             }

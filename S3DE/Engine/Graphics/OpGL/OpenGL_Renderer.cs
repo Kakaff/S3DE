@@ -14,6 +14,7 @@ using static S3DE.Engine.Enums;
 using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
+using S3DE.Engine.Graphics.OpGL.DC;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
@@ -40,28 +41,39 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void Init()
         {
+            Console.WriteLine("Initializing OpenGL_Renderer");
             Gl.Initialize();
         }
 
         protected override void SetCapabilities()
         {
-            Gl.Get(Gl.MINOR_VERSION, out int minor);
-            Gl.Get(Gl.MAJOR_VERSION, out int major);
+            Console.WriteLine("Setting Renderer Capabilities");
+            
+            try
+            {
+                Gl.Get(Gl.MINOR_VERSION, out int minor);
+                TestForGLErrors();
+                Gl.Get(Gl.MAJOR_VERSION, out int major);
+                TestForGLErrors();
                 SetApiVersion((major * 100) + (minor * 10));
 
-            Console.WriteLine($"Supported OpenGL Version: " + Renderer.API_Version);
+                Console.WriteLine($"Supported OpenGL Version: " + Renderer.API_Version);
 
-            Gl.FrontFace(FrontFaceDirection.Cw);
-            TestForGLErrors();
-            Gl.Enable(EnableCap.DepthTest);
-            TestForGLErrors();
-            Gl.CullFace(CullFaceMode.Back);
-            TestForGLErrors();
-            Gl.FrontFace(FrontFaceDirection.Cw);
-            TestForGLErrors();
-            Gl.Enable(EnableCap.CullFace);
-            TestForGLErrors();
-            
+                Gl.Enable(EnableCap.CullFace);
+                TestForGLErrors();
+                Gl.FrontFace(FrontFaceDirection.Cw);
+                TestForGLErrors();
+                Gl.Enable(EnableCap.DepthTest);
+                TestForGLErrors();
+                Gl.CullFace(CullFaceMode.Back);
+                TestForGLErrors();
+                Gl.FrontFace(FrontFaceDirection.Cw);
+                TestForGLErrors();
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                EngineMain.StopEngine_ConfirmationRequired(-1);
+            }
         }
 
         protected override void SetDrawBuffers(BufferAttachment[] buffers)
@@ -122,9 +134,15 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override RenderTexture2D CreateRenderTexture2D(S3DE.Engine.Enums.InternalFormat internalFormat, S3DE.Engine.Enums.PixelFormat pixelFormat, S3DE.Engine.Enums.PixelType pixelType,FilterMode filter, int width, int height) => 
             new OpenGL_RenderTexture2D(internalFormat,pixelFormat,pixelType,filter,width, height);
 
-        protected override void UnbindTexUnit(int textureUnit)
+        protected override void BindTexUnit(ITexture tex, TextureUnit tu)
         {
-            Gl.ActiveTexture(TextureUnit.Texture0 + textureUnit);
+            Gl.ActiveTexture(OpenGL.TextureUnit.Texture0 + (int)tu);
+            Gl.BindTexture(TextureTarget.Texture2d, ((IOpenGL_Texture)tex).Pointer);
+            TestForGLErrors();
+        }
+        protected override void UnbindTexUnit(TextureUnit textureUnit)
+        {
+            Gl.ActiveTexture(OpenGL.TextureUnit.Texture0 + (int)textureUnit);
             Gl.BindTexture(TextureTarget.Texture2d,0);
             TestForGLErrors();
         }
@@ -146,6 +164,18 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             Gl.Disable(OpenGL_Utility.Convert(func));
             TestForGLErrors();
+        }
+
+        protected override int MaxSupportedTextureUnits()
+        {
+            OpenGL.Gl.Get(OpenGL.Gl.MAX_TEXTURE_IMAGE_UNITS,out int c);
+            return c;
+        }
+
+        protected override void FinalizePass()
+        {
+            DrawCallSorter.IssueDrawCalls();
+            DrawCallSorter.FlushContainers();
         }
     }
 }

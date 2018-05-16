@@ -21,41 +21,34 @@ namespace SampleGame
         protected override void LoadScene()
         {
             
-            GameEntity ge = CreateGameEntity();
-            MeshRenderer mr = ge.AddComponent<MeshRenderer>();
-            mr.mesh = Mesh.CreateCube(new Vector3(1,1,1));
-            ge.transform.Position = new Vector3(0f,0,0f);
-            ge.AddComponent<Sample_ObjectRotator>();
             Material mat = new SimpleMaterial();
-            mr.Material = mat;
+            Mesh m = Mesh.CreateCube(new Vector3(1, 1, 1));
             
-            MainCamera.transform.Position = new Vector3(0,0,-1);
+            const int s = 11;
+            Console.WriteLine($"Testing {(s*2) * (s*2)} rotating cubes");
+
             
-            GameEntity ge2 = CreateGameEntity();
-            MeshRenderer mr2 = ge2.AddComponent<MeshRenderer>();
-            mr2.mesh = Mesh.CreateCube(new Vector3(1, 1, 1));
-            mr2.Material = mr.Material;
-            ge2.transform.SetParent(ge.transform);
-            ge2.transform.SetPosition(new Vector3(0, 1, 2f), Enums.Space.World);
-
-            GameEntity ge3 = CreateGameEntity();
-            MeshRenderer mr3 = ge3.AddComponent<MeshRenderer>();
-            mr3.mesh = Mesh.CreateCube(new Vector3(1, 1, 1));
-            mr3.Material = mr.Material;
-            ge3.transform.Position = new Vector3(3, 0, 3);
-
-            Sample_LookAt la = ge2.AddComponent<Sample_LookAt>();
-            la.Target = ge3.transform.Position;
-
+            for (int x = -s; x < s; x++)
+                for (int y = -s; y < s; y++)
+                {
+                    GameEntity ge = CreateGameEntity();
+                    ge.transform.Position = new Vector3(x * 2, 0, y * 2);
+                    MeshRenderer mr = ge.AddComponent<MeshRenderer>();
+                    ge.AddComponent<Sample_ObjectRotator>();
+                    mr.mesh = m;
+                    mr.Material = mat;
+                }
+            
+            
             GameEntity sun = CreateGameEntity();
             DirectionalLight sunLight1 = sun.AddComponent<DirectionalLight>();
-
+            sun.AddComponent<Sample_TitleChanger>();
             sunLight1.LightDirection = new Vector3(1, -1, 0).normalized;
             
             MainCamera.gameEntity.AddComponent<Sample_CameraController>();
             //MainCamera.gameEntity.AddComponent<Sample_FrameMonitor>();
 
-            
+
         }
 
         protected override void UnloadScene()

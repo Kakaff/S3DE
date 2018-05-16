@@ -1,4 +1,5 @@
-﻿using S3DE.Engine.Graphics.Lights;
+﻿using S3DE.Engine.Entities;
+using S3DE.Engine.Graphics.Lights;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Maths;
 using System;
@@ -100,16 +101,8 @@ namespace S3DE.Engine.Graphics.Materials
             SetSources();
         }
 
-        public void UseMaterial(RenderPass pass)
+        void CheckActiveRenderMatCompiled()
         {
-            if (!isCreated)
-            {
-                Console.WriteLine($"Creating RendererMaterials for {this.GetType().Name} in {this.GetType().Namespace}");
-                CreateRendererMaterial();
-                isCreated = true;
-            }
-
-            SetActiveRenderMaterial(pass);
             if (!_rActMaterial.IsCompiled)
             {
                 _rActMaterial.Compile_Internal();
@@ -123,7 +116,24 @@ namespace S3DE.Engine.Graphics.Materials
                     AddUniform("rotation");
                 AddUserDefinedUniforms();
             }
+        }
 
+        void CheckIsCreated()
+        {
+            if (!isCreated)
+            {
+                Console.WriteLine($"Creating RendererMaterials for {this.GetType().Name} in {this.GetType().Namespace}");
+                CreateRendererMaterial();
+                isCreated = true;
+            }
+
+        }
+
+        public void UseMaterial(RenderPass pass)
+        {
+            CheckIsCreated();
+            SetActiveRenderMaterial(pass);
+            CheckActiveRenderMatCompiled();
             _rActMaterial.UseRendererMaterial();
             UpdateUniforms(pass);
         }
@@ -192,6 +202,13 @@ namespace S3DE.Engine.Graphics.Materials
         protected void SetUniform(string uniformName, float[] value) => _rActMaterial.Internal_SetUniformf(uniformName, value);
         protected void SetUniform(string uniformName, Vector3 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
         protected void SetUniform(string uniformName, Matrix4x4 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
-        protected void SetTexture(string samplerName, int TextureUnit, ITexture texture) => _rActMaterial.Internal_SetTexture(samplerName,TextureUnit, texture);
+        protected void SetTexture(string samplerName, TextureUnit TextureUnit, ITexture texture) => _rActMaterial.Internal_SetTexture(samplerName,TextureUnit, texture);
+        protected void SetTexture(string samplerName, ITexture texture)
+        {
+            bool isbound = texture.IsBound(out TextureUnit texUnit);
+            if (!isbound)
+                texUnit = texture.Bind();
+            _rActMaterial.Internal_SetTexture(samplerName, texUnit, texture);
+        }
     }
 }

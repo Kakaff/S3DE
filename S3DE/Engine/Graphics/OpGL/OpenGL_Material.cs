@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
+using S3DE.Engine.Graphics.OpGL.DC;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
@@ -27,6 +28,11 @@ namespace S3DE.Engine.Graphics.OpGL
         internal OpenGL_Material()
         {
             Uniforms = new Dictionary<string, int>();
+        }
+
+        protected override void UseMaterial()
+        {
+            prog.UseProgram();
         }
 
         protected override void SetSource(MaterialSource source)
@@ -60,14 +66,12 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void SetUniform(string uniformName, Vector3 v) => prog.SetUniform(uniformName, v);
 
-        protected override void UseMaterial() => prog.UseProgram();
-
         protected override void AddUniform(string uniformName) => prog.AddUniform(uniformName);
 
-        protected override void SetTexture(string uniformName, int textureUnit, ITexture texture)
+        protected override void SetTexture(string uniformName, TextureUnit textureUnit, ITexture texture)
         {
             texture.Bind(textureUnit);
-            SetUniformi(uniformName, textureUnit);
+            SetUniformi(uniformName, (int)textureUnit);
         }
     }
 }

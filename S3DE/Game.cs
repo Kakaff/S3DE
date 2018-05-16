@@ -40,6 +40,8 @@ namespace S3DE
         }
 
         public static bool ResolutionChanged => EngineMain.WindowResized;
+        public static string WindowTitle {set => Engine.Graphics.Window.SetTitle(value);}
+        public static string GameTitle => EngineMain.RunningGame.GameName();
 
         protected void SetStartScene<T>() where T : GameScene => SceneHandler.SetMainScene<T>();
         

@@ -48,6 +48,7 @@
     <Compile Include="Sample_Components\Sample_LookAt.cs" />
     <Compile Include="Sample_Components\Sample_ObjectRotator.cs" />
     <Compile Include="SampleScene.cs" />
+    <Compile Include="Sample_Components\Sample_TitleChanger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\S3DE\S3DE.csproj">

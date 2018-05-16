@@ -22,11 +22,15 @@ namespace S3DE.Engine.Entities
             get => isActive & entity.IsActive;
             set
             {
-                if (isActive != value)
+                IEnableLogic l = (IEnableLogic)this;
+                if (isActive != value && l != null) {
                     if (value)
-                        OnEnable();
+                        l.OnEnable();
                     else
-                        OnDisable();
+                        l.OnDisable();
+
+                    isActive = value;
+                }
             }
         }
         internal bool IsStarted => isStarted;
@@ -40,17 +44,10 @@ namespace S3DE.Engine.Entities
 
         protected virtual void Init() { }
         protected virtual void Start() { }
-
-        protected virtual void EarlyUpdate() { }
-        protected virtual void Update() { }
-        protected virtual void LateUpdate() { }
         
         protected virtual void PreRender() { }
         protected virtual void Render() { }
         protected virtual void PostRender() { }
-
-        protected virtual void OnEnable() { }
-        protected virtual void OnDisable() { }
 
         internal void OnCreation_Internal() => OnCreation();
 
@@ -76,12 +73,6 @@ namespace S3DE.Engine.Entities
             Start();
             isStarted = true;
         }
-
-        internal void EarlyUpdate_Internal() => EarlyUpdate();
-
-        internal void Update_Internal() => Update();
-
-        internal void LateUpdate_Internal() => LateUpdate();
 
         internal void PreDraw_Internal() => PreRender();
 

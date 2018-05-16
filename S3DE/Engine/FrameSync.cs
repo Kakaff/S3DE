@@ -14,6 +14,7 @@ namespace S3DE.Engine
         long prevUpdate;
         long targetDuration;
         long waitStartTick;
+        int currFps;
 
         static FrameSync frameSync;
 
@@ -21,6 +22,8 @@ namespace S3DE.Engine
         {
             set => frameSync = value;
         }
+
+        public static int CurrentFPS => frameSync.currFps;
 
         protected long WaitStartTick => waitStartTick;
         protected long TargetFrameDuration => targetDuration;
@@ -39,8 +42,6 @@ namespace S3DE.Engine
 
         internal void _waitForTargetFPS()
         {
-            
-
             long target = prevUpdate + targetDuration; //On what tick we should start the next frame.
             
             //Adjust for what the time is as of right now.
@@ -52,7 +53,10 @@ namespace S3DE.Engine
                 duration = 0;
 
             WaitForTargetFrameDuration(duration);
-            prevUpdate = Time.CurrentTick;
+            long t = Time.CurrentTick;
+            currFps = (int)(TimeSpan.TicksPerSecond / (t - prevUpdate));
+            prevUpdate = t;
+            
         }
 
         

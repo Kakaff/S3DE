@@ -17,6 +17,8 @@ namespace S3DE.Engine.Entities
         List<EntityComponent> inactiveComponents; 
 
         EntityComponent[] frameStageComponents;
+        IUpdateLogic[] updateStageComponents;
+
         bool isActive;
 
         Transform trans;
@@ -30,7 +32,7 @@ namespace S3DE.Engine.Entities
         public bool IsActive => isActive;
 
         void InitStage() => frameStageComponents = components.Where(ec => ec.IsActive && ec.IsStarted).ToArray();
-
+        void InitUpdateStage() => updateStageComponents = components.Where(ec => ec.IsActive && ec.IsStarted && ec is IUpdateLogic).Cast<IUpdateLogic>().ToArray();
         void GetComponentsToInitAndStart() => componentsToStart.AddRange(components.Where(ec => ec.IsActive && !ec.IsStarted));
 
         internal void InitComponents()
@@ -49,23 +51,23 @@ namespace S3DE.Engine.Entities
 
         internal void EarlyUpdate()
         {
-            InitStage();
-            foreach (EntityComponent ec in frameStageComponents)
-                ec.EarlyUpdate_Internal();
+            InitUpdateStage();
+            foreach (IUpdateLogic iul in updateStageComponents)
+                iul.EarlyUpdate();
         }
 
         internal void Update()
         {
-            InitStage();
-            foreach (EntityComponent ec in frameStageComponents)
-                ec.Update_Internal();
+            InitUpdateStage();
+            foreach (IUpdateLogic iul in updateStageComponents)
+                iul.Update();
         }
 
         internal void LateUpdate()
         {
-            InitStage();
-            foreach (EntityComponent ec in frameStageComponents)
-                ec.LateUpdate_Internal();
+            InitUpdateStage();
+            foreach (IUpdateLogic iul in updateStageComponents)
+                iul.LateUpdate();
         }
 
         internal void PreDraw()

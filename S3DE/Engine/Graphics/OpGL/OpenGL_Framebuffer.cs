@@ -64,14 +64,14 @@ namespace S3DE.Engine.Graphics.OpGL
 
             //Attach it to the framebuffer.
             this.Bind();
-            tex.Bind();
+            tex.Bind(TextureUnit._0);
             Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer,
                 OpenGL_Utility.Convert(attachment), 
                 TextureTarget.Texture2d, 
                 tex.Pointer, 0);
             OpenGL_Renderer.TestForGLErrors();
-            tex.Unbind();
             this.Unbind();
+            TextureUnits.UnbindTextureUnit(TextureUnit._0);
             attachments.Add(attachment, tex);
             
         }
@@ -79,12 +79,12 @@ namespace S3DE.Engine.Graphics.OpGL
         public override void AddBuffer(RenderTexture2D buffer, BufferAttachment attachment)
         {
             this.Bind();
-            buffer.Bind();
+            buffer.Bind(TextureUnit._0);
             Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer,
                 OpenGL_Utility.Convert(attachment),
                 TextureTarget.Texture2d,
                 ((OpenGL_RenderTexture2D)buffer).Pointer, 0);
-            buffer.Unbind();
+            TextureUnits.UnbindTextureUnit(TextureUnit._0);
             this.Unbind();
             attachments.Add(attachment, (OpenGL_RenderTexture2D)buffer);
         }

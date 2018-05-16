@@ -1,6 +1,7 @@
 ﻿using OpenGL;
 using S3DE;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.OpGL.DC;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -13,21 +14,22 @@ namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_Mesh
     {
-        OpenGL_BufferObject vbo, ebo;
+        IOpenGL_BufferObject vbo, ebo;
         OpenGL_VertexArrayObject vao;
 
         int indicieCount;
         bool hasNormals, hasUvs;
 
+        internal uint VAO_Pointer => vao.Pointer;
         internal int Indicies => indicieCount;
 
         internal OpenGL_Mesh()
         {
             vao = new OpenGL_VertexArrayObject(Gl.GenVertexArray());
             vao.Bind();
-            vbo = new OpenGL_BufferObject(Gl.GenBuffer(), BufferTarget.ArrayBuffer);
+            vbo = OpenGL_BufferObject.CreateBuffer(BufferTarget.ArrayBuffer);
             vbo.Bind();
-            ebo = new OpenGL_BufferObject(Gl.GenBuffer(), BufferTarget.ElementArrayBuffer);
+            ebo = OpenGL_BufferObject.CreateBuffer(BufferTarget.ElementArrayBuffer);
             ebo.Bind();
         }
 
@@ -127,7 +129,7 @@ namespace S3DE.Engine.Graphics.OpGL
             float[] vertData = MeshDataToArray(vertices, uvs, normals,tangents,indicies);
             ushort[] indicieData = IndiciesToUShortArray(indicies);
 
-            Console.WriteLine($"Uploading mesh {(vertData.Length * 4) + (indicieData.Length * 2)} bytes to GPU");
+            //Console.WriteLine($"Uploading mesh {(vertData.Length * 4) + (indicieData.Length * 2)} bytes to GPU");
             //Uploads the vertices,uvs and normals to the GPU.
             using (MemoryLock ml = new MemoryLock(vertData))
                 Gl.BufferData(BufferTarget.ArrayBuffer,

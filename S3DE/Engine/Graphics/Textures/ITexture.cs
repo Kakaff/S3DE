@@ -9,9 +9,13 @@ namespace S3DE.Engine.Graphics.Textures
 {
     public interface ITexture
     {
-        void Bind();
-        void Bind(int textureUnit);
-        void Unbind();
+        void Bind(TextureUnit tu);
+        TextureUnit Bind();
+        bool IsBound(out TextureUnit texUnit);
+        void SetIsBound(bool value, TextureUnit texUnit);
+        bool Compare(ITexture tex1);
+
+        TextureUnit BoundTextureUnit { get; }
         InternalFormat InternalFormat {get;}
         PixelFormat PixelFormat {get;}
         PixelType PixelType {get;}

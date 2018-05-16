@@ -39,5 +39,6 @@ namespace S3DE.Engine.Graphics
         }
 
         protected void DrawScene(GameScene scene) => scene.Draw();
+        protected void FinalizeRenderPass() => Renderer.FinalizeRenderPass();
     }
 }

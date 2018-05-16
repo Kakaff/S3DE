@@ -24,7 +24,7 @@ namespace S3DE.Engine.Graphics.Materials
         protected abstract void SetUniformf(string uniformName, float[] value);
         protected abstract void SetUniform(string uniformName, Matrix4x4 m);
         protected abstract void SetUniform(string uniformName, Vector3 v);
-        protected abstract void SetTexture(string uniformName, int textureUnit, ITexture texture);
+        protected abstract void SetTexture(string uniformName, TextureUnit textureUnit, ITexture texture);
         //protected abstract void SetUniform(string uniformName, ILight light);
         //protected abstract void SetUniform(string uniformName, IDirectionalLight directionalLight);
 
@@ -34,7 +34,7 @@ namespace S3DE.Engine.Graphics.Materials
         internal void Internal_SetUniformf(string uniformName, float[] value) => SetUniformf(uniformName, value);
         internal void Internal_SetUniform(string uniformName, Matrix4x4 m) => SetUniform(uniformName, m);
         internal void Internal_SetUniform(string uniformName, Vector3 v) => SetUniform(uniformName, v);
-        internal void Internal_SetTexture(string uniformName, int textureUnit, ITexture texture) => SetTexture(uniformName, textureUnit, texture);
+        internal void Internal_SetTexture(string uniformName, TextureUnit textureUnit, ITexture texture) => SetTexture(uniformName, textureUnit, texture);
 
         internal void Internal_SetUniform(string uniformName, ILight light)
         {

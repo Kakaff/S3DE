@@ -1,6 +1,7 @@
 ﻿using S3DE;
 using S3DE.Engine;
 using S3DE.Engine.Entities;
+using S3DE.Engine.Entities.Components;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -11,13 +12,14 @@ using static S3DE.Engine.Enums;
 
 namespace SampleGame.Sample_Components
 {
-    public class Sample_CameraController : EntityComponent
+    public class Sample_CameraController : EntityComponent, IUpdateLogic
     {
         Vector3 movDir;
 
         float xRot = 0, yRot = 0;
 
-        protected override void Update()
+        public void EarlyUpdate() { }
+        public void Update()
         {
             movDir = Vector3.Zero;
 
@@ -53,6 +55,8 @@ namespace SampleGame.Sample_Components
             if (Input.GetKeyReleased(KeyCode.F11))
                 Game.SetFullScreen(!Game.IsFullScreen);
         }
+
+        public void LateUpdate() { }
 
         float Clamp(float min, float max, float val) => val > max ? max : val < min ? min : val;
 

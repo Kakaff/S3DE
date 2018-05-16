@@ -1,4 +1,5 @@
 ﻿using S3DE.Engine.Entities;
+using S3DE.Engine.Entities.Components;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SampleGame.Sample_Components
 {
-    public class Sample_LookAt : EntityComponent
+    public class Sample_LookAt : EntityComponent, IUpdateLogic
     {
         Vector3 target;
 
@@ -20,7 +21,9 @@ namespace SampleGame.Sample_Components
 
         protected override void OnCreation() { target = Vector3.Zero; }
 
-        protected override void Update()
+        public void EarlyUpdate() { }
+        public void LateUpdate() { }
+        public void Update()
         {
             transform.LookAt(target);
         }
