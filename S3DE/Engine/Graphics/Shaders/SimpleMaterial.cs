@@ -21,7 +21,7 @@ namespace S3DE.Engine.Graphics.Shaders
             {
                 SetStage(ShaderStage.Vertex);
                 SetSource(
-                  "#version 330 core " + '\n'
+                  "#version 330 " + '\n'
                 + "layout(location = 0)in vec3 position; " + '\n'
                 + "layout(location = 1)in vec2 uvs;" + '\n'
                 + "layout(location = 2)in vec3 normal;" + '\n'
@@ -53,7 +53,7 @@ namespace S3DE.Engine.Graphics.Shaders
             {
                 SetStage(ShaderStage.Fragment);
                 SetSource(
-                "#version 330 core" + '\n'
+                "#version 330" + '\n'
               + "layout(location = 0) out vec3 gFragColor; " + '\n'
               + "layout(location = 1) out vec3 gNormal;" + '\n'
               + "layout(location = 2) out vec3 gPosition;" + '\n'

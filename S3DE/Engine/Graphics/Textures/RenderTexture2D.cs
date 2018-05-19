@@ -25,6 +25,13 @@ namespace S3DE.Engine.Graphics
         public TextureUnit Bind() => TextureUnits.BindTexture(this);
         public abstract bool Compare(ITexture tex1);
 
+        public void Unbind()
+        {
+            if (isBound)
+                TextureUnits.UnbindTextureUnit(BoundTextureUnit);
+        }
+
+
         public bool IsBound(out TextureUnit texUnit)
         {
             texUnit = boundTexUnit;

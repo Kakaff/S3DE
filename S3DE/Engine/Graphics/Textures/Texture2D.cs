@@ -59,6 +59,12 @@ namespace S3DE.Engine.Graphics.Textures
             boundTexUnit = value ? texUnit : TextureUnit.Null;
         }
 
+        public void Unbind()
+        {
+            if (isBound)
+                TextureUnits.UnbindTextureUnit(BoundTextureUnit);
+        }
+
         public abstract void Apply();
         
         public void Bind(TextureUnit tu) => TextureUnits.BindTextureUnit(this, tu);

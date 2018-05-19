@@ -46,7 +46,6 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             if (_CurrentlyBoundShaderProgram == null || _CurrentlyBoundShaderProgram.pointer != this.pointer)
             {
-                
                 _CurrentlyBoundShaderProgram = this;
                 Gl.UseProgram(pointer);
                 TestForGLErrors();

@@ -30,6 +30,10 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             if (pointer == 0)
                 CreateHandle();
+            /* Not sure if we should allow for binding buffer attachments while writing to the same framebuffer. Sounds kinda stupid.
+            foreach (RenderTexture2D tex in attachments.Values)
+                tex.Unbind();
+                */
             Gl.BindFramebuffer(FramebufferTarget.Framebuffer, pointer);
             OpenGL_Renderer.TestForGLErrors();
         }

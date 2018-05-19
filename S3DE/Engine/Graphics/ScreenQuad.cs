@@ -18,6 +18,7 @@ namespace S3DE.Engine.Graphics
 
         internal static void Present_Frame(RenderTexture2D frame)
         {
+            Framebuffer.ActiveFrameBuffer.Unbind();
             Renderer.Disable(Function.DepthTest);
             Renderer.Disable(Function.AlphaTest);
             Renderer.Clear_Internal();

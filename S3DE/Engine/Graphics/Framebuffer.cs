@@ -64,7 +64,7 @@ namespace S3DE.Engine.Graphics
     {
 
         protected BufferAttachment[] DrawBuffers;
-
+        
         public abstract bool IsComplete { get; }
         public static Framebuffer Create(Vector2 size) => Renderer.CreateFramebuffer_Internal(size);
         public static Framebuffer ActiveFrameBuffer => activeFrameBuffer;

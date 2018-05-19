@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using S3DE.Engine;
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
+using S3DE.Engine.Debug.RenderingDebugging;
+using S3DE.Engine.IO;
 
 namespace S3DE
 {
@@ -48,12 +50,17 @@ namespace S3DE
             game.InitGame();
 
             Time.Start();
-            Renderer.Init_Internal();
             Glfw.Init();
+
+            /*
+             * On 2 of the 3 gpu's i've tested, the renderer has to be initialized before creating a window.
+             * and making the window context current.
+             */
 
             Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
 
+            Renderer.Init_Internal();
             Renderer.SetCapabilities_Internal();
             TextureUnits.Initialize();
             RenderPipeline.Init_Internal();
@@ -72,9 +79,10 @@ namespace S3DE
             while (!Engine.Graphics.Window.IsCloseRequested)
             {
                 Engine.Graphics.Window.PollEvents();
+                
                 Input.PollInput();
-                Renderer.Clear_Internal();
                 SceneHandler.RunScenes();
+                
                 Engine.Graphics.Window.SwapBuffer();
                 FrameSync.WaitForTargetFPS();
                 Time.UpdateDeltaTime(Time.CurrentTick);

@@ -62,6 +62,9 @@
   <ItemGroup>
     <Compile Include="Engine\AutoAdjustingStopWatchClock.cs" />
     <Compile Include="Engine\Data\LinkedQueueList.cs" />
+    <Compile Include="Engine\Debug\RenderingDebugging\ColoredFullScreenTest.cs" />
+    <Compile Include="Engine\Debug\RenderingDebugging\RenderFramebufferTest.cs" />
+    <Compile Include="Engine\Debug\RenderingDebugging\TexturedFullScreenTest.cs" />
     <Compile Include="Engine\Entities\Components\DirectionalLight.cs" />
     <Compile Include="Engine\Entities\Components\DrawCall_MeshRenderer.cs" />
     <Compile Include="Engine\Entities\Components\IEnableLogic.cs" />

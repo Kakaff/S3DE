@@ -81,7 +81,6 @@ namespace S3DE.Engine.Graphics
                 ITexture t = Textures[(int)texUnit];
                 if (t == null || !t.Compare(tex))
                 {
-                    Console.WriteLine("Binding a Texture to " + texUnit);
                     if (t == null)
                         UnboundTextureUnits.Remove(texUnit);
                     else
@@ -131,6 +130,7 @@ namespace S3DE.Engine.Graphics
                 Textures[(int)texUnit] = null;
                 BoundTextureUnits.Remove(texUnit);
                 UnboundTextureUnits.Enqueue(texUnit);
+                Renderer.UnbindTextureUnit(texUnit);
             }
         }
     }

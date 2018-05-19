@@ -33,7 +33,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
             #region Deferred Geometry
             Framebuffer def_geo_fb = Framebuffer.Create(resolution);
-            def_geo_fb.AddBuffer(InternalFormat.RGB8, PixelFormat.RGB, PixelType.UByte, FilterMode.Nearest, TargetBuffer.Color);
+            def_geo_fb.AddBuffer(InternalFormat.RGB, PixelFormat.RGB, PixelType.UByte, FilterMode.Nearest, TargetBuffer.Color);
             //Normal
             def_geo_fb.AddBuffer(InternalFormat.RGB16F, PixelFormat.RGB, PixelType.Float16, FilterMode.Nearest, TargetBuffer.Normal);
             //Specular
@@ -200,12 +200,14 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             SetCurrentRenderPass(RenderPass.Deferred);
             RenderDeferredGeo(scene, renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry));
+            
             renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Color).Bind();
             renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Normal).Bind();
             renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Position).Bind();
             renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Geometry).GetBuffer(TargetBuffer.Specular).Bind();
             
             RenderDeferredLight(scene, renderCall.GetFrameBuffer(FrameBufferTarget.Deferred_Light));
+            
         }
 
         void RenderDeferredGeo(GameScene scene, Framebuffer fb)
@@ -215,7 +217,8 @@ namespace S3DE.Engine.Graphics.OpGL
             fb.Clear();
             Renderer.Enable(Function.DepthTest);
             Renderer.Enable(Function.AlphaTest);
-            Renderer.AlphaFunction(AlphaFunction.Never, 0f);
+            //Renderer.AlphaFunction(AlphaFunction.Never, 0f); //Uncommenting this makes nothing render on amd and intel gpu's.
+            //It will still work on some nvidia gpu's.
             DrawScene(scene);
             FinalizeRenderPass();
         }
@@ -259,7 +262,7 @@ namespace S3DE.Engine.Graphics.OpGL
             {
                 SetStage(ShaderStage.Vertex);
                 SetSource(
-                  "#version 330 core " + '\n'
+                  "#version 330 " + '\n'
                 + "layout(location = 0)in vec3 position; " + '\n'
                 + "layout(location = 1)in vec2 uvs;" + '\n'
                 + "out Frag { " + '\n'
@@ -284,7 +287,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 {
                     SetStage(ShaderStage.Fragment);
                     SetSource(
-                        "#version 330 core " + '\n'
+                        "#version 330 " + '\n'
                       + "uniform sampler2D color;" + '\n'
                       + "layout(location = 0) out vec4 gDiffuse; " + '\n'
                       + "layout(location = 1) out vec4 gLightColorIntensity; " + '\n'

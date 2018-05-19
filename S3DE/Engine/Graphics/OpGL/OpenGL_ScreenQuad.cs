@@ -1,6 +1,8 @@
 ﻿using OpenGL;
 using S3DE;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Textures;
+using S3DE.Engine.IO;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace S3DE.Engine.Graphics.OpGL
     {
         ScreenQuadShader shader;
         OpenGL_Mesh quadMesh;
-
+        
         internal OpenGL_ScreenQuad()
         {
             shader = new ScreenQuadShader();
@@ -33,10 +35,9 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void RenderFrameToScreen(RenderTexture2D frame)
         {
-            frame.Bind();
             shader.Use();
             quadMesh.Bind();
-            shader.SetFrameTexture((int)frame.BoundTextureUnit);
+            shader.SetFrameTexture((int)frame.Bind());
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
             OpenGL_Renderer.TestForGLErrors();
         }

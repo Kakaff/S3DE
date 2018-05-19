@@ -11,6 +11,7 @@ namespace S3DE.Engine.Graphics.Textures
     {
         void Bind(TextureUnit tu);
         TextureUnit Bind();
+        void Unbind();
         bool IsBound(out TextureUnit texUnit);
         void SetIsBound(bool value, TextureUnit texUnit);
         bool Compare(ITexture tex1);
