@@ -11,7 +11,21 @@ namespace S3DE.Engine.Graphics.Materials
 {
     public abstract class Renderer_Material
     {
-        public bool IsCompiled { get; set; }
+        protected uint identifier;
+
+        public bool IsCompiled {get; set;}
+        static Renderer_Material CurrentlyBoundRendererMaterial;
+
+        public uint Identifier
+        {
+            get
+            {
+                if (!IsCompiled)
+                    Compile_Internal();
+                return identifier;
+            }
+        }
+
         protected abstract void SetSource(MaterialSource source);
         protected abstract void Compile();
 
@@ -48,7 +62,15 @@ namespace S3DE.Engine.Graphics.Materials
         }
 
         internal void Compile_Internal() { Compile(); IsCompiled = true;}
-        internal void UseRendererMaterial() => UseMaterial();
+
+        internal void UseRendererMaterial() {
+            if (CurrentlyBoundRendererMaterial == null || CurrentlyBoundRendererMaterial.Identifier != Identifier)
+            {
+                UseMaterial();
+                CurrentlyBoundRendererMaterial = this;
+            }
+        }
+
         internal void SetSource_Internal(MaterialSource source) => SetSource(source);
     }
 }

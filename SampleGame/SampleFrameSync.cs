@@ -25,7 +25,13 @@ namespace SampleGame
 
         static long dynamicYieldTime = MIN_YIELD_TIME;
         static long dynamicBreakTime = MIN_BREAK_TIME;
-        
+
+        const long MAX_BREAK_ADJUSTMENT = 50;
+        const long MIN_BREAK_ADJUSTMENT = 5;
+
+        const long MAX_YIELD_ADJUSTMENT = 500;
+        const long MIN_YIELD_ADJUSTMENT = 5;
+
         const long MAX_DIFF_OVERSLEEP_BREAK = 350;
         const long MAX_DIFF_UNDERSLEEP_BREAK = -150;
         const long MAX_DIFF_OVERSLEEP_YIELD = 150;
@@ -62,18 +68,18 @@ namespace SampleGame
                 if (eslapedTicks >= modifiedDurToWait - dynamicBreakTime)
                 {
                     oversleep = eslapedTicks - modifiedDurToWait;
-
+                    
                     if (oversleep > MAX_DIFF_OVERSLEEP_YIELD)
-                        dynamicYieldTime += 50;
+                        dynamicYieldTime += EngineMath.Clamp(MIN_YIELD_ADJUSTMENT, MAX_YIELD_ADJUSTMENT, (long)(EngineMath.MultipleOf(oversleep * 0.9, 5)));
 
                     if (oversleep > MAX_DIFF_OVERSLEEP_BREAK)
-                        dynamicBreakTime += 50;
+                        dynamicBreakTime += EngineMath.Clamp(MIN_BREAK_ADJUSTMENT,MAX_BREAK_ADJUSTMENT,(long)(EngineMath.MultipleOf(oversleep * 0.25,5)));
 
                     if ((oversleep > 0 && oversleep <= MAX_DIFF_OVERSLEEP_YIELD) || oversleep < MAX_DIFF_UNDERSLEEP_YIELD)
-                        dynamicYieldTime -= 25;
+                        dynamicYieldTime -= EngineMath.Clamp(MIN_YIELD_ADJUSTMENT, MAX_YIELD_ADJUSTMENT, (long)(EngineMath.MultipleOf(oversleep * 0.9,5)));
 
                     if (oversleep < MAX_DIFF_UNDERSLEEP_BREAK)
-                        dynamicBreakTime -= 25;
+                        dynamicBreakTime -= EngineMath.Clamp(MIN_BREAK_ADJUSTMENT, MAX_BREAK_ADJUSTMENT, (long)(EngineMath.MultipleOf(oversleep * 0.25, 5)));
 
                     dynamicBreakTime = (dynamicBreakTime < MIN_BREAK_TIME) ? MIN_BREAK_TIME 
                         : (dynamicBreakTime > MAX_BREAK_TIME) ? MAX_BREAK_TIME : dynamicBreakTime;

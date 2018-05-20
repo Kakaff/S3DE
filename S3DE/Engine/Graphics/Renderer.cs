@@ -30,6 +30,7 @@ namespace S3DE.Engine.Graphics
 
     public enum AlphaFunction
     {
+        Equals,
         GreaterThan,
         LessThan,
         Never,
@@ -103,8 +104,10 @@ namespace S3DE.Engine.Graphics
         protected abstract RenderTexture2D CreateRenderTexture2D(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height);
         protected abstract Framebuffer CreateFrameBuffer(int width, int height);
         protected abstract ScreenQuad CreateScreenQuad();
+        protected abstract Renderer_Mesh CreateRendererMesh();
         protected abstract int MaxSupportedTextureUnits();
 
+        protected abstract void Draw_Mesh(Renderer_Mesh m);
         protected abstract void Clear();
         protected abstract void OnWindowResized();
         protected abstract void OnRenderResolutionChanged();
@@ -152,6 +155,10 @@ namespace S3DE.Engine.Graphics
         {
             return ActiveRenderer.CreateTexture2D(width, height);
         }
+
+        public static Renderer_Mesh CreateMesh() => ActiveRenderer.CreateRendererMesh();
+
+        internal static void DrawMesh(Renderer_Mesh m) => ActiveRenderer.Draw_Mesh(m);
 
         internal static RenderTexture2D CreateRenderTexture2D_Internal(InternalFormat internalFormat, 
             PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height) => 

@@ -23,6 +23,7 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             prog = new OpenGL_ShaderProgram(OpenGL_Shader.Create(VertexShader), OpenGL_Shader.Create(FragmentShader));
             prog.Compile();
+            identifier = prog.Pointer;
         }
 
         internal OpenGL_Material()

@@ -60,7 +60,6 @@
     <None Include="WrapperGLFW.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\AutoAdjustingStopWatchClock.cs" />
     <Compile Include="Engine\Data\LinkedQueueList.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\ColoredFullScreenTest.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\RenderFramebufferTest.cs" />
@@ -88,10 +87,10 @@
     <Compile Include="Engine\Graphics\OpGL\DC\SetMatrixCommand.cs" />
     <Compile Include="Engine\Graphics\OpGL\DC\SetTextureSamplerCommand.cs" />
     <Compile Include="Engine\Graphics\OpGL\DC\SetVector3Command.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\UseShaderProgramCommand.cs" />
+    <Compile Include="Engine\Graphics\OpGL\DC\UseRendererMaterialCommand.cs" />
     <Compile Include="Engine\Graphics\OpGL\IOpenGL_Texture.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Material_DC.cs" />
-    <Compile Include="Engine\Graphics\OpGL\StandardPipeline.cs" />
+    <Compile Include="Engine\Graphics\OpGL\OpenGL_StandardPipeline.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_BufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Framebuffer.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Material.cs" />
@@ -105,6 +104,7 @@
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Texture2D.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Utility.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_VertexArrayObject.cs" />
+    <Compile Include="Engine\Graphics\Renderer_Mesh.cs" />
     <Compile Include="Engine\Graphics\Shaders\SimpleMaterial.cs" />
     <Compile Include="Engine\Graphics\RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderCall.cs" />

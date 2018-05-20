@@ -23,6 +23,8 @@ namespace S3DE.Engine.Graphics.OpGL
     {
         public override RenderingAPI GetRenderingAPI() => RenderingAPI.OpenGL;
 
+        Dictionary<Type, OpenGL_Material> ShaderPrograms;
+
         protected override void Clear()
         {
             Gl.Clear(ClearBufferMask.ColorBufferBit | 
@@ -31,7 +33,13 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override Renderer_Material CreateMaterial(Type materialType,RenderPass pass)
         {
-            return new OpenGL_Material();
+            if (!ShaderPrograms.TryGetValue(materialType,out OpenGL_Material mat))
+            {
+                mat = new OpenGL_Material();
+                ShaderPrograms.Add(materialType, mat);
+            }
+
+            return mat;
         }
 
         protected override Renderer_MeshRenderer CreateMeshRenderer()
@@ -39,41 +47,54 @@ namespace S3DE.Engine.Graphics.OpGL
             return new OpenGL_MeshRenderer();
         }
 
+        protected override void Draw_Mesh(Renderer_Mesh m)
+        {
+            OpenGL_Mesh mesh = m as OpenGL_Mesh;
+            Draw_Mesh(mesh);
+        }
+
+        void Draw_Mesh(OpenGL_Mesh m)
+        {
+            m.Bind();
+            Gl.DrawElements(PrimitiveType.Triangles, m.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
+        }
+
         protected override void Init()
         {
             Console.WriteLine("Initializing OpenGL_Renderer");
+            ShaderPrograms = new Dictionary<Type, OpenGL_Material>();
+
+            Console.WriteLine("Creating dummy DeviceContext");
+            DeviceContext dc = DeviceContext.Create();
             Gl.Initialize();
+            dc.Dispose();
         }
 
         protected override void SetCapabilities()
         {
             Console.WriteLine("Setting Renderer Capabilities");
+            string s = $"GPU | Vendor: {Gl.GetString(StringName.Vendor)} | Model: {Gl.GetString(StringName.Renderer)}";
+            TestForGLErrors();
+            Console.WriteLine("GPU: " + s);
+            Gl.Get(Gl.MINOR_VERSION, out int minor);
+            TestForGLErrors();
+            Gl.Get(Gl.MAJOR_VERSION, out int major);
+            TestForGLErrors();
+            SetApiVersion((major * 100) + (minor * 10));
+
+            Console.WriteLine($"Supported OpenGL Version: " + Renderer.API_Version);
             
-            try
-            {
-                Gl.Get(Gl.MINOR_VERSION, out int minor);
-                TestForGLErrors();
-                Gl.Get(Gl.MAJOR_VERSION, out int major);
-                TestForGLErrors();
-                SetApiVersion((major * 100) + (minor * 10));
+            Gl.Enable(EnableCap.CullFace);
+            TestForGLErrors();
+            Gl.FrontFace(FrontFaceDirection.Cw);
+            TestForGLErrors();
+            Gl.Enable(EnableCap.DepthTest);
+            TestForGLErrors();
+            Gl.CullFace(CullFaceMode.Back);
+            TestForGLErrors();
+            Gl.FrontFace(FrontFaceDirection.Cw);
+            TestForGLErrors();
 
-                Console.WriteLine($"Supported OpenGL Version: " + Renderer.API_Version);
-
-                Gl.Enable(EnableCap.CullFace);
-                TestForGLErrors();
-                Gl.FrontFace(FrontFaceDirection.Cw);
-                TestForGLErrors();
-                Gl.Enable(EnableCap.DepthTest);
-                TestForGLErrors();
-                Gl.CullFace(CullFaceMode.Back);
-                TestForGLErrors();
-                Gl.FrontFace(FrontFaceDirection.Cw);
-                TestForGLErrors();
-            } catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                EngineMain.StopEngine_ConfirmationRequired(-1);
-            }
         }
 
         protected override void SetDrawBuffers(BufferAttachment[] buffers)
@@ -130,6 +151,8 @@ namespace S3DE.Engine.Graphics.OpGL
         }
 
         protected override Framebuffer CreateFrameBuffer(int width, int height) => new OpenGL_Framebuffer(width,height);
+
+        protected override Renderer_Mesh CreateRendererMesh() => new OpenGL_Mesh();
 
         protected override RenderTexture2D CreateRenderTexture2D(S3DE.Engine.Enums.InternalFormat internalFormat, S3DE.Engine.Enums.PixelFormat pixelFormat, S3DE.Engine.Enums.PixelType pixelType,FilterMode filter, int width, int height) => 
             new OpenGL_RenderTexture2D(internalFormat,pixelFormat,pixelType,filter,width, height);

@@ -12,7 +12,7 @@ using static S3DE.Engine.Graphics.OpGL.OpenGL_Renderer;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
-    internal class OpenGL_Mesh
+    internal class OpenGL_Mesh : Renderer_Mesh
     {
         IOpenGL_BufferObject vbo, ebo;
         OpenGL_VertexArrayObject vao;
@@ -31,9 +31,11 @@ namespace S3DE.Engine.Graphics.OpGL
             vbo.Bind();
             ebo = OpenGL_BufferObject.CreateBuffer(BufferTarget.ElementArrayBuffer);
             ebo.Bind();
+
+            identifier = vao.Pointer;
         }
 
-        internal void Bind()
+        public override void Bind()
         {
             vao.Bind();
             vao.EnableAttribute(0);
@@ -47,7 +49,7 @@ namespace S3DE.Engine.Graphics.OpGL
             }
         }
 
-        internal void Unbind()
+        public override void Unbind()
         {
             vao.DisableAttribute(0);
             if (hasUvs)
@@ -152,7 +154,7 @@ namespace S3DE.Engine.Graphics.OpGL
             Unbind();
         }
 
-        internal void SetData(Mesh m) => SetData(m.Vertices, m.Uvs, m.Normals,m.Tangents, m.Indicies, m.IsDynamic);
+        public override void SetData(Mesh m) => SetData(m.Vertices, m.Uvs, m.Normals,m.Tangents, m.Indicies, m.IsDynamic);
 
         ushort[] IndiciesToUShortArray(int[] arr)
         {

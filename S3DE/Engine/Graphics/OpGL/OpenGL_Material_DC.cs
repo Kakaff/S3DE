@@ -21,6 +21,7 @@ namespace S3DE.Engine.Graphics.OpGL
     {
         prog = new OpenGL_ShaderProgram(OpenGL_Shader.Create(VertexShader), OpenGL_Shader.Create(FragmentShader));
         prog.Compile();
+        identifier = prog.Pointer;
     }
 
     internal OpenGL_Material_DC()
@@ -31,7 +32,7 @@ namespace S3DE.Engine.Graphics.OpGL
     protected override void UseMaterial()
     {
         DrawCallSorter.SetCurrentDrawCall(new DrawCall());
-        DrawCallSorter.AddCommandToCurrent(new UseShaderProgramCommand(prog));
+        DrawCallSorter.AddCommandToCurrent(new UseRendererMaterialCommand(this));
     }
 
     protected override void SetSource(MaterialSource source)

@@ -25,6 +25,10 @@ namespace S3DE.Maths
 
         public static float Clamp(float min, float max, float value) => value > max ? max : value < min ? min : value;
         public static double Clamp(double min, double max, double value) => value > max ? max : value < min ? min : value;
+        public static long Clamp(long min, long max, long value) => value > max ? max : value < min ? min : value;
+
+        public static long MultipleOf(long value, int multiple) => (value / multiple) * multiple;
+        public static double MultipleOf(double value, int multiple) => MultipleOf((long)value, multiple);
 
         public static bool IsPowerOfTwo(uint value) => ((value & ~(value - 1)) == value);
 

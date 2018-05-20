@@ -16,8 +16,10 @@ namespace S3DE.Engine.Graphics
             uvs = new Vector2[0];
             normals = new Vector3[0];
             dynamic = false;
+            RMesh = Renderer.CreateMesh();
         }
 
+        bool hasChanged;
         int[] indicies;
         Vector2[] uvs;
         Vector3[] vertices;
@@ -25,15 +27,42 @@ namespace S3DE.Engine.Graphics
         Vector4[] tangents;
         bool dynamic;
 
-        public Vector4[] Tangents { set => tangents = value; get => tangents;}
-        public Vector3[] Vertices { set => vertices = value; get => vertices;}
-        public Vector3[] Normals { set => normals = value; get => normals;}
-        public Vector2[] Uvs { set => uvs = value; get => uvs;}
-        public int[] Indicies { set => indicies = value; get => indicies;}
-        public bool IsDynamic { get => dynamic; set => dynamic = value;}
+        Renderer_Mesh RMesh;
+
+        public Renderer_Mesh InternalMesh => RMesh;
+
+        public Vector4[] Tangents { set { tangents = value; hasChanged = true;} get => tangents;}
+        public Vector3[] Vertices { set { vertices = value; hasChanged = true;} get => vertices;}
+        public Vector3[] Normals { set  { normals = value; hasChanged = true;} get => normals;}
+        public Vector2[] Uvs { set { uvs = value; hasChanged = true;} get => uvs;}
+        public int[] Indicies { set { indicies = value; hasChanged = true;} get => indicies;}
+        public bool IsDynamic { get => dynamic; set {dynamic = value; hasChanged = true; }}
+
+        public Mesh Clone()
+        {
+            Mesh m = new Mesh();
+            m.Normals = Normals;
+            m.Indicies = Indicies;
+            m.Tangents = Tangents;
+            m.Vertices = Vertices;
+            m.IsDynamic = IsDynamic;
+            m.Uvs = Uvs;
+            m.Apply();
+            return m;
+        }
 
         public void CalculateBounds()
         {
+
+        }
+
+        public void Apply()
+        {
+            if (hasChanged)
+            {
+                RMesh.SetData(this);
+                hasChanged = false;
+            }
 
         }
 
@@ -172,6 +201,7 @@ namespace S3DE.Engine.Graphics
             m.Uvs = uvs;
             m.Indicies = triangles;
             m.ReCalculateNormals(true);
+            m.Apply();
 
             return m;
         }

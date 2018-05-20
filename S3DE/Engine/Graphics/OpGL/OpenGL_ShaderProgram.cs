@@ -16,8 +16,6 @@ namespace S3DE.Engine.Graphics.OpGL
         Dictionary<string, int> Uniforms;
         uint pointer;
 
-        static OpenGL_ShaderProgram _CurrentlyBoundShaderProgram = null;
-
         internal uint Pointer => pointer;
 
         internal OpenGL_ShaderProgram(OpenGL_Shader VertexShader, OpenGL_Shader FragmentShader)
@@ -30,6 +28,8 @@ namespace S3DE.Engine.Graphics.OpGL
 
         internal void Compile()
         {
+            Console.WriteLine("Compiling shaderprogram");
+
             if (!vertexShader.IsCompiled)
                 vertexShader.Compile();
 
@@ -44,14 +44,10 @@ namespace S3DE.Engine.Graphics.OpGL
 
         internal void UseProgram()
         {
-            if (_CurrentlyBoundShaderProgram == null || _CurrentlyBoundShaderProgram.pointer != this.pointer)
-            {
-                _CurrentlyBoundShaderProgram = this;
-                Gl.UseProgram(pointer);
-                TestForGLErrors();
-            }
+            Gl.UseProgram(pointer);
+            TestForGLErrors();
         }
-        
+
         internal void Dispose()
         {
             //Free all shaders.

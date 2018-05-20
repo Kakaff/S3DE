@@ -17,22 +17,10 @@ namespace S3DE.Engine.Graphics.OpGL
         OpenGL_Mesh mesh;
         Mesh m;
 
-        bool hasChanged = false;
-
         internal OpenGL_Mesh InternalMesh => mesh;
 
         protected override void PrepareRender()
         {
-            if (hasChanged)
-            {
-                //Validate the mesh.
-                if (mesh == null)
-                    mesh = new OpenGL_Mesh();
-
-                //Re-Sort?
-                mesh.SetData(m);
-                hasChanged = false;
-            }
         }
 
         protected override void Render()
@@ -40,7 +28,7 @@ namespace S3DE.Engine.Graphics.OpGL
             if (mesh != null)
             {
                 mesh.Bind();
-                Gl.DrawElements(PrimitiveType.Triangles, mesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                Renderer.DrawMesh(mesh);
                 OpenGL_Renderer.TestForGLErrors();
             }
         }
@@ -58,7 +46,7 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override void SetMesh(Mesh m)
         {
             this.m = m;
-            hasChanged = true;
+            mesh = m.InternalMesh as OpenGL_Mesh;
         }
     }
 }

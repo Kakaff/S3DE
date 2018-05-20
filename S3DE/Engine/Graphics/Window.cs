@@ -33,6 +33,9 @@ namespace S3DE.Engine.Graphics
         internal static bool IsCloseRequested => instance.GLFW_window.ShouldClose();
 
         internal static void SwapBuffer() => instance.GLFW_window.SwapBuffers();
+
+        internal static void DestroyWindow() { Glfw.DestroyWindow(instance.GLFW_window); instance.Dispose(); instance = null; }
+
         internal static bool IsCurrentContext()
         {
             GLFWwindow w = Glfw.GetCurrentContext();
@@ -53,12 +56,18 @@ namespace S3DE.Engine.Graphics
                 instance = new Window();
                 instance.CreateGLFWWindow((int)Game.DisplayResolution.x,(int)Game.DisplayResolution.y, title);
                 instance.aspect = Game.DisplayResolution.x / Game.DisplayResolution.y;
+                
             }
         }
 
         void CreateGLFWWindow(int width, int height, string title)
         {
             GLFW_window = Glfw.CreateWindow(width, height, title, null, null);
+        }
+
+        void Dispose()
+        {
+            GLFW_window = null;
         }
 
         internal static void PollEvents()

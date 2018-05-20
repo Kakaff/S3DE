@@ -1,4 +1,5 @@
 ﻿using OpenGL;
+using S3DE.Engine.Graphics.Materials;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +20,15 @@ namespace S3DE.Engine.Graphics.OpGL.DC
         //So basicly when setting a uniform/binding a texture/etc. lump it into a Drawcall. Which is then performed on Renderer.FinalizeRenderStage()
         //But only when doing it from a Meshrenderer. Not when binding textures outside of that.
 
-        OpenGL_Mesh mesh;
-        OpenGL_ShaderProgram shaderProg;
+        Renderer_Mesh mesh;
+        Renderer_Material rMat;
         List<IDrawCallCommand> commands;
         List<IOpenGL_Texture> Textures;
 
-        internal OpenGL_Mesh Mesh => mesh;
+        internal Renderer_Mesh Mesh => mesh;
         internal int TextureBindings => Textures.Count;
-        internal uint ShaderProgramIdentifier => shaderProg.Pointer;
-        internal uint MeshIdentifier => mesh.VAO_Pointer;
+        internal uint MaterialIdentifier => rMat.Identifier;
+        internal uint MeshIdentifier => mesh.Identifier;
 
         internal DrawCall()
         {
@@ -36,8 +37,8 @@ namespace S3DE.Engine.Graphics.OpGL.DC
         }
 
         internal void AddTexture(IOpenGL_Texture tex) => Textures.Add(tex);
-        internal void SetShaderProg(OpenGL_ShaderProgram shad) => shaderProg = shad;
-        internal void SetMesh(OpenGL_Mesh m) => mesh = m;
+        internal void SetRendererMaterial(Renderer_Material rmat) => rMat = rmat;
+        internal void SetMesh(Renderer_Mesh m) => mesh = m;
 
         internal void Perform()
         {
@@ -56,7 +57,7 @@ namespace S3DE.Engine.Graphics.OpGL.DC
         internal void Dispose()
         {
             mesh = null;
-            shaderProg = null;
+            rMat = null;
 
             foreach (IDrawCallCommand dcc in commands)
                 dcc.Dispose();

@@ -10,9 +10,9 @@ namespace S3DE.Engine.Graphics.OpGL.DC
     {
         private BindMeshCommand() { }
 
-        OpenGL_Mesh mesh;
+        Renderer_Mesh mesh;
 
-        internal BindMeshCommand(OpenGL_Mesh m)
+        internal BindMeshCommand(Renderer_Mesh m)
         {
             mesh = m;
         }

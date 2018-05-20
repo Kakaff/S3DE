@@ -12,7 +12,7 @@ using S3DE.Engine.Graphics.Lights;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
-    public class StandardPipeline : RenderPipeline
+    public class OpenGL_StandardPipeline : RenderPipeline
     {
         static long passDuration,def_geo_Dur,def_li_dur;
 
@@ -216,9 +216,7 @@ namespace S3DE.Engine.Graphics.OpGL
             fb.SetAsActive();
             fb.Clear();
             Renderer.Enable(Function.DepthTest);
-            Renderer.Enable(Function.AlphaTest);
-            //Renderer.AlphaFunction(AlphaFunction.Never, 0f); //Uncommenting this makes nothing render on amd and intel gpu's.
-            //It will still work on some nvidia gpu's.
+            
             DrawScene(scene);
             FinalizeRenderPass();
         }
@@ -236,7 +234,6 @@ namespace S3DE.Engine.Graphics.OpGL
             dfb.Clear(true,false,false);
             Renderer.Disable(Function.DepthTest);
             Renderer.Disable(Function.AlphaTest);
-             
             ambientMat.UseMaterial(RenderPass.Deferred);
             ScreenQuad.RenderToScreenQuad();
             FinalizeRenderPass();

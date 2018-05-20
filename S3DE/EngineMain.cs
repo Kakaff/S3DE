@@ -36,13 +36,6 @@ namespace S3DE
 
         public static bool IsRunning => isRunning;
 
-        static void CheckContext()
-        {
-            if (Engine.Graphics.Window.IsCurrentContext())
-                Console.WriteLine("Renderer has a context");
-            else
-                Console.WriteLine("Renderer does not have a context");
-        }
         public static void RunGame(Game game)
         {
             EngineMain.game = game;
@@ -52,16 +45,14 @@ namespace S3DE
             Time.Start();
             Glfw.Init();
 
-            /*
-             * On 2 of the 3 gpu's i've tested, the renderer has to be initialized before creating a window.
-             * and making the window context current.
-             */
+
+            Renderer.Init_Internal();
 
             Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
 
-            Renderer.Init_Internal();
             Renderer.SetCapabilities_Internal();
+
             TextureUnits.Initialize();
             RenderPipeline.Init_Internal();
             game.StartGame();
@@ -102,10 +93,12 @@ namespace S3DE
             isRunning = false;
             Environment.Exit(exitCode);
         }
+
         internal static void StopEngine_ConfirmationRequired(int exitCode)
         {
             isRunning = false;
-            Console.Read();
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey();
             Environment.Exit(exitCode);
         }
     }

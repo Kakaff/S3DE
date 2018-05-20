@@ -96,6 +96,7 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             switch (func)
             {
+                case S3DE.Engine.Graphics.AlphaFunction.Equals: return OpenGL.AlphaFunction.Equal;
                 case S3DE.Engine.Graphics.AlphaFunction.Always: return OpenGL.AlphaFunction.Always;
                 case S3DE.Engine.Graphics.AlphaFunction.GreaterThan: return OpenGL.AlphaFunction.Greater;
                 case S3DE.Engine.Graphics.AlphaFunction.LessThan: return OpenGL.AlphaFunction.Less;

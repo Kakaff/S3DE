@@ -147,12 +147,13 @@ namespace S3DE.Engine.Graphics.OpGL.DC
         {
             if (CurrentDrawCall != null)
             {
-                DrawCallContainer dcc = QueuedDrawCalls.Find(t => t.Identifier == CurrentDrawCall.ShaderProgramIdentifier);
+                DrawCallContainer dcc = QueuedDrawCalls.Find(t => t.Identifier == CurrentDrawCall.MaterialIdentifier);
                 if (dcc == null)
                 {
-                    dcc = new DrawCallContainer(DrawCallContainer.ContainerType.ShaderProgram, 0, (int)CurrentDrawCall.ShaderProgramIdentifier);
+                    dcc = new DrawCallContainer(DrawCallContainer.ContainerType.ShaderProgram, 0, (int)CurrentDrawCall.MaterialIdentifier);
                     QueuedDrawCalls.Add(dcc);
                 }
+
                 dcc.AddDrawCall(CurrentDrawCall);
                 CurrentDrawCall = null;
             }
