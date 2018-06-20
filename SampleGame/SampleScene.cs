@@ -21,7 +21,7 @@ namespace SampleGame
         protected override void LoadScene()
         {
             
-            Material mat = new SimpleMaterial();
+            Material mat = new SimpleMaterial_UBO();
             Mesh m = Mesh.CreateCube(new Vector3(1, 1, 1));
             
             const int s = 4;

@@ -10,6 +10,7 @@ using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
 using S3DE.Engine.Debug.RenderingDebugging;
 using S3DE.Engine.IO;
+using S3DE.Engine.Data;
 
 namespace S3DE
 {
@@ -54,6 +55,7 @@ namespace S3DE
             Renderer.SetCapabilities_Internal();
 
             TextureUnits.Initialize();
+            S3DE_UniformBuffer.Initialize_BindingPoints();
             RenderPipeline.Init_Internal();
             game.StartGame();
             isRunning = true;

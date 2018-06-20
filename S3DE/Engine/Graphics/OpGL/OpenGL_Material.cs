@@ -18,6 +18,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
         MaterialSource VertexShader, FragmentShader;
         Dictionary<string, int> Uniforms;
+        Dictionary<string, int> UniformBlocks;
 
         protected override void Compile()
         {
@@ -29,11 +30,19 @@ namespace S3DE.Engine.Graphics.OpGL
         internal OpenGL_Material()
         {
             Uniforms = new Dictionary<string, int>();
+            UniformBlocks = new Dictionary<string, int>();
         }
 
         protected override void UseMaterial()
         {
             prog.UseProgram();
+        }
+
+        protected override int GetUniformBlockIndex(string name)
+        {
+            int index = (int)Gl.GetUniformBlockIndex(prog.Pointer, name);
+            OpenGL_Renderer.TestForGLErrors();
+            return index;
         }
 
         protected override void SetSource(MaterialSource source)
@@ -67,7 +76,27 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void SetUniform(string uniformName, Vector3 v) => prog.SetUniform(uniformName, v);
 
+        protected override void SetUniformBlock(string blockName, int bindingPoint)
+        {
+            if (UniformBlocks.TryGetValue(blockName,out int index))
+            {
+                Gl.UniformBlockBinding(prog.Pointer, (uint)index, (uint)bindingPoint);
+                OpenGL_Renderer.TestForGLErrors();
+            } else
+            {
+                throw new NullReferenceException($"UniformBlock {blockName} does not exist");
+            }
+        }
+
         protected override void AddUniform(string uniformName) => prog.AddUniform(uniformName);
+
+        protected override void AddUniformBlock(string blockName)
+        {
+            int index = GetUniformBlockIndex(blockName);
+            Console.WriteLine($"Getting UniformBlock {blockName} | Index: {index}");
+            UniformBlocks.Add(blockName, index);
+        }
+
 
         protected override void SetTexture(string uniformName, TextureUnit textureUnit, ITexture texture)
         {

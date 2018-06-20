@@ -29,7 +29,17 @@ namespace S3DE.Engine.Graphics.OpGL
         Uniforms = new Dictionary<string, int>();
     }
 
-    protected override void UseMaterial()
+        protected override void AddUniformBlock(string blockName)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void SetUniformBlock(string blockName, int bindingPoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void UseMaterial()
     {
         DrawCallSorter.SetCurrentDrawCall(new DrawCall());
         DrawCallSorter.AddCommandToCurrent(new UseRendererMaterialCommand(this));
@@ -77,5 +87,10 @@ namespace S3DE.Engine.Graphics.OpGL
     {
         DrawCallSorter.AddCommandToCurrent(new SetTextureSamplerCommand((uint)prog.GetUniformLocation(uniformName), texture as IOpenGL_Texture));
     }
-}
+
+        protected override int GetUniformBlockIndex(string name)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

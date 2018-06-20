@@ -8,26 +8,26 @@ namespace S3DE.Maths
 {
     public sealed class Matrix4x4
     {
-        float[,] mV;
+        float[][] mV;
 
         public float this[int x, int y]
         {
-            get => mV[x, y];
-            set => mV[x, y] = value;
+            get => mV[x][y];
+            set => mV[x][y] = value;
         }
 
         public Matrix4x4()
         {
-            mV = new float[4, 4];
+            mV = new float[4][];
             SetIdentity();
         }
 
         public Matrix4x4 SetIdentity()
         {
-            mV[0, 0] = 1;
-            mV[1, 1] = 1;
-            mV[2, 2] = 1;
-            mV[3, 3] = 1;
+            mV[0] = new float[] { 1, 0, 0, 0 };
+            mV[1] = new float[] { 0, 1, 0, 0 };
+            mV[2] = new float[] { 0, 0, 1, 0 };
+            mV[3] = new float[] { 0, 0, 0, 1 };
 
             return this;
         }
@@ -155,9 +155,28 @@ namespace S3DE.Maths
             List<float> values = new List<float>();
             for (int x = 0; x < 4; x++)
                 for (int y = 0; y < 4; y++)
-                    values.Add(mV[x, y]);
+                    values.Add(mV[x][y]);
 
             return values.ToArray();
+        }
+
+        public byte[] ToByteArray()
+        {
+            List<byte> bytes = new List<byte>();
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    bytes.AddRange(BitConverter.GetBytes(mV[i][j]));
+
+            return bytes.ToArray();
+        }
+
+        public static byte[] ToByteArray(params Matrix4x4[] matrices)
+        {
+            List<byte> res = new List<byte>();
+            foreach (Matrix4x4 m in matrices)
+                res.AddRange(m.ToByteArray());
+            
+            return res.ToArray();
         }
     }
 }

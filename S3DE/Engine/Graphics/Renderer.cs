@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using static S3DE.Engine.Enums;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
+using S3DE.Engine.Data;
 
 namespace S3DE.Engine.Graphics
 {
@@ -105,8 +106,10 @@ namespace S3DE.Engine.Graphics
         protected abstract Framebuffer CreateFrameBuffer(int width, int height);
         protected abstract ScreenQuad CreateScreenQuad();
         protected abstract Renderer_Mesh CreateRendererMesh();
-        protected abstract int MaxSupportedTextureUnits();
+        protected abstract S3DE_UniformBuffer Create_UniformBuffer();
 
+        protected abstract int MaxSupportedTextureUnits();
+        protected abstract int MaxSupportedUniformBlockBindingPoints();
         protected abstract void Draw_Mesh(Renderer_Mesh m);
         protected abstract void Clear();
         protected abstract void OnWindowResized();
@@ -116,6 +119,7 @@ namespace S3DE.Engine.Graphics
         protected abstract void disable(Function func);
         protected abstract void SetViewportSize(Vector2 size);
         protected abstract void BindTexUnit(ITexture tex, TextureUnit tu);
+        protected abstract void Bind_UniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint);
         protected abstract void UnbindTexUnit(TextureUnit tu);
         protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
         protected abstract void Sync();
@@ -157,6 +161,8 @@ namespace S3DE.Engine.Graphics
         }
 
         public static Renderer_Mesh CreateMesh() => ActiveRenderer.CreateRendererMesh();
+
+        public static S3DE_UniformBuffer CreateUniformBuffer() => ActiveRenderer.Create_UniformBuffer();
 
         internal static void DrawMesh(Renderer_Mesh m) => ActiveRenderer.Draw_Mesh(m);
 
@@ -213,8 +219,10 @@ namespace S3DE.Engine.Graphics
         internal static Vector2 DisplayResolution => ActiveRenderer.displayResolution;
         internal static Vector2 RenderResolution => ActiveRenderer.renderResolution;
         internal static int RefreshRate => ActiveRenderer.refreshRate;
-        internal static void UnbindTextureUnit(TextureUnit tu) => ActiveRenderer.UnbindTexUnit(tu);
-        internal static void BindTextureUnit(ITexture tex, TextureUnit tu) => ActiveRenderer.BindTexUnit(tex, tu);
-        internal static int TextureUnitCount { get => ActiveRenderer.MaxSupportedTextureUnits(); }
+        public static void UnbindTextureUnit(TextureUnit tu) => ActiveRenderer.UnbindTexUnit(tu);
+        public static void BindTextureUnit(ITexture tex, TextureUnit tu) => ActiveRenderer.BindTexUnit(tex, tu);
+        public static void BindUniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint) => ActiveRenderer.Bind_UniformBuffer(buffer, bindingPoint);
+        public static int TextureUnitCount { get => ActiveRenderer.MaxSupportedTextureUnits(); }
+        public static int UniformBlockBindingPoints { get => ActiveRenderer.MaxSupportedUniformBlockBindingPoints(); }
     }
 }

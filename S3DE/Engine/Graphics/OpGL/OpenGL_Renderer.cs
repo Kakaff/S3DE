@@ -15,12 +15,17 @@ using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.Graphics.OpGL.DC;
+using S3DE.Engine.Data;
+using S3DE.Engine.Graphics.OpGL.BufferObjects;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
 
     public sealed class OpenGL_Renderer : Renderer
     {
+
+        int textureUnits, uniformBlockBindingPoints;
+
         public override RenderingAPI GetRenderingAPI() => RenderingAPI.OpenGL;
 
         Dictionary<Type, OpenGL_Material> ShaderPrograms;
@@ -70,6 +75,13 @@ namespace S3DE.Engine.Graphics.OpGL
             dc.Dispose();
         }
 
+        protected override void Bind_UniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint)
+        {
+            Gl.BindBufferBase(BufferTarget.UniformBuffer, (uint)bindingPoint, buffer.Identifier);
+            TestForGLErrors();
+        }
+
+        protected override S3DE_UniformBuffer Create_UniformBuffer() => OpenGL_BufferObject.CreateBuffer(BufferTarget.UniformBuffer) as S3DE_UniformBuffer;
         protected override void SetCapabilities()
         {
             Console.WriteLine("Setting Renderer Capabilities");
@@ -83,6 +95,18 @@ namespace S3DE.Engine.Graphics.OpGL
             SetApiVersion((major * 100) + (minor * 10));
 
             Console.WriteLine($"Supported OpenGL Version: " + Renderer.API_Version);
+
+            Gl.Get(OpenGL.Gl.MAX_TEXTURE_IMAGE_UNITS, out textureUnits);
+
+            Console.WriteLine($"Supported Texture Units: {textureUnits}");
+
+            Gl.Get(Gl.MAX_UNIFORM_BUFFER_BINDINGS,out uniformBlockBindingPoints);
+            Gl.Get(Gl.MAX_UNIFORM_LOCATIONS, out int uniformLocations);
+            Gl.Get(Gl.MAX_UNIFORM_BLOCK_SIZE, out int uniformBlockSize);
+
+            Console.WriteLine($"Max Supported Uniform Binding Points: {uniformBlockBindingPoints}");
+            Console.WriteLine($"Max Supported Uniform Locations: {uniformLocations}");
+            Console.WriteLine($"Max Supported Uniform Block Size: {uniformBlockSize} bytes");
             
             Gl.Enable(EnableCap.CullFace);
             TestForGLErrors();
@@ -191,8 +215,12 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override int MaxSupportedTextureUnits()
         {
-            OpenGL.Gl.Get(OpenGL.Gl.MAX_TEXTURE_IMAGE_UNITS,out int c);
-            return c;
+            return textureUnits;
+        }
+
+        protected override int MaxSupportedUniformBlockBindingPoints()
+        {
+            return uniformBlockBindingPoints;
         }
 
         protected override void FinalizePass()

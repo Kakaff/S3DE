@@ -73,7 +73,15 @@ namespace S3DE.Engine.Entities
                         mat.SetProjectionMatrix(Scene.ActiveCamera.ProjectionMatrix);
                     if (mat.UsesRotationMatrix)
                         mat.SetRotationMatrix(gameEntity.transform.WorldRotationMatrix);
+
                     
+                    if (mat.UsesCameraMatrices)
+                        mat.SetCameraBlock(Scene.ActiveCamera.UniformBuffer);
+
+                    if (mat.UsesTransformMatrices)
+                        mat.SetTransformBlock(transform.UniformBuffer);
+                    
+
                     api_mr.Render_Internal();
                 } else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))
                 {

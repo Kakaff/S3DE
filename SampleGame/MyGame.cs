@@ -38,6 +38,7 @@ namespace SampleGame
             DisplayResolution = new Vector2(1280, 720);
             RenderResolution = new Vector2(1280, 720);
             RefreshRate = 60;
+            SetVSync(false);
             Input.LockCursor();
             SetStartScene<SampleScene>();
         }

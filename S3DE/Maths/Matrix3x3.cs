@@ -8,24 +8,24 @@ namespace S3DE.Maths
 {
     public class Matrix3x3
     {
-        float[,] mv;
+        float[][] mv;
 
         public float this[int x, int y] {
-            get => mv[x, y];
-            set => mv[x, y] = value;
+            get => mv[x][y];
+            set => mv[x][y] = value;
         }
 
         public Matrix3x3()
         {
-            mv = new float[3, 3];
+            mv = new float[3][];
             SetIdentity();
         }
 
         public void SetIdentity()
         {
-            mv[0, 0] = 1;
-            mv[1, 1] = 1;
-            mv[2, 2] = 1;
+            mv[0] = new float[] { 1, 0, 0 };
+            mv[1] = new float[] { 0, 1, 0 };
+            mv[2] = new float[] { 0, 0, 1 };
         }
 
         public static Matrix3x3 Identity => new Matrix3x3();

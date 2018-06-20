@@ -41,6 +41,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Debug\AlternativeFrameSync.cs" />
     <Compile Include="MyGame.cs" />
     <Compile Include="SampleFrameSync.cs" />
     <Compile Include="Sample_Components\Sample_CameraController.cs" />

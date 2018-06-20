@@ -1,5 +1,4 @@
-﻿using S3DE.Engine.Graphics;
-using S3DE.Engine.Graphics.Materials;
+﻿using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.IO;
 using S3DE.Maths;
@@ -11,9 +10,10 @@ using System.Threading.Tasks;
 
 namespace S3DE.Engine.Graphics.Shaders
 {
-    public class SimpleMaterial : Material
+    public class SimpleMaterial_UBO : Material
     {
-        Texture2D texture,normal;
+
+        Texture2D texture, normal;
 
         private class SimpleVertSource : MaterialSource
         {
@@ -28,18 +28,13 @@ namespace S3DE.Engine.Graphics.Shaders
                     "layout(location = 2)in vec3 normal;",
                     "layout(location = 3)in vec3 tangent;",
                     "layout(location = 4)in vec3 bitangent;",
-
-                    "uniform mat4 view;",
-                    "uniform mat4 projection;",
-                    "uniform mat4 transform;",
-                    "uniform mat4 rotation;",
-
-                    "uniform CameraMatrices {",
+                    
+                    "layout(std140) uniform CameraMatrices {",
                     "mat4 view;",
                     "mat4 projection;",
                     "} Camera;",
 
-                    "uniform TransformMatrices {",
+                    "layout(std140) uniform TransformMatrices {",
                     "mat4 transform;",
                     "mat4 translation;",
                     "mat4 rotation;",
@@ -53,10 +48,10 @@ namespace S3DE.Engine.Graphics.Shaders
                     "} frag;",
 
                     "void main() {",
-                    "frag.pos = (transform * vec4(position,1.0)).xyz;",
+                    "frag.pos = (Transform.transform * vec4(position,1.0)).xyz;",
                     "frag.uv = uvs;",
-                    "frag.TBN = mat3(rotation) * mat3(tangent,bitangent,normal);",
-                    "gl_Position = (projection * view) * vec4(frag.pos,1.0);",
+                    "frag.TBN = mat3(Transform.rotation) * mat3(tangent,bitangent,normal);",
+                    "gl_Position = (Camera.projection * Camera.view) * vec4(frag.pos,1.0);",
                     "}");
             }
         }
@@ -93,12 +88,13 @@ namespace S3DE.Engine.Graphics.Shaders
             }
         }
 
-        public SimpleMaterial() : base()
+        public SimpleMaterial_UBO() : base()
         {
-            UsesProjectionMatrix = true;
-            UsesViewMatrix = true;
-            UsesTransformMatrix = true;
-            UsesRotationMatrix = true;
+            UsesTransformMatrices = true;
+            UsesCameraMatrices = true;
+            CameraUniformBlockName = "CameraMatrices";
+            TransformUniformBlockName = "TransformMatrices";
+
             SupportsDeferredRendering = true;
             normal = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall_normal.jpg");
             texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
@@ -122,7 +118,7 @@ namespace S3DE.Engine.Graphics.Shaders
             return tex;
         }
 
-        protected override MaterialSource GetSource(ShaderStage stage,RenderPass pass)
+        protected override MaterialSource GetSource(ShaderStage stage, RenderPass pass)
         {
             switch (stage)
             {
@@ -143,12 +139,12 @@ namespace S3DE.Engine.Graphics.Shaders
 
         protected override string[] GetUniforms()
         {
-            return new string[] {"tex", "normalMap"};
+            return new string[] { "tex", "normalMap" };
         }
 
         protected override void UpdateUniforms(RenderPass pass)
         {
-            SetTexture("tex",texture);
+            SetTexture("tex", texture);
             SetTexture("normalMap", normal);
         }
     }

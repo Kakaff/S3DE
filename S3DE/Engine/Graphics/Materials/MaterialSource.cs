@@ -17,5 +17,6 @@ namespace S3DE.Engine.Graphics.Materials
 
         protected void SetStage(ShaderStage stage) => this.stage = stage;
         protected void SetSource(string source) => this.source = source;
+        protected void SetSource(params string[] source) => this.source = String.Join("\n", source);
     }
 }

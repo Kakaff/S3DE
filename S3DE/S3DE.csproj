@@ -60,6 +60,7 @@
     <None Include="WrapperGLFW.dll.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Graphics\S3DE_UniformBuffer.cs" />
     <Compile Include="Engine\Data\LinkedQueueList.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\ColoredFullScreenTest.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\RenderFramebufferTest.cs" />
@@ -76,6 +77,10 @@
     <Compile Include="Engine\Graphics\Lights\IDirectionalLight.cs" />
     <Compile Include="Engine\Graphics\Lights\ILight.cs" />
     <Compile Include="Engine\Graphics\Materials\Material.cs" />
+    <Compile Include="Engine\Graphics\OpGL\BufferObjects\IOpenGL_BufferObject.cs" />
+    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ArrayBufferObject.cs" />
+    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ElementArrayBufferObject.cs" />
+    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_UniformBufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\DC\BindMeshCommand.cs" />
     <Compile Include="Engine\Graphics\OpGL\DC\DrawCall.cs" />
     <Compile Include="Engine\Graphics\OpGL\DC\DrawCallSorter.cs" />
@@ -91,7 +96,7 @@
     <Compile Include="Engine\Graphics\OpGL\IOpenGL_Texture.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Material_DC.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_StandardPipeline.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_BufferObject.cs" />
+    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_BufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Framebuffer.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Material.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Mesh.cs" />
@@ -109,6 +114,7 @@
     <Compile Include="Engine\Graphics\RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderCall.cs" />
     <Compile Include="Engine\Graphics\Materials\Renderer_Material.cs" />
+    <Compile Include="Engine\Graphics\Shaders\SimpleMaterial_UBO.cs" />
     <Compile Include="Engine\Graphics\Textures\ITexture.cs" />
     <Compile Include="Engine\Graphics\Textures\ITexture2D.cs" />
     <Compile Include="Engine\Graphics\Textures\RenderTexture2D.cs" />

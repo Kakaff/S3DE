@@ -36,13 +36,13 @@ namespace SampleGame
         const long MAX_DIFF_UNDERSLEEP_BREAK = -150;
         const long MAX_DIFF_OVERSLEEP_YIELD = 150;
         const long MAX_DIFF_UNDERSLEEP_YIELD = -150;
-        const long MAX_OVERSLEEP_ERR = 250;
+        const long MAX_OVERSLEEP_ERR = 50;
         const long OVERSLEEP_STEP = 50;
         const long MIN_BREAK_TIME = 0;
         const long MIN_YIELD_TIME = 2500;
 
-        const long MAX_BREAK_TIME = 5500;
-        const long MAX_YIELD_TIME = 5500;
+        const long MAX_BREAK_TIME = 500;
+        const long MAX_YIELD_TIME = 1500;
 
         const long MAX_FRAME_SKIPS = 1;
         const double MAX_FRAME_LAG = 1;

@@ -1,4 +1,5 @@
-﻿using S3DE.Engine.Entities;
+﻿using S3DE.Engine.Data;
+using S3DE.Engine.Entities;
 using S3DE.Engine.Graphics.Lights;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Maths;
@@ -21,12 +22,22 @@ namespace S3DE.Engine.Graphics.Materials
 
     public abstract class Material
     {
-        Renderer_Material _rActMaterial,_rDefMaterial,_rForMaterial,_rShadMaterial;
-        protected abstract MaterialSource GetSource(ShaderStage stage,RenderPass pass);
-        bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix,usesRotationMatrix;
-        bool supportsDeferred, supportsForward,supportShadow;
+        Renderer_Material _rActMaterial, _rDefMaterial, _rForMaterial, _rShadMaterial;
+        protected abstract MaterialSource GetSource(ShaderStage stage, RenderPass pass);
+        bool usesTransformMatrices, usesCameraMatrices;
+        bool usesTransMatrix, usesViewMatrix, usesProjectionMatrix, usesRotationMatrix;
+        bool supportsDeferred, supportsForward, supportShadow;
 
         bool isCreated;
+
+        string cameraUniformBlockName = "Camera";
+        string transformUniformBlockName = "Transform";
+
+        S3DE_UniformBuffer transformBuffer, cameraBuffer;
+
+
+        public S3DE_UniformBuffer Transform_UBO { set => transformBuffer = value; }
+        public S3DE_UniformBuffer Camera_UBO { set => cameraBuffer = value; }
 
         public bool SupportsShadowMapping
         {
@@ -70,6 +81,42 @@ namespace S3DE.Engine.Graphics.Materials
             protected set => usesRotationMatrix = value;
         }
 
+        public bool UsesTransformMatrices
+        {
+            get => usesTransformMatrices;
+            protected set => usesTransformMatrices = value;
+        }
+
+        public bool UsesCameraMatrices
+        {
+            get => usesCameraMatrices;
+            protected set => usesCameraMatrices = value;
+        }
+
+        public string CameraUniformBlockName
+        {
+            get => cameraUniformBlockName;
+            protected set => SetCameraUniformBlockName(value);
+        }
+
+        public string TransformUniformBlockName
+        {
+            get => transformUniformBlockName;
+            protected set => SetTransformUniformBlockName(value);
+        }
+
+        private void SetTransformUniformBlockName(string n)
+        {
+            //Check to see if material is already compiled.
+            transformUniformBlockName = n;
+        }
+
+        private void SetCameraUniformBlockName(string n)
+        {
+            //Check to see if material is already compiled.
+            cameraUniformBlockName = n;
+        }
+
         public bool SupportsRenderPass(RenderPass pass)
         {
             switch (pass)
@@ -82,7 +129,7 @@ namespace S3DE.Engine.Graphics.Materials
         }
         protected Material()
         {
-            
+
         }
 
         protected void CreateRendererMaterial()
@@ -114,7 +161,14 @@ namespace S3DE.Engine.Graphics.Materials
                     AddUniform("projection");
                 if (UsesRotationMatrix)
                     AddUniform("rotation");
+
+                if (UsesCameraMatrices)
+                    AddUniformBlock(CameraUniformBlockName);
+                if (UsesTransformMatrices)
+                    AddUniformBlock(TransformUniformBlockName);
+
                 AddUserDefinedUniforms();
+                AddUserDefinedUniformBlocks();
             }
         }
 
@@ -171,8 +225,13 @@ namespace S3DE.Engine.Graphics.Materials
         internal void SetViewMatrix(Matrix4x4 m) => SetUniform("view", m);
         internal void SetProjectionMatrix(Matrix4x4 m) => SetUniform("projection", m);
         internal void SetRotationMatrix(Matrix4x4 m) => SetUniform("rotation", m);
+        internal void SetTransformBlock(S3DE_UniformBuffer ubo) => SetUniformBlock(TransformUniformBlockName, ubo);
+        internal void SetCameraBlock(S3DE_UniformBuffer ubo) => SetUniformBlock(CameraUniformBlockName, ubo);
 
-        internal void UpdateUniforms_Internal(RenderPass pass) => UpdateUniforms(pass);
+        internal void UpdateUniforms_Internal(RenderPass pass)
+        {
+            UpdateUniforms(pass);
+        }
         protected abstract void UpdateUniforms(RenderPass pass);
 
         internal void AddUniform(string uniformName)
@@ -186,6 +245,24 @@ namespace S3DE.Engine.Graphics.Materials
             }
         }
 
+        internal void AddUniformBlock(string blockName)
+        {
+            try
+            {
+                _rActMaterial.Internal_AddUniformBlock(blockName);
+            } catch (Exception ex)
+            {
+                throw new NullReferenceException($"Error getting UniformBlock '{blockName}' in {GetType().Name}' | {ex.Message}");
+            }
+        }
+
+        internal void AddUserDefinedUniformBlocks()
+        {
+            string[] uniformBlocks = GetUniformBlocks();
+            foreach (string s in uniformBlocks)
+                AddUniformBlock(s);
+        }
+
         internal void AddUserDefinedUniforms()
         {
             string[] uniforms = GetUniforms();
@@ -193,8 +270,9 @@ namespace S3DE.Engine.Graphics.Materials
                 AddUniform(s);
         }
 
+        protected virtual string[] GetUniformBlocks() { return new string[0];}
         protected virtual string[] GetUniforms() { return new string[0];}
-
+        
         protected void SetUniform(string uniformName, float value) => _rActMaterial.Internal_SetUniformf(uniformName, value);
         protected void SetUniform(string uniformName, ILight light) => _rActMaterial.Internal_SetUniform(uniformName, light);
         protected void SetUniform(string uniformName, IDirectionalLight directionalLight) => _rActMaterial.Internal_SetUniform(uniformName, directionalLight);
@@ -209,6 +287,15 @@ namespace S3DE.Engine.Graphics.Materials
             if (!isbound)
                 texUnit = texture.Bind();
             _rActMaterial.Internal_SetTexture(samplerName, texUnit, texture);
+        }
+
+        protected void SetUniformBlock(string blockName,S3DE_UniformBuffer buffer)
+        {
+            if (!buffer.IsBound)
+                buffer.Bind();
+
+            _rActMaterial.Internal_SetUniformBlock(blockName, buffer.BoundUniformBlockBinding);
+            
         }
     }
 }

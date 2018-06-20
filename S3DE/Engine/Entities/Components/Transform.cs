@@ -1,4 +1,5 @@
-﻿using S3DE.Maths;
+﻿using S3DE.Engine.Data;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,9 @@ namespace S3DE.Engine.Entities.Components
         Transform parent;
         List<Transform> children;
         bool hasChanged;
+        S3DE_UniformBuffer ubo;
 
+        public S3DE_UniformBuffer UniformBuffer => ubo;
         public bool HasChanged => hasChanged;
 
         public Transform Parent => parent;
@@ -73,6 +76,16 @@ namespace S3DE.Engine.Entities.Components
         public Matrix4x4 WorldScaleMatrix => worldScaleMatrix;
         public Matrix4x4 WorldTransformMatrix => worldTransformMatrix;
 
+        protected override void PreRender()
+        {
+            if (hasChanged)
+            {
+                if (ubo == null)
+                    ubo = S3DE_UniformBuffer.Create();
+
+                ubo.SetData(Matrix4x4.ToByteArray(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix));
+            }
+        }
         protected override void PostRender() => hasChanged = false;
 
         public void Translate(Vector3 direction, float distance) => Translate(direction, distance, Space.World);
