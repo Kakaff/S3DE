@@ -122,17 +122,19 @@ namespace S3DE.Engine.Graphics
         protected abstract void Bind_UniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint);
         protected abstract void UnbindTexUnit(TextureUnit tu);
         protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
-        protected abstract void Sync();
         protected abstract void FinalizePass();
+        protected abstract void FinishFrame();
 
         protected void SetApiVersion(int version) => apiVer = version;
 
         internal static Renderer ActiveRenderer => activeRenderer;
         internal static RenderCall MainRenderCall => mainRenderCall;
-        internal static void Sync_Internal() => ActiveRenderer.Sync();
         public static void Enable(Function func) => ActiveRenderer.enable(func);
         public static void Disable(Function func) => ActiveRenderer.disable(func);
-        internal static void FinalizeRenderPass() => ActiveRenderer.FinalizePass(); 
+        internal static void FinalizeRenderPass() => ActiveRenderer.FinalizePass();
+        internal static void Finish_Internal() => ActiveRenderer.FinishFrame();
+
+        internal static string GetName() => ActiveRenderer.GetType().Name;
 
         internal static T SetTargetRenderer<T>() where T : Renderer
         {
@@ -172,7 +174,7 @@ namespace S3DE.Engine.Graphics
 
         internal static ScreenQuad CreateScreenQuad_Internal() => ActiveRenderer.CreateScreenQuad();
 
-        internal static Framebuffer CreateFramebuffer_Internal(Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.x, (int)size.y);
+        internal static Framebuffer CreateFramebuffer_Internal(Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.X, (int)size.Y);
         
         public static void AlphaFunction(AlphaFunction function, float value) => ActiveRenderer.SetAlphaFunction(function, value);
 

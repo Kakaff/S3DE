@@ -9,12 +9,13 @@ namespace S3DE.Maths
     public sealed class Matrix4x4
     {
         float[][] mV;
-
+        
         public float this[int x, int y]
         {
             get => mV[x][y];
             set => mV[x][y] = value;
         }
+        
 
         public Matrix4x4()
         {
@@ -24,11 +25,12 @@ namespace S3DE.Maths
 
         public Matrix4x4 SetIdentity()
         {
+            
             mV[0] = new float[] { 1, 0, 0, 0 };
             mV[1] = new float[] { 0, 1, 0, 0 };
             mV[2] = new float[] { 0, 0, 1, 0 };
             mV[3] = new float[] { 0, 0, 0, 1 };
-
+            
             return this;
         }
 
@@ -36,13 +38,19 @@ namespace S3DE.Maths
         {
             Matrix4x4 m = new Matrix4x4();
 
-            float t = (float)Math.Tan(Constants.ToRadians * (fov / 2d));
-            float r = zNear - zFar;
+            Vector2 v2_0 = new Vector2(zNear, -zNear) - new Vector2(zFar);
+            Vector2 v2_1 = new Vector2((float)Constants.ToRadians, 2f) * new Vector2((fov / 2f), zFar);
+            v2_1.X = (float)Math.Tan(v2_1.X);
 
-            m[0, 0] = 1f / (t * aspect);
-            m[1, 1] = 1f / t;
-            m[2, 2] = (-zNear - zFar) / r;
-            m[3, 2] = 2f * zFar * zNear / r;
+            float t = v2_1.X;
+
+            v2_1 *= new Vector2(aspect, zNear);
+            Vector4 v4_0 = new Vector4(1, 1, (v2_0.Y), v2_1.Y) / new Vector4(v2_1.X, t, v2_0.X, v2_0.X);
+
+            m[0, 0] = v4_0.X;
+            m[1, 1] = v4_0.Y;
+            m[2, 2] = v4_0.Z;
+            m[3, 2] = v4_0.W;
             m[2, 3] = 1f;
             m[3, 3] = 0;
             return m;
@@ -69,11 +77,11 @@ namespace S3DE.Maths
         {
             Matrix4x4 m = new Matrix4x4();
             m[0, 0] = 1;
-            m[3, 0] = translation.x;
+            m[3, 0] = translation.X;
             m[1, 1] = 1;
-            m[3, 1] = translation.y;
+            m[3, 1] = translation.Y;
             m[2, 2] = 1;
-            m[3, 2] = translation.z;
+            m[3, 2] = translation.Z;
             m[3, 3] = 1;
 
             return m;
@@ -82,9 +90,9 @@ namespace S3DE.Maths
         public static Matrix4x4 CreateScaleMatrix(Vector3 scale)
         {
             Matrix4x4 m = new Matrix4x4();
-            m[0, 0] = scale.x;
-            m[1, 1] = scale.y;
-            m[2, 2] = scale.z;
+            m[0, 0] = scale.X;
+            m[1, 1] = scale.Y;
+            m[2, 2] = scale.Z;
             m[3, 3] = 1;
 
             return m;
@@ -97,36 +105,41 @@ namespace S3DE.Maths
 
         public static Matrix4x4 CreateRotationMatrix(Quaternion quat)
         {
-            
             Matrix4x4 m = new Matrix4x4();
-            float sqw = quat.w * quat.w;
-            float sqx = quat.x * quat.x;
-            float sqy = quat.y * quat.y;
-            float sqz = quat.z * quat.z;
 
-            float xy = quat.x * quat.y;
-            float zw = quat.z * quat.w;
+            Vector4 sqv = quat.ToVector4() * quat.ToVector4();
+            Vector3 xv = new Vector3(quat.X,quat.X,quat.Y) * new Vector3(quat.Y,quat.Z,quat.Z);
+            Vector3 wv = quat.XYZ * new Vector3(quat.W);
+            float invs = 1 / (new Vector2(sqv.X, sqv.Y) + new Vector2(sqv.Z, sqv.W)).Sum();
 
-            float xz = quat.x * quat.z;
-            float yw = quat.y * quat.w;
+            Vector3 v1_0 = new Vector3(sqv.X, -sqv.X, -sqv.X) +
+            new Vector3(-sqv.Y, sqv.Y, -sqv.Y) +
+            new Vector3(-sqv.Z, -sqv.Z, sqv.Z) +
+            new Vector3(sqv.W) *
+            invs;
 
-            float yz = quat.y * quat.z;
-            float xw = quat.x * quat.w;
 
-            float invs = 1 / (sqx + sqy + sqz + sqw);
+            Vector2 v2_0 = new Vector2(2) * 
+                (new Vector2(xv.Z) + 
+                new Vector2(-wv.X, wv.X)) *
+                invs;
 
-            m[0, 0] = (sqx - sqy - sqz + sqw) * invs;
-            m[1, 1] = (-sqx + sqy - sqz + sqw) * invs;
-            m[2, 2] = (-sqx - sqy + sqz + sqw) * invs;
+            Vector4 v4_0 = new Vector4(2) *
+                (new Vector4(xv.X, xv.X, xv.Y, xv.Y) + 
+                new Vector4(-wv.Z, wv.Z, wv.Y, -wv.Y)) *
+                invs;
 
-            m[1, 0] = 2 * (xy - zw) * invs;
-            m[0, 1] = 2 * (xy + zw) * invs;
+            m[0, 0] = v1_0.X;
+            m[1, 1] = v1_0.Y;
+            m[2, 2] = v1_0.Z;
 
-            m[2, 0] = 2 * (xz + yw) * invs;
-            m[0, 2] = 2 * (xz - yw) * invs;
-
-            m[2, 1] = 2 * (yz - xw) * invs;
-            m[1, 2] = 2 * (yz + xw) * invs;
+            m[1, 0] = v4_0.X;
+            m[0, 1] = v4_0.Y;
+            m[2, 0] = v4_0.Z;
+            m[0, 2] = v4_0.W;
+            
+            m[2, 1] = v2_0.X;
+            m[1, 2] = v2_0.Y;
 
             m[3, 3] = 1;
 
@@ -139,11 +152,12 @@ namespace S3DE.Maths
 
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
-                    m[i, j] =
-                        m1[i, 0] * m2[0, j] +
-                        m1[i, 1] * m2[1, j] +
-                        m1[i, 2] * m2[2, j] +
-                        m1[i, 3] * m2[3, j];
+                {
+                    m[i, j] = 
+                        (new Vector4(m1[i,0],m1[i,1],m1[i,2],m1[i,3]) * 
+                        new Vector4(m2[0,j],m2[1,j],m2[2,j],m2[3,j]))
+                        .Sum();
+                }
 
             return m;
         }

@@ -106,12 +106,12 @@ namespace S3DE.Engine.Graphics.Shaders
 
         Texture2D createSampleTexture(Vector2 resolution)
         {
-            Texture2D tex = Texture2D.Create((int)resolution.x, (int)resolution.y);
-            float xMod = 255 / resolution.x;
-            float yMod = 255 / resolution.y;
+            Texture2D tex = Texture2D.Create((int)resolution.X, (int)resolution.Y);
+            float xMod = 255 / resolution.X;
+            float yMod = 255 / resolution.Y;
 
-            for (int x = 0; x < resolution.x; x++)
-                for (int y = 0; y < resolution.y; y++)
+            for (int x = 0; x < resolution.X; x++)
+                for (int y = 0; y < resolution.Y; y++)
                     tex.SetPixel(x, y, new Color((byte)(x * xMod), (byte)(y * yMod), (byte)(((x * xMod) + (y * yMod)) / 2), 255));
 
             tex.FilterMode = FilterMode.Trilinear;

@@ -52,6 +52,8 @@ namespace S3DE.Engine.Graphics.Textures
             texUnit = boundTexUnit;
             return isBound;
         }
+
+        public bool IsBound() => isBound;
         
         public void SetIsBound(bool value, TextureUnit texUnit)
         {
@@ -83,11 +85,10 @@ namespace S3DE.Engine.Graphics.Textures
         protected int CalcMaxNumberMipmaps(Vector2 size)
         {
             //Floor size to power of two.
-            Vector2 floored = new Vector2(EngineMath.FloorToPowerOfTwo((int)size.x), EngineMath.FloorToPowerOfTwo((int)size.y));
-            int smallest = (int)(floored.x > floored.y ? floored.x : floored.y);
-
-            Console.WriteLine($"Smallest: {smallest}");
-            return (int)(Math.Log(smallest) / Math.Log(2)) - 4;
+            Vector2 floored = new Vector2(EngineMath.FloorToPowerOfTwo((int)size.X), EngineMath.FloorToPowerOfTwo((int)size.Y));
+            int smallest = (int)(floored.X > floored.Y ? floored.X : floored.Y);
+            
+            return (int)(Math.Log(smallest) / Math.Log(2)) - 1;
         }
     }
 }

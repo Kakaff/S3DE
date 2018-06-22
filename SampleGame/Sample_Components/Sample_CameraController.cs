@@ -40,8 +40,8 @@ namespace SampleGame.Sample_Components
 
             if (Input.CursorMoved)
             {
-                xRot += Input.MouseDelta.x * 45f;
-                yRot += Input.MouseDelta.y * 45f;
+                xRot += Input.MouseDelta.X * 45f;
+                yRot += Input.MouseDelta.Y * 45f;
 
                 xRot = EngineMath.Normalize(-180, 180, xRot);
                 yRot = EngineMath.Clamp(-90, 90, yRot);

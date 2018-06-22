@@ -22,7 +22,13 @@ namespace S3DE.Engine.Entities.Components
         float zNear, zFar, fov;
         S3DE_UniformBuffer ubo;
 
-        public S3DE_UniformBuffer UniformBuffer => ubo;
+        public S3DE_UniformBuffer UniformBuffer {
+            get {
+                if (updateUBO)
+                    UpdateUniformBuffer();
+                return ubo;
+            }
+        }
 
         public float ZNear
         {
@@ -65,7 +71,6 @@ namespace S3DE.Engine.Entities.Components
 
         protected override void PreRender()
         {
-
             if (gameEntity.transform.HasChanged)
             {
                 RecalculateViewMatrix();
@@ -77,14 +82,16 @@ namespace S3DE.Engine.Entities.Components
                 RecalculateProjectionMatrix();
                 updateUBO = true;
             }
+        }
 
+        void UpdateUniformBuffer()
+        {
             if (updateUBO)
             {
                 if (ubo == null)
                     ubo = S3DE_UniformBuffer.Create();
-                ubo.SetData(Matrix4x4.ToByteArray(ViewMatrix, ProjectionMatrix));
-
                 updateUBO = false;
+                ubo.SetData(Matrix4x4.ToByteArray(ViewMatrix, ProjectionMatrix));
             }
         }
         

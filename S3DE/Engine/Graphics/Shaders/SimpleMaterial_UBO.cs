@@ -1,4 +1,5 @@
-﻿using S3DE.Engine.Graphics.Materials;
+﻿using S3DE.Engine.Data;
+using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.IO;
 using S3DE.Maths;
@@ -13,7 +14,7 @@ namespace S3DE.Engine.Graphics.Shaders
     public class SimpleMaterial_UBO : Material
     {
 
-        Texture2D texture, normal;
+        Texture2D diffuse, normal;
 
         private class SimpleVertSource : MaterialSource
         {
@@ -76,15 +77,16 @@ namespace S3DE.Engine.Graphics.Shaders
                     "mat3 TBN;",
                     "} frag;",
 
-                    "uniform sampler2D tex;",
-                    "uniform sampler2D normalMap;",
+                    "uniform sampler2D diffuse;",
+                    "uniform sampler2D normal;",
 
                     "void main() {",
-                    "gFragColor = vec3(texture(tex,frag.uv).rgb);",
+                    "gFragColor = vec3(texture(diffuse,frag.uv).rgb);",
                     "gPosition = frag.pos;",
-                    "gNormal = frag.TBN * (texture(normalMap,frag.uv).rgb * 2 - 1);",
-                    "gSpecular = vec4(vec3(length(gFragColor) * 0.5773502691896258f),0.025f);",
+                    "gNormal = frag.TBN * (texture(normal,frag.uv).rgb * 2 - 1);",
+                    "gSpecular = vec4(1,1,1,0.075f);",
                     "}");
+                //vec3(length(gFragColor) * 0.5773502691896258f)
             }
         }
 
@@ -97,25 +99,7 @@ namespace S3DE.Engine.Graphics.Shaders
 
             SupportsDeferredRendering = true;
             normal = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall_normal.jpg");
-            texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
-        }
-
-        Texture2D createSampleTexture(Vector2 resolution)
-        {
-            Texture2D tex = Texture2D.Create((int)resolution.x, (int)resolution.y);
-            float xMod = 255 / resolution.x;
-            float yMod = 255 / resolution.y;
-
-            for (int x = 0; x < resolution.x; x++)
-                for (int y = 0; y < resolution.y; y++)
-                    tex.SetPixel(x, y, new Color((byte)(x * xMod), (byte)(y * yMod), (byte)(((x * xMod) + (y * yMod)) / 2), 255));
-
-            tex.FilterMode = FilterMode.Trilinear;
-            tex.AnisotropicSamples = AnisotropicSamples.x16;
-            tex.CalculateMipMapCount();
-            Console.WriteLine($"Target mipmap count: " + tex.MipMapLevels);
-            tex.Apply();
-            return tex;
+            diffuse = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
         }
 
         protected override MaterialSource GetSource(ShaderStage stage, RenderPass pass)
@@ -139,13 +123,13 @@ namespace S3DE.Engine.Graphics.Shaders
 
         protected override string[] GetUniforms()
         {
-            return new string[] { "tex", "normalMap" };
+            return new string[] { "diffuse", "normal" };
         }
 
         protected override void UpdateUniforms(RenderPass pass)
         {
-            SetTexture("tex", texture);
-            SetTexture("normalMap", normal);
+            SetTexture("diffuse", diffuse);
+            SetTexture("normal", normal);
         }
     }
 }

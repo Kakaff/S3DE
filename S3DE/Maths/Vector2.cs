@@ -6,46 +6,55 @@ using System.Threading.Tasks;
 
 namespace S3DE.Maths
 {
+    
     public struct Vector2
     {
-        float _x;
-        float _y;
+        //Needs to be represented as a Vector3 internally otherwise things don't work.
+        //Don't ask why, just accept it.
+        System.Numerics.Vector3 vec;
 
-        public float x
+        public float X
         {
-            get => _x;
-            set => _x = value;
+            get => vec.X;
+            set => vec.X = value;
         }
 
-        public float y
+        public float Y
         {
-            get => _y;
-            set => _y = value;
+            get => vec.Y;
+            set => vec.Y = value;
         }
 
         public static Vector2 Zero => new Vector2(0, 0);
         public static Vector2 One => new Vector2(1, 1);
-        public float[] ToArray() => new float[] { _x, _y };
+        public float[] ToArray() => new float[] {X, Y};
+
+        public Vector2(float f)
+        {
+            vec = new System.Numerics.Vector3(f,f,0);
+        }
 
         public Vector2(float x, float y)
         {
-            _x = x;
-            _y = y;
+            vec = new System.Numerics.Vector3(x, y,0);
         }
+
+        public float Sum() => X + Y;
 
         public override string ToString()
         {
-            return $"({x},{y})";
+            return $"({X},{Y})";
         }
 
-        public static Vector2 operator -(Vector2 v1, Vector2 v2) => new Vector2(v1.x - v2.x, v1.y - v2.y);
-        public static Vector2 operator +(Vector2 v1, Vector2 v2) => new Vector2(v1.x + v2.x, v1.y + v2.y);
-        public static Vector2 operator /(Vector2 v1, Vector2 v2) => new Vector2(v1.x / v2.x, v1.y / v2.y);
-        public static Vector2 operator *(Vector2 v1, Vector2 v2) => new Vector2(v1.x * v2.x, v1.y * v2.y);
+        public static Vector2 operator -(Vector2 v1, Vector2 v2) { System.Numerics.Vector3 v = (v1.vec - v2.vec); return new Vector2(v.X, v.Y); }
+        public static Vector2 operator +(Vector2 v1, Vector2 v2) { System.Numerics.Vector3 v = (v1.vec + v2.vec); return new Vector2(v.X, v.Y); }
+        public static Vector2 operator /(Vector2 v1, Vector2 v2) { System.Numerics.Vector3 v = (v1.vec / v2.vec); return new Vector2(v.X, v.Y); }
+        public static Vector2 operator *(Vector2 v1, Vector2 v2) { System.Numerics.Vector3 v = (v1.vec * v2.vec); return new Vector2(v.X, v.Y); }
 
+        public static Vector2 operator *(Vector2 v1, float f) { System.Numerics.Vector3 v = (v1.vec * f); return new Vector2(v.X, v.Y); }
         public static bool operator == (Vector2 v1, Vector2 v2)
         {
-            if (v1.x == v2.x && v1.y == v2.y)
+            if (v1.vec == v2.vec)
                 return true;
 
             return false;

@@ -23,11 +23,12 @@ namespace S3DE.Engine.IO
             tex.PixelFormat = PixelFormat.RGBA;
             tex.PixelType = PixelType.UByte;
             tex.InternalFormat = InternalFormat.RGB16F;
-            tex.MipMapLevels = 10;
+            tex.CalculateMipMapCount();
             tex.AnisotropicSamples = AnisotropicSamples.x16;
             for (int x = 0; x < bmp.Width; x++)
                 for (int y = 0; y < bmp.Width; y++)
                     tex.SetPixel(x, y, bmp.GetPixel(x, y));
+            
             tex.Apply();
             bmp.Dispose();
             return tex;

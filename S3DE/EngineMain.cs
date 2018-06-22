@@ -41,29 +41,42 @@ namespace S3DE
         {
             EngineMain.game = game;
 
+            Console.WriteLine("Initializing Game");
             game.InitGame();
 
+            Console.WriteLine("Starting Clock");
             Time.Start();
+            Console.WriteLine("Initializing GLFW");
             Glfw.Init();
 
-
+            Console.WriteLine($"Intiializing Renderer | Name: {Renderer.GetName()} | API: {Renderer.GetAPI}");
             Renderer.Init_Internal();
 
+            Console.WriteLine($"Creating new Window");
             Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
 
+            Console.WriteLine($"Setting Renderer Capabilities");
             Renderer.SetCapabilities_Internal();
-
+            Console.WriteLine("Initializing TextureUnits");
             TextureUnits.Initialize();
+            Console.WriteLine("Intiializing BindingPoints");
             S3DE_UniformBuffer.Initialize_BindingPoints();
+            Console.WriteLine("Initializing RenderPipeline");
             RenderPipeline.Init_Internal();
+            Console.WriteLine($"Starting Game {game.GameName()}");
             game.StartGame();
+            Console.WriteLine($"Game: {game.GameName()} started");
             isRunning = true;
-            
+
+            Console.WriteLine($"Creating the Main Rendercall");
             Renderer.CreateMainRenderCall();
+            Console.WriteLine($"Creating ScreenQuad");
             ScreenQuad.Create();
             Time.UpdateDeltaTime(Time.CurrentTick);
-            
+            Console.WriteLine("------------------------------------------------------------");
+            Console.WriteLine("----------------Intialization Completed---------------------");
+            Console.WriteLine("------------------------------------------------------------");
             MainLoop();
         }
 
@@ -75,9 +88,11 @@ namespace S3DE
                 
                 Input.PollInput();
                 SceneHandler.RunScenes();
-                
-                Engine.Graphics.Window.SwapBuffer();
+
+                Renderer.Finish_Internal();
                 FrameSync.WaitForTargetFPS();
+                Engine.Graphics.Window.SwapBuffer();
+
                 Time.UpdateDeltaTime(Time.CurrentTick);
                 
                 windowResized = false;

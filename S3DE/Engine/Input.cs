@@ -191,10 +191,10 @@ namespace S3DE.Engine
                 double x = 0, y = 0;
                 Glfw.GetCursorPos(S3DE.Engine.Graphics.Window.window, ref x, ref y);
 
-                mousePos = new Vector2((float)(x > Game.DisplayResolution.x ? Game.DisplayResolution.x : x < 0 ? 0 : x),
-                                       (float)(y > Game.DisplayResolution.y ? Game.DisplayResolution.y : y < 0 ? 0 : y));
+                mousePos = new Vector2((float)(x > Game.DisplayResolution.X ? Game.DisplayResolution.X : x < 0 ? 0 : x),
+                                       (float)(y > Game.DisplayResolution.Y ? Game.DisplayResolution.Y : y < 0 ? 0 : y));
 
-                mouseDeltaRaw = new Vector2((float)x - prevMousePos.x, (float)y - prevMousePos.y);
+                mouseDeltaRaw = new Vector2((float)x - prevMousePos.X, (float)y - prevMousePos.Y);
                 prevMousePos = new Vector2((float)x, (float)y);
 
                 if (!LockedCursor && !CursorIsInsideWindow((int)x, (int)y))
@@ -212,7 +212,7 @@ namespace S3DE.Engine
                 else
                     cursorHasMoved = false;
 
-                mouseDelta = new Vector2(mouseDeltaRaw.x / Game.DisplayResolution.x, mouseDeltaRaw.y / Game.DisplayResolution.x);
+                mouseDelta = new Vector2(mouseDeltaRaw.X / Game.DisplayResolution.X, mouseDeltaRaw.Y / Game.DisplayResolution.X);
             } else
             {
                 mouseDelta = Vector2.Zero;
@@ -307,7 +307,7 @@ namespace S3DE.Engine
 
         private static bool CursorIsInsideWindow(int x, int y)
         {
-            if (x > 0 && x < Game.DisplayResolution.x && y > 0 && y < Game.DisplayResolution.y)
+            if (x > 0 && x < Game.DisplayResolution.X && y > 0 && y < Game.DisplayResolution.Y)
                 return true;
             return false;
         }

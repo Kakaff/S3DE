@@ -41,6 +41,9 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override int GetUniformBlockIndex(string name)
         {
             int index = (int)Gl.GetUniformBlockIndex(prog.Pointer, name);
+            if (index < 0)
+                throw new Exception();
+
             OpenGL_Renderer.TestForGLErrors();
             return index;
         }
@@ -93,7 +96,6 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override void AddUniformBlock(string blockName)
         {
             int index = GetUniformBlockIndex(blockName);
-            Console.WriteLine($"Getting UniformBlock {blockName} | Index: {index}");
             UniformBlocks.Add(blockName, index);
         }
 

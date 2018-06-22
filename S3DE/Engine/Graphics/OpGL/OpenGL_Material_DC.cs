@@ -28,16 +28,7 @@ namespace S3DE.Engine.Graphics.OpGL
     {
         Uniforms = new Dictionary<string, int>();
     }
-
-        protected override void AddUniformBlock(string blockName)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void SetUniformBlock(string blockName, int bindingPoint)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         protected override void UseMaterial()
     {
@@ -89,6 +80,16 @@ namespace S3DE.Engine.Graphics.OpGL
     }
 
         protected override int GetUniformBlockIndex(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void AddUniformBlock(string blockName)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void SetUniformBlock(string blockName, int bindingPoint)
         {
             throw new NotImplementedException();
         }

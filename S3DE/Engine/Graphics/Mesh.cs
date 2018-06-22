@@ -26,6 +26,7 @@ namespace S3DE.Engine.Graphics
         Vector3[] normals;
         Vector4[] tangents;
         bool dynamic;
+        BoundingBox boundingBox;
 
         Renderer_Mesh RMesh;
 
@@ -114,17 +115,17 @@ namespace S3DE.Engine.Graphics
                     Vector2 dUv0 = uv1 - uv0; 
                     Vector2 dUv1 = uv2 - uv0; 
 
-                    float r = 1.0f / (dUv0.x * dUv1.y - dUv1.x * dUv0.y);
+                    float r = 1.0f / (dUv0.X * dUv1.Y - dUv1.X * dUv0.Y);
 
                     Vector3 sDir = new Vector3(
-                        dUv1.y * n0.x - dUv0.y * n1.x,
-                        dUv1.y * n0.y - dUv0.y * n1.y,
-                        dUv1.y * n0.z - dUv0.y * n1.z) * r;
+                        dUv1.Y * n0.X - dUv0.Y * n1.X,
+                        dUv1.Y * n0.Y - dUv0.Y * n1.Y,
+                        dUv1.Y * n0.Z - dUv0.Y * n1.Z) * r;
 
                     Vector3 tDir = new Vector3(
-                        dUv0.x * n1.x - dUv1.x * n0.x,
-                        dUv0.x * n1.y - dUv1.x * n0.y,
-                        dUv0.x * n1.z - dUv1.x * n0.z) * r;
+                        dUv0.X * n1.X - dUv1.X * n0.X,
+                        dUv0.X * n1.Y - dUv1.X * n0.Y,
+                        dUv0.X * n1.Z - dUv1.X * n0.Z) * r;
 
                     tan1[i0] += sDir;
                     tan1[i1] += sDir;
@@ -145,7 +146,7 @@ namespace S3DE.Engine.Graphics
                     Vector3 tan = tan1[i];
 
                     newTangents[i] = (tan - norm * Vector3.Dot(norm, tan)).normalized;
-                    newTangents[i].w = (Vector3.Dot(Vector3.Cross(norm, tan), tan2[i]) < 0.0f) ? -1 : 1;
+                    newTangents[i].W = (Vector3.Dot(Vector3.Cross(norm, tan), tan2[i]) < 0.0f) ? -1 : 1;
                 }
             }
 
@@ -162,9 +163,9 @@ namespace S3DE.Engine.Graphics
         {
             Mesh m = new Mesh();
 
-            float x = 0.5f * scale.x;
-            float y = 0.5f * scale.y;
-            float z = 0.5f * scale.z;
+            float x = 0.5f * scale.X;
+            float y = 0.5f * scale.Y;
+            float z = 0.5f * scale.Z;
             Vector3[] verts;
             Vector2[] uvs;
 

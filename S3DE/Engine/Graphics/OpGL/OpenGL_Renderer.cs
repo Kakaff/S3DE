@@ -84,7 +84,6 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override S3DE_UniformBuffer Create_UniformBuffer() => OpenGL_BufferObject.CreateBuffer(BufferTarget.UniformBuffer) as S3DE_UniformBuffer;
         protected override void SetCapabilities()
         {
-            Console.WriteLine("Setting Renderer Capabilities");
             string s = $"GPU | Vendor: {Gl.GetString(StringName.Vendor)} | Model: {Gl.GetString(StringName.Renderer)}";
             TestForGLErrors();
             Console.WriteLine("GPU: " + s);
@@ -141,7 +140,7 @@ namespace S3DE.Engine.Graphics.OpGL
             }
         }
 
-        protected override void Sync()
+        protected override void FinishFrame()
         {
             Gl.Finish();
             TestForGLErrors();
@@ -152,7 +151,7 @@ namespace S3DE.Engine.Graphics.OpGL
             //This needs to be removed. As the viewport will now be set from the framebuffer currently being drawn. (Framebuffer.Resolution)
             //The screenquad will also set the viewport to the appropriate size when drawn. (DisplayResolution)
             //So there's no need to change the viewport when we resize the window.
-            Gl.Viewport(0, 0, (int)Game.DisplayResolution.x, (int)Game.DisplayResolution.y);
+            Gl.Viewport(0, 0, (int)Game.DisplayResolution.X, (int)Game.DisplayResolution.Y);
             TestForGLErrors();
         }
 
@@ -163,7 +162,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void SetViewportSize(Vector2 size)
         {
-            Gl.Viewport(0, 0, (int)size.x, (int)size.y);
+            Gl.Viewport(0, 0, (int)size.X, (int)size.Y);
             TestForGLErrors();
         }
 

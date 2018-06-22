@@ -52,10 +52,9 @@ namespace S3DE.Engine.Graphics
         {
             if (instance == null)
             {
-                Console.WriteLine("Creating new window");
                 instance = new Window();
-                instance.CreateGLFWWindow((int)Game.DisplayResolution.x,(int)Game.DisplayResolution.y, title);
-                instance.aspect = Game.DisplayResolution.x / Game.DisplayResolution.y;
+                instance.CreateGLFWWindow((int)Game.DisplayResolution.X,(int)Game.DisplayResolution.Y, title);
+                instance.aspect = Game.DisplayResolution.X / Game.DisplayResolution.Y;
                 
             }
         }
@@ -106,9 +105,9 @@ namespace S3DE.Engine.Graphics
         
         internal static void ResizeWindow()
         {
-            Console.WriteLine($"Setting window size to {(int)Game.DisplayResolution.x}*{(int)Game.DisplayResolution.y}");
-            Glfw.SetWindowSize(instance.GLFW_window, (int)Game.DisplayResolution.x, (int)Game.DisplayResolution.y);
-            instance.aspect = Game.DisplayResolution.x / Game.DisplayResolution.y;
+            Console.WriteLine($"Setting window size to {(int)Game.DisplayResolution.X}*{(int)Game.DisplayResolution.Y}");
+            Glfw.SetWindowSize(instance.GLFW_window, (int)Game.DisplayResolution.X, (int)Game.DisplayResolution.Y);
+            instance.aspect = Game.DisplayResolution.X / Game.DisplayResolution.Y;
             Renderer.OnWindowResized_Internal();
         }
 
@@ -116,7 +115,7 @@ namespace S3DE.Engine.Graphics
         {
             instance.isFullScreen = value;
             Glfw.SetWindowMonitor(instance.GLFW_window, value ? Glfw.GetPrimaryMonitor() : null, 0, 0, 
-                (int)Renderer.DisplayResolution.x, (int)Renderer.DisplayResolution.y, Renderer.RefreshRate);
+                (int)Renderer.DisplayResolution.X, (int)Renderer.DisplayResolution.Y, Renderer.RefreshRate);
         }
 
         internal static void SetVSync(bool value)

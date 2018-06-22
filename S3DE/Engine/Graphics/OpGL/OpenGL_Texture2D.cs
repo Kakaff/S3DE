@@ -52,8 +52,8 @@ namespace S3DE.Engine.Graphics.OpGL
         byte[] convertToByteArray(Color[,] pixels, Vector2 size)
         {
             List<byte> result = new List<byte>();
-            for (int y = 0; y < size.y; y++)
-                for (int x = 0; x < size.x; x++)
+            for (int y = 0; y < size.Y; y++)
+                for (int x = 0; x < size.X; x++)
                     result.AddRange(pixels[x, y].ToArray());
 
             return result.ToArray();
@@ -86,11 +86,13 @@ namespace S3DE.Engine.Graphics.OpGL
 
         public override void Apply()
         {
-            Console.WriteLine($"Sending {size.x * size.y * 4} bytes of texture data to GPU");
-
             if (pointer == 0)
+            {
+                Console.WriteLine($"Generating new Texture handle");
                 GenerateHandle();
-
+            }
+            
+            Console.WriteLine($"Uploading {size.X * size.Y * 4} bytes of texture data to GPU");
             UploadToGPU_Tex();
 
             SetFilterMode();
@@ -102,13 +104,14 @@ namespace S3DE.Engine.Graphics.OpGL
                 Gl.GenerateMipmap(TextureTarget.Texture2d);
                 OpenGL_Renderer.TestForGLErrors();
             }
+            
         }
 
         void SetMipMapCount(int count)
         {
             int MaxMipMaps = CalcMaxNumberMipmaps(size);
             MaxMipMaps = (MaxMipMaps > Renderer.Max_Mipmap_Levels) ? Renderer.Max_Mipmap_Levels : MaxMipMaps;
-            mipmapCount = (count < MaxMipMaps) ? count : MaxMipMaps;
+            mipmapCount = (count < MaxMipMaps) ? count > 1 ? count : 1 : MaxMipMaps;
         }
 
         void SetWrapMode()
@@ -129,7 +132,7 @@ namespace S3DE.Engine.Graphics.OpGL
             byte[] pixelData = convertToByteArray(pixels, size);
             using (MemoryLock ml = new MemoryLock(pixelData))
             Gl.TexImage2D(TextureTarget.Texture2d, 0, OpenGL_Utility.Convert(InternalFormat), 
-               (int)size.x, (int)size.y, 0, OpenGL_Utility.Convert(PixelFormat), OpenGL_Utility.Convert(PixelType), ml.Address);
+               (int)size.X, (int)size.Y, 0, OpenGL_Utility.Convert(PixelFormat), OpenGL_Utility.Convert(PixelType), ml.Address);
 
             Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureMaxLevel, new int[] {1 + mipmapCount});
             OpenGL_Renderer.TestForGLErrors();

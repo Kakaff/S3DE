@@ -64,7 +64,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 pixelFormat,
                 pixelType,
                 filter,
-                (int)resolution.x,(int)resolution.y);
+                (int)resolution.X,(int)resolution.Y);
 
             //Attach it to the framebuffer.
             this.Bind();

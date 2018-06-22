@@ -64,7 +64,7 @@ namespace S3DE.Engine.Graphics.OpGL
             OpenGL_Renderer.TestForGLErrors();
 
             Gl.TexImage2D(TextureTarget.Texture2d, 0,
-                OpenGL_Utility.Convert(InternalFormat), (int)size.x, (int)size.y, 0, 
+                OpenGL_Utility.Convert(InternalFormat), (int)size.X, (int)size.Y, 0, 
                 OpenGL_Utility.Convert(PixelFormat), 
                 OpenGL_Utility.Convert(PixelType), 
                 IntPtr.Zero);

@@ -22,6 +22,15 @@ namespace S3DE.Engine.Data
 
         public abstract void SetData(byte[] data);
 
+        public void SetData(params byte[][] dataArrays)
+        {
+            List<byte> data = new List<byte>();
+            foreach (byte[] dataArr in dataArrays)
+                data.AddRange(dataArr);
+
+            SetData(data.ToArray());
+        }
+
         public void Bind()
         {
             if (!isBound)

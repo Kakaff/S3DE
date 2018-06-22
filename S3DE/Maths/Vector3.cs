@@ -7,45 +7,49 @@ using System.Threading.Tasks;
 
 namespace S3DE.Maths
 {
+    //SIMD Enabled Vector3
+    
     public struct Vector3
     {
-        float _x, _y, _z;
+        System.Numerics.Vector3 internalVector;
 
-        public float x
+        public System.Numerics.Vector3 InternalVector => internalVector;
+
+        public float X
         {
-            get => _x;
-            set => _x = value;
+            get => internalVector.X;
+            set => internalVector.Y = value;
         }
 
-        public float y
+        public float Y
         {
-            get => _y;
-            set => _y = value;
+            get => internalVector.Y;
+            set => internalVector.Y = value;
         }
 
-        public float z
+        public float Z
         {
-            get => _z;
-            set => _z = value;
+            get => internalVector.Z;
+            set => internalVector.Z = value;
         }
 
-        public Vector2 xy => new Vector2(_x, _y);
-        public Vector2 xz => new Vector2(_x, _z);
-        public Vector2 yz => new Vector2(_y, _z);
+        public Vector2 XY => new Vector2(X, Y);
+        public Vector2 XZ => new Vector2(X, Z);
+        public Vector2 YZ => new Vector2(Y, Z);
         
-        public Vector2 yx => new Vector2(_y, _x);
-        public Vector2 zx => new Vector2(_z, _x);
-        public Vector2 zy => new Vector2(_z, _y);
+        public Vector2 YX => new Vector2(Y, X);
+        public Vector2 ZX => new Vector2(Z, X);
+        public Vector2 ZY => new Vector2(Z, Y);
 
-        public Vector3 xzy => new Vector3(_x, _z, _y);
+        public Vector3 XZY => new Vector3(X, Z, Y);
 
-        public Vector3 zxy => new Vector3(_z, _x, _y);
-        public Vector3 zyx => new Vector3(_z, _y, _x);
+        public Vector3 ZXY => new Vector3(Z, X, Y);
+        public Vector3 ZYX => new Vector3(Z, Y, X);
 
-        public Vector3 yxz => new Vector3(_y, _x, _z);
-        public Vector3 yzx => new Vector3(_y, _z, _x);
+        public Vector3 YXZ => new Vector3(Y, X, Z);
+        public Vector3 YZX => new Vector3(Y, Z, X);
 
-        public float[] ToArray() => new float[] {_x,_y,_z};
+        public float[] ToArray() => new float[] {X,Y,Z};
 
         public float length => Length(this);
         
@@ -67,68 +71,91 @@ namespace S3DE.Maths
 
         public Vector3(float x, float y, float z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            internalVector = new System.Numerics.Vector3(x, y, z);
         }
 
-        public static float Dot(Vector3 v1, Vector3 v2) => v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+        public Vector3(float f)
+        {
+            internalVector = new System.Numerics.Vector3(f);
+        }
 
-        public Vector3 Cross(Vector3 v) => new Vector3(y * v.z - z * v.y,
-                                                       z * v.x - x * v.z,
-                                                       x * v.y - y * v.x);
+        public Vector3(System.Numerics.Vector3 vec)
+        {
+            this.internalVector = vec;
+        }
+
+        public float Sum => X + Y + Z;
+
+        public static float Dot(Vector3 v1, Vector3 v2) => System.Numerics.Vector3.Dot(v1.internalVector, v2.internalVector);
+
+        public Vector3 Cross(Vector3 v) => new Vector3(System.Numerics.Vector3.Cross(internalVector, v.internalVector));
 
         public static Vector3 Cross(Vector3 v1, Vector3 v2) => v1.Cross(v2);
 
-        public static float Length(Vector3 v) => (float)Math.Sqrt(LengthSquared(v));
+        public static float Length(Vector3 v) => v.internalVector.Length();
 
-        public static float LengthSquared(Vector3 v) => (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+        public static float LengthSquared(Vector3 v) => v.internalVector.LengthSquared();
 
         public static Vector3 Normalized(Vector3 v) => v / Length(v);
 
         public Vector3 Transform(Matrix4x4 m)
         {
-            return new Vector3(
-                x * m[0, 0] + y * m[1, 0] + z * m[2, 0] + m[3, 0],
-                x * m[0, 1] + y * m[1, 1] + z * m[2, 1] + m[3, 1],
-                x * m[0, 2] + y * m[1, 2] + z * m[2, 2] + m[3, 2]
-                );
+           return new Vector3(X) * new Vector3(m[0, 0], m[0, 1], m[0, 2]) +
+            new Vector3(Y) * new Vector3(m[1, 0], m[1, 1], m[1, 2]) + 
+            new Vector3(Z) * new Vector3(m[2, 0], m[2, 1], m[2, 2]) + 
+            new Vector3(m[3, 0], m[3, 1], m[3, 2]);
         }
 
         public Vector3 Transform(Quaternion q)
         {
-            Quaternion c = q.normalized;
-            Quaternion r = (c * this) * c.conjugate;
-
-            return new Vector3(r.x,r.y,r.z);
+            return new Vector3(System.Numerics.Vector3.Transform(internalVector, q.InternalQuaternion));
         }
-
 
         public static Vector3 DirectionTo(Vector3 start, Vector3 target) => (target - start).normalized;
 
+        public static Vector3 Clamp(Vector3 v, float min,float max)
+        {
+            return new Vector3(System.Numerics.Vector3.Clamp(v.internalVector, new System.Numerics.Vector3(min), new System.Numerics.Vector3(max)));
+        }
+
+        public static Vector3 Clamp(Vector3 v, Vector3 min, Vector3 max)
+        {
+            return new Vector3(System.Numerics.Vector3.Clamp(v.internalVector, min.internalVector, max.internalVector));
+        }
+
+        public static Vector3 Sign(Vector3 v)
+        {
+            return new Vector3(Math.Sign(v.X), Math.Sign(v.Y), Math.Sign(v.Z));
+        }
+
         public static Vector3 operator * (Vector3 vec, float f)
         {
-            return new Vector3(vec.x * f, vec.y * f, vec.z * f);
+            return new Vector3(vec.internalVector * f);
         }
 
         public static Vector3 operator / (Vector3 vec, float f)
         {
-            return new Vector3(vec.x / f, vec.y / f, vec.z / f);
+            return new Vector3(vec.internalVector / f);
+        }
+
+        public static Vector3 operator * (Vector3 v1, Vector3 v2)
+        {
+            return new Vector3(v1.internalVector * v2.internalVector);
         }
 
         public static Vector3 operator + (Vector3 v1, Vector3 v2)
         {
-            return new Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+            return new Vector3(v1.internalVector + v2.internalVector);
         }
 
         public static Vector3 operator - (Vector3 v1, Vector3 v2)
         {
-            return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+            return new Vector3(v1.internalVector - v2.internalVector);
         }
 
         public static bool operator == (Vector3 v1, Vector3 v2)
         {
-            if (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
+            if (v1.internalVector == v2.internalVector)
                 return true;
             else
                 return false;
@@ -136,7 +163,7 @@ namespace S3DE.Maths
 
         public static bool operator !=(Vector3 v1, Vector3 v2) => !(v1 == v2);
 
-        public static Vector3 operator -(Vector3 v) => new Vector3(-v.x, -v.y, -v.z);
+        public static Vector3 operator -(Vector3 v) => new Vector3(-v.internalVector);
 
         public static Vector3 operator * (Vector3 v, Matrix4x4 m)
         {
@@ -147,9 +174,10 @@ namespace S3DE.Maths
         {
             return v.Transform(q);
         }
+
         public override string ToString()
         {
-            return $"({x},{y},{z})";
+            return $"({X},{Y},{Z})";
         }
         public static float[] ToArray(Vector3[] values)
         {

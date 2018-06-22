@@ -98,7 +98,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 if (hasNormals)
                 {
                     result.AddRange(normals[i].ToArray());
-                    result.AddRange(tangents[i].xyz.ToArray());
+                    result.AddRange(tangents[i].XYZ.ToArray());
                     result.AddRange(biTangents[i].ToArray());
                 }
             }
@@ -179,7 +179,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
             for (int i = 0; i < Tangents.Length; i++)
             {
-                BiTangents[i] = Vector3.Cross(normals[i], Tangents[i].xyz) * Tangents[i].w;
+                BiTangents[i] = Vector3.Cross(normals[i], Tangents[i].XYZ) * Tangents[i].W;
             }
 
             return BiTangents;

@@ -13,10 +13,18 @@ namespace S3DE.Engine.Entities.Components
     {
         Transform parent;
         List<Transform> children;
-        bool hasChanged;
+        bool hasChanged,updateUBO;
         S3DE_UniformBuffer ubo;
 
-        public S3DE_UniformBuffer UniformBuffer => ubo;
+        public S3DE_UniformBuffer UniformBuffer
+        {
+            get
+            {
+                if (updateUBO)
+                    UpdateUniformBuffer();
+                return ubo;
+            }
+        }
         public bool HasChanged => hasChanged;
 
         public Transform Parent => parent;
@@ -79,14 +87,23 @@ namespace S3DE.Engine.Entities.Components
         protected override void PreRender()
         {
             if (hasChanged)
+                updateUBO = true;
+        }
+
+
+        protected override void PostRender() => hasChanged = false;
+
+        void UpdateUniformBuffer()
+        {
+            if (updateUBO)
             {
+                updateUBO = false;
                 if (ubo == null)
                     ubo = S3DE_UniformBuffer.Create();
 
                 ubo.SetData(Matrix4x4.ToByteArray(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix));
             }
         }
-        protected override void PostRender() => hasChanged = false;
 
         public void Translate(Vector3 direction, float distance) => Translate(direction, distance, Space.World);
 

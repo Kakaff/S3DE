@@ -6,32 +6,37 @@ using System.Threading.Tasks;
 
 namespace S3DE.Maths
 {
+
+    //SIMD Quaternion
+    
     public struct Quaternion
     {
-        float _x, _y, _z, _w;
-        
-        public float x
+        System.Numerics.Quaternion internalQuat;
+
+        public System.Numerics.Quaternion InternalQuaternion => internalQuat;
+
+        public float X
         {
-            get => _x;
-            set => _x = value;
+            get => internalQuat.X;
+            set => internalQuat.X = value;
         }
 
-        public float y
+        public float Y
         {
-            get => _y;
-            set => _y = value;
+            get => internalQuat.Y;
+            set => internalQuat.Y = value;
         }
 
-        public float z
+        public float Z
         {
-            get => _z;
-            set => _z = value;
+            get => internalQuat.Z;
+            set => internalQuat.Z = value;
         }
 
-        public float w
+        public float W
         {
-            get => _w;
-            set => _w = value;
+            get => internalQuat.W;
+            set => internalQuat.W = value;
         }
 
         public static Quaternion Identity => new Quaternion(0,0,0,1);
@@ -44,18 +49,24 @@ namespace S3DE.Maths
 
         public Quaternion(float x, float y, float z, float w)
         {
-            _x = x;
-            _y = y;
-            _z = z;
-            _w = w;
+            internalQuat = new System.Numerics.Quaternion(x, y, z, w);
+        }
+
+        public Quaternion(Vector3 vec, float w)
+        {
+            internalQuat = new System.Numerics.Quaternion(vec.InternalVector, w);
+        }
+        public Quaternion(System.Numerics.Quaternion quat)
+        {
+            internalQuat = quat;
         }
 
         public void SetIdentity()
         {
-            _x = 0;
-            _y = 0;
-            _z = 0;
-            _w = 1;
+            X = 0;
+            Y = 0;
+            Z = 0;
+            W = 1;
         }
 
         public static Quaternion RotationBetweenVectors(Vector3 start, Vector3 target)
@@ -77,7 +88,7 @@ namespace S3DE.Maths
             float s = (float)Math.Sqrt((1f + cosTheta) * 2f);
             float invs = 1f / s;
 
-            return new Quaternion(axis.x * invs, axis.y * invs, axis.z * invs, s * 0.5f);
+            return new Quaternion(axis * invs, s * 0.5f);
         }
 
         public static Quaternion CreateLookAt(Vector3 position, Vector3 target, Vector3 up)
@@ -94,67 +105,74 @@ namespace S3DE.Maths
 
         public static Quaternion CreateLookAt(Vector3 position, Vector3 target)
         {
-            return Quaternion.Identity;
+            return Identity;
         }
 
         public static Quaternion CreateFromAxisAngle(Vector3 axis, float angle)
         {
             Vector3 a = axis.normalized;
+            double d = (angle * Constants.ToRadians) * 0.5d;
 
-            float hSA = (float)Math.Sin((angle * Constants.ToRadians) * 0.5d);
-            float hCA = (float)Math.Cos((angle * Constants.ToRadians) * 0.5d);
+            float hSA = (float)Math.Sin(d);
+            float hCA = (float)Math.Cos(d);
 
-            return new Quaternion(a.x * hSA, a.y * hSA, a.z * hSA, hCA);
+            return new Quaternion(a * hSA, hCA);
         }
+
+        public Vector3 XYZ => new Vector3(X, Y, Z);
+        public Vector3 YZX => new Vector3(Y, Z, X);
+        public Vector3 ZXY => new Vector3(Z, X, Y);
+        public Vector2 YZ => new Vector2(Y, Z);
+
+        public Vector4 ToVector4() => new Vector4(X, Y, Z, W);
 
         public Matrix4x4 ToRotationMatrix() => Matrix4x4.CreateRotationMatrix(this);
 
-        public static float Length(Quaternion q) => (float)Math.Sqrt(LengthSquared(q));
-        public static float LengthSquared(Quaternion q) => q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+        public static float Length(Quaternion q) => q.internalQuat.Length();
+        public static float LengthSquared(Quaternion q) => q.internalQuat.LengthSquared();
 
         public static Quaternion CreateFromRotationMatrix(Matrix4x4 m)
         {
-            Quaternion quat = Identity;
-            quat.w = (float)(Math.Sqrt(Math.Max(0, 1 + m[0, 0] + m[1, 1] + m[2, 2])) / 2);
-            quat.x = (float)(Math.Sqrt(Math.Max(0, 1 + m[0, 0] - m[1, 1] - m[2, 2])) / 2);
-            quat.y = (float)(Math.Sqrt(Math.Max(0, 1 - m[0, 0] + m[1, 1] - m[2, 2])) / 2);
-            quat.z = (float)(Math.Sqrt(Math.Max(0, 1 - m[0, 0] - m[1, 1] + m[2, 2])) / 2);
+            Vector4 v4_0 = new Vector4(1) +
+            new Vector4(m[0, 0], -m[0, 0], -m[0, 0], m[0, 0]) +
+            new Vector4(-m[1, 1], m[1, 1], -m[1, 1], m[1, 1]) +
+            new Vector4(-m[2, 2], -m[2, 2], m[2, 2], m[2, 2]);
 
-            quat.x *= Math.Sign(quat.x * (m[2, 1] - m[1, 2]));
-            quat.y *= Math.Sign(quat.y * (m[0, 2] - m[2, 0]));
-            quat.z *= Math.Sign(quat.z * (m[1, 0] - m[0, 1]));
+            v4_0 = Vector4.Max(new Vector4(0), v4_0);
+
+            v4_0 = Vector4.Sqrt(v4_0);
+            v4_0 /= 2;
+            Vector3 v3_0 = v4_0.XYZ;
             
-            return quat;
+            v3_0 *= Vector3.Sign(v3_0 * 
+                (new Vector3(m[2, 1], m[0, 2], m[1, 0]) - 
+                new Vector3(m[1, 2], m[2, 0], m[0, 1])));
+            
+            return new Quaternion(v3_0,v4_0.W);
         }
+
         public static Quaternion Normalized(Quaternion q)
         {
-            float l = Length(q);
-            return new Quaternion(q.x / l, q.y / l, q.z / l, q.w / l);
+            return new Quaternion(System.Numerics.Quaternion.Normalize(q.InternalQuaternion));
         }
 
-        public static Quaternion Conjugate(Quaternion q) => new Quaternion(-q.x, -q.y, -q.z, q.w);
-
+        public static Quaternion Conjugate(Quaternion q) => new Quaternion(-q.X, -q.Y, -q.Z, q.W);
+        
         public static Quaternion operator * (Quaternion q1, Quaternion q2)
         {
-            return new Quaternion(
-                q1.x * q2.w + q1.w * q2.x + q1.y * q2.z - q1.z * q2.y,
-                q1.y * q2.w + q1.w * q2.y + q1.z * q2.x - q1.x * q2.z,
-                q1.z * q2.w + q1.w * q2.z + q1.x * q2.y - q1.y * q2.x,
-                q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
+            return new Quaternion(q1.internalQuat * q2.internalQuat);
         }
 
         public static Quaternion operator * (Quaternion q, Vector3 v)
         {
-            float x, y, z, w;
-
-            x =  q.w * v.x + q.y * v.z - q.z * v.y;
-            y =  q.w * v.y + q.z * v.x - q.x * v.z;
-            z =  q.w * v.z + q.x * v.y - q.y * v.x;
-            w = -q.x * v.x - q.y * v.y - q.z * v.z;
-            return new Quaternion(x,y,z,w);
+            float w;
+            Vector3 vecPart = new Vector3(q.W) * v + q.YZX * v.ZXY - q.ZXY * v.YZX;
+            w = -q.X * v.X - q.Y * v.Y - q.Z * v.Z;
+            
+            return new Quaternion(vecPart, w);
         }
 
-        public override string ToString() => $"(x:{x}|y:{y}|z:{z}|w:{w})";
+        public override string ToString() => $"(x:{X}|y:{Y}|z:{Z}|w:{W})";
 
     }
 }
