@@ -64,6 +64,7 @@ namespace S3DE
             S3DE_UniformBuffer.Initialize_BindingPoints();
             Console.WriteLine("Initializing RenderPipeline");
             RenderPipeline.Init_Internal();
+            Console.WriteLine($"Vectors are {(System.Numerics.Vector.IsHardwareAccelerated ? "" : "not")} hardware accelerated.");
             Console.WriteLine($"Starting Game {game.GameName()}");
             game.StartGame();
             Console.WriteLine($"Game: {game.GameName()} started");

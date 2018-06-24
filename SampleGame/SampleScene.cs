@@ -21,15 +21,12 @@ namespace SampleGame
     {
         protected override void LoadScene()
         {
-            
             Material mat = new SimpleMaterial_UBO();
             Mesh m = Mesh.CreateCube(new System.Numerics.Vector3(1, 1, 1));
             
-            const int s = 10;
+            const int s = 20;
             Console.WriteLine($"Testing {(s*2) * (s*2)} rotating cubes");
-
             
-
             for (int x = -s; x < s; x++)
                 for (int y = -s; y < s; y++)
                 {
