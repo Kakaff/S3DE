@@ -100,7 +100,7 @@ namespace S3DE.Engine.Graphics
 
         internal static void SetResolution(int width, int height)
         {
-            Game.DisplayResolution = new Vector2(width, height);
+            Game.DisplayResolution = new S3DE_Vector2(width, height);
         }
         
         internal static void ResizeWindow()

@@ -23,12 +23,12 @@ namespace S3DE.Engine.Graphics.OpGL
 
             quadMesh = new OpenGL_Mesh();
             quadMesh.SetData(
-                new Vector3[] {new Vector3(-1,1,0), new Vector3(1,1,0),
-                               new Vector3(1,-1,0),new Vector3(-1,-1,0)},
-                new Vector2[] {new Vector2(0,1),new Vector2(1,1),
-                                new Vector2(1,0),new Vector2(0,0)}, 
-                new Vector3[] { }, 
-                new Vector4[] {},
+                new System.Numerics.Vector3[] {new System.Numerics.Vector3(-1,1,0), new System.Numerics.Vector3(1,1,0),
+                               new System.Numerics.Vector3(1,-1,0),new System.Numerics.Vector3(-1,-1,0)},
+                new S3DE_Vector2[] {new S3DE_Vector2(0,1),new S3DE_Vector2(1,1),
+                                new S3DE_Vector2(1,0),new S3DE_Vector2(0,0)}, 
+                new System.Numerics.Vector3[] { }, 
+                new System.Numerics.Vector4[] {},
                 new int[] {0,1,2,0,2,3},
                 false);
         }

@@ -11,9 +11,9 @@ namespace S3DE.Engine.Graphics.OpGL.DC
     class SetVector3Command : IDrawCallCommand
     {
         uint uniformLocation;
-        Vector3 vec;
+        System.Numerics.Vector3 vec;
 
-        internal SetVector3Command(uint uniformLocation, Vector3 vec)
+        internal SetVector3Command(uint uniformLocation, System.Numerics.Vector3 vec)
         {
             this.uniformLocation = uniformLocation;
             this.vec = vec;

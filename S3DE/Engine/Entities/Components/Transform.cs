@@ -1,5 +1,6 @@
 ﻿using S3DE.Engine.Data;
 using S3DE.Maths;
+using S3DE.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,54 +29,54 @@ namespace S3DE.Engine.Entities.Components
         public bool HasChanged => hasChanged;
 
         public Transform Parent => parent;
-        public Vector3 Position
+        public System.Numerics.Vector3 Position
         {
             get => worldPosition;
             set => SetPosition(value, Space.World);
         }
 
-        public Quaternion Rotation
+        public System.Numerics.Quaternion Rotation
         {
             get => worldQuatRotation;
             set => SetRotation(value, Space.World);
         }
 
-        public Vector3 Scale
+        public System.Numerics.Vector3 Scale
         {
             get => worldScale;
             set => SetScale(value, Space.World);
         }
 
-        public Vector3 LocalScale
+        public System.Numerics.Vector3 LocalScale
         {
             get => localScale;
             set => SetScale(value, Space.Local);
         }
 
-        public Vector3 LocalPosition
+        public System.Numerics.Vector3 LocalPosition
         {
             get => localPosition;
             set => SetPosition(value, Space.Local);
         }
 
-        public Quaternion LocalRotation
+        public System.Numerics.Quaternion LocalRotation
         {
             get => localQuatRotation;
             set => SetRotation(value, Space.Local);
         }
 
-        public Vector3 Forward => forward;
-        public Vector3 Right => right;
-        public Vector3 Up => up;
-        public Vector3 Backward => -Forward;
-        public Vector3 Left => -Right;
-        public Vector3 Down => -Up;
+        public System.Numerics.Vector3 Forward => forward;
+        public System.Numerics.Vector3 Right => right;
+        public System.Numerics.Vector3 Up => up;
+        public System.Numerics.Vector3 Backward => -Forward;
+        public System.Numerics.Vector3 Left => -Right;
+        public System.Numerics.Vector3 Down => -Up;
 
-        Vector3 worldPosition, localPosition;
-        Quaternion worldQuatRotation, localQuatRotation;
-        Vector3 worldScale, localScale;
+        System.Numerics.Vector3 worldPosition, localPosition;
+        System.Numerics.Quaternion worldQuatRotation, localQuatRotation;
+        System.Numerics.Vector3 worldScale, localScale;
 
-        Vector3 forward, up, right;
+        System.Numerics.Vector3 forward, up, right;
 
         Matrix4x4 worldTranslationMatrix, worldRotMatrix, worldScaleMatrix, worldTransformMatrix;
         
@@ -100,14 +101,15 @@ namespace S3DE.Engine.Entities.Components
                 updateUBO = false;
                 if (ubo == null)
                     ubo = S3DE_UniformBuffer.Create();
-
-                ubo.SetData(Matrix4x4.ToByteArray(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix));
+                ByteBuffer buff = Matrix4x4.ToByteBuffer(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix);
+                ubo.SetData(buff);
+                buff.Dispose();
             }
         }
 
-        public void Translate(Vector3 direction, float distance) => Translate(direction, distance, Space.World);
+        public void Translate(System.Numerics.Vector3 direction, float distance) => Translate(direction, distance, Space.World);
 
-        public void Translate(Vector3 direction, float distance, Space space)
+        public void Translate(System.Numerics.Vector3 direction, float distance, Space space)
         {
             switch (space)
             {
@@ -116,7 +118,7 @@ namespace S3DE.Engine.Entities.Components
             }
         }
 
-        public void SetPosition(Vector3 position, Space space)
+        public void SetPosition(System.Numerics.Vector3 position, Space space)
         {
             hasChanged = true;
             switch (space)
@@ -124,7 +126,7 @@ namespace S3DE.Engine.Entities.Components
                 case Space.World:
                     {
                         //Take parent scale matrix into account aswell.
-                        localPosition = (parent == null) ? position : (position - parent.Position) * parent.Rotation.conjugate;
+                        localPosition = (parent == null) ? position : System.Numerics.Vector3.Transform((position - parent.Position),parent.Rotation.conjugate());
                         break;
                     }
                 case Space.Local:
@@ -138,14 +140,14 @@ namespace S3DE.Engine.Entities.Components
             UpdateChildren();
         }
 
-        public void SetRotation(Quaternion quat, Space space)
+        public void SetRotation(System.Numerics.Quaternion quat, Space space)
         {
             hasChanged = true;
             switch (space)
             {
                 case Space.World:
                     {
-                        localQuatRotation = (parent == null) ? quat : parent.worldQuatRotation.conjugate * quat;
+                        localQuatRotation = (parent == null) ? quat : parent.worldQuatRotation.conjugate() * quat;
                         break;
                     }
                 case Space.Local:
@@ -159,17 +161,17 @@ namespace S3DE.Engine.Entities.Components
             UpdateChildren();
         }
 
-        public void Rotate(Quaternion q) => Rotate(q, Space.World);
-        public void Rotate(Vector3 axis, float angle) => Rotate(axis, angle, Space.World);
+        public void Rotate(System.Numerics.Quaternion q) => Rotate(q, Space.World);
+        public void Rotate(System.Numerics.Vector3 axis, float angle) => Rotate(axis, angle, Space.World);
 
-        public void Rotate(Vector3 axis, float angle, Space space) => Rotate(Quaternion.CreateFromAxisAngle(axis, angle), space);
+        public void Rotate(System.Numerics.Vector3 axis, float angle, Space space) => Rotate(VectorExtensions.Quat_CreateFromAxisAngle(axis, angle), space);
 
-        public void Rotate(Quaternion q, Space s) => SetRotation((s == Space.World ? worldQuatRotation : localQuatRotation) * q, s);
+        public void Rotate(System.Numerics.Quaternion q, Space s) => SetRotation((s == Space.World ? worldQuatRotation : localQuatRotation) * q, s);
 
-        public void LookAt(Vector3 target) => SetRotation(Quaternion.CreateLookAt(transform.Position, target, Vector3.Up), Space.World);
+        public void LookAt(System.Numerics.Vector3 target) => SetRotation(VectorExtensions.Quat_CreateLookAt(transform.Position, target, VectorExtensions.Vec3_Up), Space.World);
         
 
-        public void SetScale(Vector3 scale, Space space)
+        public void SetScale(System.Numerics.Vector3 scale, Space space)
         {
             localScale = scale;
             hasChanged = true;
@@ -218,9 +220,9 @@ namespace S3DE.Engine.Entities.Components
         {
             children.Remove(c);
 
-            Vector3 pos = c.Position;
-            Quaternion rot = c.Rotation;
-            Vector3 scale = c.Scale;
+            System.Numerics.Vector3 pos = c.Position;
+            System.Numerics.Quaternion rot = c.Rotation;
+            System.Numerics.Vector3 scale = c.Scale;
 
             c.parent = null;
 
@@ -236,7 +238,7 @@ namespace S3DE.Engine.Entities.Components
             Matrix4x4 transMatrix = Matrix4x4.CreateTranslationMatrix(localPosition);
             worldTranslationMatrix = (parent == null) ? transMatrix : transMatrix * parent.worldTranslationMatrix;
             UpdateWorldTransform();
-            worldPosition = Vector3.Zero * worldTransformMatrix;
+            worldPosition = VectorExtensions.Vec3_Zero.Transform(worldTransformMatrix);
         }
 
         private void UpdateWorldTransform()
@@ -249,9 +251,9 @@ namespace S3DE.Engine.Entities.Components
             worldQuatRotation = (parent == null) ? localQuatRotation : parent.worldQuatRotation * localQuatRotation;
             worldRotMatrix = Matrix4x4.CreateRotationMatrix(worldQuatRotation);
 
-            right = Vector3.Right * worldRotMatrix;
-            up = Vector3.Up * worldRotMatrix;
-            forward = Vector3.Forward * worldRotMatrix;
+            right = VectorExtensions.Vec3_Right.Transform(worldRotMatrix);
+            up = VectorExtensions.Vec3_Up.Transform(worldRotMatrix);
+            forward = VectorExtensions.Vec3_Forward.Transform(worldRotMatrix);
             UpdateWorldTransform();
         }
 
@@ -259,7 +261,7 @@ namespace S3DE.Engine.Entities.Components
         {
             Matrix4x4 m = Matrix4x4.CreateScaleMatrix(localScale);
             worldScaleMatrix = (parent == null) ? m : parent.WorldScaleMatrix * m;
-            worldScale = Vector3.One * worldScaleMatrix;
+            worldScale = VectorExtensions.Vec3_One.Transform(worldScaleMatrix);
 
             UpdateWorldTransform();
         }
@@ -285,16 +287,16 @@ namespace S3DE.Engine.Entities.Components
             children = new List<Transform>();
 
             worldTranslationMatrix = new Matrix4x4().SetIdentity();
-            worldRotMatrix = Quaternion.Identity.ToRotationMatrix();
-            worldScaleMatrix = Matrix4x4.CreateScaleMatrix(Vector3.One);
+            worldRotMatrix = System.Numerics.Quaternion.Identity.ToRotationMatrix();
+            worldScaleMatrix = Matrix4x4.CreateScaleMatrix(VectorExtensions.Vec3_One);
 
-            Scale = Vector3.One;
-            Position = Vector3.Zero;
-            Rotation = Quaternion.Identity;
+            Scale = VectorExtensions.Vec3_One;
+            Position = VectorExtensions.Vec3_Zero;
+            Rotation = System.Numerics.Quaternion.Identity;
 
-            forward = Vector3.Forward;
-            up = Vector3.Up;
-            right = Vector3.Right;
+            forward = VectorExtensions.Vec3_Forward;
+            up = VectorExtensions.Vec3_Up;
+            right = VectorExtensions.Vec3_Right;
             hasChanged = true;
 
             RecalculateMatrices();

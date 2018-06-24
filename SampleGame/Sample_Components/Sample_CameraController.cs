@@ -14,14 +14,14 @@ namespace SampleGame.Sample_Components
 {
     public class Sample_CameraController : EntityComponent, IUpdateLogic
     {
-        Vector3 movDir;
+        System.Numerics.Vector3 movDir;
 
         float xRot = 0, yRot = 0;
 
         public void EarlyUpdate() { }
         public void Update()
         {
-            movDir = Vector3.Zero;
+            movDir = System.Numerics.Vector3.Zero;
 
             if (Input.GetKey(KeyCode.W))
                 movDir += transform.Forward;
@@ -35,8 +35,8 @@ namespace SampleGame.Sample_Components
             if (Input.GetKey(KeyCode.D))
                 movDir += transform.Right;
 
-            if (movDir != Vector3.Zero)
-                transform.Translate(movDir.normalized, 1f * DeltaTime);
+            if (movDir != System.Numerics.Vector3.Zero)
+                transform.Translate(movDir.Normalized(), 1f * DeltaTime);
 
             if (Input.CursorMoved)
             {
@@ -46,8 +46,8 @@ namespace SampleGame.Sample_Components
                 xRot = EngineMath.Normalize(-180, 180, xRot);
                 yRot = EngineMath.Clamp(-90, 90, yRot);
 
-                Quaternion q1 = Quaternion.CreateFromAxisAngle(Vector3.Up, xRot);
-                Quaternion q2 = Quaternion.CreateFromAxisAngle(Vector3.Right, yRot);
+                System.Numerics.Quaternion q1 = VectorExtensions.Quat_CreateFromAxisAngle(VectorExtensions.Vec3_Up, xRot);
+                System.Numerics.Quaternion q2 = VectorExtensions.Quat_CreateFromAxisAngle(VectorExtensions.Vec3_Right, yRot);
 
                 transform.SetRotation(q1 * q2,Space.Local);
             }

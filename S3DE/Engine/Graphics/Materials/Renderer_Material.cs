@@ -39,7 +39,7 @@ namespace S3DE.Engine.Graphics.Materials
         protected abstract void SetUniformi(string uniformName, int value);
         protected abstract void SetUniformf(string uniformName, float[] value);
         protected abstract void SetUniform(string uniformName, Matrix4x4 m);
-        protected abstract void SetUniform(string uniformName, Vector3 v);
+        protected abstract void SetUniform(string uniformName, System.Numerics.Vector3 v);
         protected abstract void SetTexture(string uniformName, TextureUnit textureUnit, ITexture texture);
         protected abstract void SetUniformBlock(string blockName, int bindingPoint);
         //protected abstract void SetUniform(string uniformName, ILight light);
@@ -51,7 +51,7 @@ namespace S3DE.Engine.Graphics.Materials
         internal void Internal_SetUniformi(string uniformName, int value) => SetUniformi(uniformName, value);
         internal void Internal_SetUniformf(string uniformName, float[] value) => SetUniformf(uniformName, value);
         internal void Internal_SetUniform(string uniformName, Matrix4x4 m) => SetUniform(uniformName, m);
-        internal void Internal_SetUniform(string uniformName, Vector3 v) => SetUniform(uniformName, v);
+        internal void Internal_SetUniform(string uniformName, System.Numerics.Vector3 v) => SetUniform(uniformName, v);
         internal void Internal_SetTexture(string uniformName, TextureUnit textureUnit, ITexture texture) => SetTexture(uniformName, textureUnit, texture);
 
         internal int GetUniformBlockIndex_Internal(string name) => GetUniformBlockIndex(name);
@@ -61,7 +61,7 @@ namespace S3DE.Engine.Graphics.Materials
         internal void Internal_SetUniform(string uniformName, ILight light)
         {
             SetUniformf(uniformName + ".intensity", light.Intensity);
-            SetUniform(uniformName + ".color", (Vector3)light.Color);
+            SetUniform(uniformName + ".color", light.Color.ToVector3());
         }
         internal void Internal_SetUniform(string uniformName, IDirectionalLight directionalLight)
         {

@@ -56,6 +56,6 @@ namespace S3DE.Engine.Graphics
         public static Color Green => new Color(0, 255, 0, 255);
 
         public static implicit operator Color(System.Drawing.Color c) => new Color(c.R,c.G,c.B,c.A);
-        public static implicit operator Vector3(Color c) => new Vector3(c.r / 255f,c.g / 255f,c.b / 255f);
+        public System.Numerics.Vector3 ToVector3() => new System.Numerics.Vector3(r / 255f, g / 255f, b / 255f);
     }
 }

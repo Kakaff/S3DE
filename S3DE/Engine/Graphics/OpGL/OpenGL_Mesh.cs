@@ -66,7 +66,7 @@ namespace S3DE.Engine.Graphics.OpGL
             ebo.Unbind();
         }
 
-        float[] MeshDataToArray(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, Vector4[] tangents, int[] indicies)
+        float[] MeshDataToArray(System.Numerics.Vector3[] vertices, S3DE_Vector2[] uvs, System.Numerics.Vector3[] normals, System.Numerics.Vector4[] tangents, int[] indicies)
         {
             if (uvs.Length == vertices.Length)
                 hasUvs = true;
@@ -83,7 +83,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 hasNormals = false;
 
             //If has normals, calc tangents and bitangents.
-            Vector3[] biTangents = null;
+            System.Numerics.Vector3[] biTangents = null;
             if (hasNormals)
                 biTangents = CalculateBiTangents(normals, tangents);
 
@@ -98,7 +98,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 if (hasNormals)
                 {
                     result.AddRange(normals[i].ToArray());
-                    result.AddRange(tangents[i].XYZ.ToArray());
+                    result.AddRange(tangents[i].XYZ().ToArray());
                     result.AddRange(biTangents[i].ToArray());
                 }
             }
@@ -126,7 +126,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
 
 
-        internal void SetData(Vector3[] vertices, Vector2[] uvs, Vector3[] normals, Vector4[] tangents, int[] indicies, bool dynamic)
+        internal void SetData(System.Numerics.Vector3[] vertices, S3DE_Vector2[] uvs, System.Numerics.Vector3[] normals, System.Numerics.Vector4[] tangents, int[] indicies, bool dynamic)
         {
             Bind();
             float[] vertData = MeshDataToArray(vertices, uvs, normals,tangents,indicies);
@@ -171,15 +171,15 @@ namespace S3DE.Engine.Graphics.OpGL
         }
 
 
-        Vector3[] CalculateBiTangents(Vector3[] normals,Vector4[] Tangents)
+        System.Numerics.Vector3[] CalculateBiTangents(System.Numerics.Vector3[] normals,System.Numerics.Vector4[] Tangents)
         {
             if (Tangents.Length != normals.Length)
                 throw new ArgumentException("The mesh needs to have the same number of tangents as normals!");
-            Vector3[] BiTangents = new Vector3[Tangents.Length];
+            System.Numerics.Vector3[] BiTangents = new System.Numerics.Vector3[Tangents.Length];
 
             for (int i = 0; i < Tangents.Length; i++)
             {
-                BiTangents[i] = Vector3.Cross(normals[i], Tangents[i].XYZ) * Tangents[i].W;
+                BiTangents[i] = System.Numerics.Vector3.Cross(normals[i], Tangents[i].XYZ()) * Tangents[i].W;
             }
 
             return BiTangents;

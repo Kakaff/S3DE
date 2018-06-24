@@ -80,7 +80,7 @@ namespace S3DE.Engine.Graphics
 
         public static int API_Version => ActiveRenderer.apiVer;
 
-        public static Vector2 ViewportSize
+        public static S3DE_Vector2 ViewportSize
         {
             get => ActiveRenderer.viewportSize;
             set {
@@ -89,7 +89,7 @@ namespace S3DE.Engine.Graphics
             }
         }
 
-        private Vector2 displayResolution,renderResolution,viewportSize;
+        private S3DE_Vector2 displayResolution,renderResolution,viewportSize;
         private int apiVer,refreshRate;
         private int maxMipMapLevels = 1000;
         private bool alphaTesting = false;
@@ -117,9 +117,10 @@ namespace S3DE.Engine.Graphics
         protected abstract void OnRefreshRateChanged();
         protected abstract void enable(Function func);
         protected abstract void disable(Function func);
-        protected abstract void SetViewportSize(Vector2 size);
+        protected abstract void SetViewportSize(S3DE_Vector2 size);
         protected abstract void BindTexUnit(ITexture tex, TextureUnit tu);
         protected abstract void Bind_UniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint);
+        protected abstract void Unbind_UniformBuffer(S3DE_UniformBuffer buffer);
         protected abstract void UnbindTexUnit(TextureUnit tu);
         protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
         protected abstract void FinalizePass();
@@ -141,8 +142,8 @@ namespace S3DE.Engine.Graphics
             Console.WriteLine($"Setting TargetRenderer as {typeof(T).Name}");
             activeRenderer = InstanceCreator.CreateInstance<T>();
 
-            ActiveRenderer.displayResolution = new Vector2(640, 480);
-            ActiveRenderer.renderResolution = new Vector2(640, 480);
+            ActiveRenderer.displayResolution = new S3DE_Vector2(640, 480);
+            ActiveRenderer.renderResolution = new S3DE_Vector2(640, 480);
             ActiveRenderer.refreshRate = 60;
             return (T)ActiveRenderer;
         }
@@ -174,7 +175,7 @@ namespace S3DE.Engine.Graphics
 
         internal static ScreenQuad CreateScreenQuad_Internal() => ActiveRenderer.CreateScreenQuad();
 
-        internal static Framebuffer CreateFramebuffer_Internal(Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.X, (int)size.Y);
+        internal static Framebuffer CreateFramebuffer_Internal(S3DE_Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.X, (int)size.Y);
         
         public static void AlphaFunction(AlphaFunction function, float value) => ActiveRenderer.SetAlphaFunction(function, value);
 
@@ -190,13 +191,13 @@ namespace S3DE.Engine.Graphics
             ActiveRenderer.Clear();
         }
 
-        internal static void SetDisplayResolution(Vector2 res)
+        internal static void SetDisplayResolution(S3DE_Vector2 res)
         {
             ActiveRenderer.displayResolution = res;
             EngineMain.ResizeWindow = true;
         }
 
-        internal static void SetRenderResolution(Vector2 res)
+        internal static void SetRenderResolution(S3DE_Vector2 res)
         {
             ActiveRenderer.renderResolution = res;
             OnRenderResolutionChanged_Internal();
@@ -218,12 +219,13 @@ namespace S3DE.Engine.Graphics
         internal static void OnWindowResized_Internal() => ActiveRenderer.OnWindowResized();
         internal static void OnRenderResolutionChanged_Internal() => ActiveRenderer.OnRenderResolutionChanged();
         internal static void OnRefreshRateChanged_Internal() => ActiveRenderer.OnRefreshRateChanged();
-        internal static Vector2 DisplayResolution => ActiveRenderer.displayResolution;
-        internal static Vector2 RenderResolution => ActiveRenderer.renderResolution;
+        internal static S3DE_Vector2 DisplayResolution => ActiveRenderer.displayResolution;
+        internal static S3DE_Vector2 RenderResolution => ActiveRenderer.renderResolution;
         internal static int RefreshRate => ActiveRenderer.refreshRate;
         public static void UnbindTextureUnit(TextureUnit tu) => ActiveRenderer.UnbindTexUnit(tu);
         public static void BindTextureUnit(ITexture tex, TextureUnit tu) => ActiveRenderer.BindTexUnit(tex, tu);
         public static void BindUniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint) => ActiveRenderer.Bind_UniformBuffer(buffer, bindingPoint);
+        public static void UnbindUniformBuffer(S3DE_UniformBuffer buffer) => ActiveRenderer.Unbind_UniformBuffer(buffer);
         public static int TextureUnitCount { get => ActiveRenderer.MaxSupportedTextureUnits(); }
         public static int UniformBlockBindingPoints { get => ActiveRenderer.MaxSupportedUniformBlockBindingPoints(); }
     }

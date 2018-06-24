@@ -8,7 +8,7 @@ namespace S3DE.Maths
 {
 
     //SIMD Quaternion
-    
+    /*
     public struct Quaternion
     {
         System.Numerics.Quaternion internalQuat;
@@ -175,4 +175,5 @@ namespace S3DE.Maths
         public override string ToString() => $"(x:{X}|y:{Y}|z:{Z}|w:{W})";
 
     }
+    */
 }

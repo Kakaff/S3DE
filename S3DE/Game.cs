@@ -17,12 +17,12 @@ namespace S3DE
         public static bool RegainedFocus => Window.RegainedFocus;
         public static bool LostFocus => Window.LostFocus;
 
-        public static Vector2 DisplayResolution {
+        public static S3DE_Vector2 DisplayResolution {
            get => Renderer.DisplayResolution;
            set => Renderer.SetDisplayResolution(value);
         }
 
-        public static Vector2 RenderResolution
+        public static S3DE_Vector2 RenderResolution
         {
             get => Renderer.RenderResolution;
             set => Renderer.SetRenderResolution(value);

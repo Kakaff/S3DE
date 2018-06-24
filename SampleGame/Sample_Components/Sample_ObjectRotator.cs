@@ -16,7 +16,7 @@ namespace SampleGame.Sample_Components
         public void EarlyUpdate() { }
         public void Update()
         {
-            transform.Rotate(Vector3.Up, 45f * DeltaTime);
+            transform.Rotate(VectorExtensions.Vec3_Up, 45f * DeltaTime);
         }
 
         public void LateUpdate() { }

@@ -104,7 +104,7 @@ namespace S3DE.Engine.Graphics.Shaders
             texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
         }
 
-        Texture2D createSampleTexture(Vector2 resolution)
+        Texture2D createSampleTexture(S3DE_Vector2 resolution)
         {
             Texture2D tex = Texture2D.Create((int)resolution.X, (int)resolution.Y);
             float xMod = 255 / resolution.X;

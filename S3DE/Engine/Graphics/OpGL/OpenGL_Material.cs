@@ -77,7 +77,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void SetUniform(string uniformName, Matrix4x4 m) => prog.SetUniform(uniformName, m);
 
-        protected override void SetUniform(string uniformName, Vector3 v) => prog.SetUniform(uniformName, v);
+        protected override void SetUniform(string uniformName, System.Numerics.Vector3 v) => prog.SetUniform(uniformName, v);
 
         protected override void SetUniformBlock(string blockName, int bindingPoint)
         {

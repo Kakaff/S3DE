@@ -16,7 +16,7 @@ namespace S3DE.Engine.Graphics.OpGL
         int mipmapCount;
         uint pointer;
         Color[,] pixels;
-        Vector2 size;
+        S3DE_Vector2 size;
         FilterMode filterMode;
         AnisotropicSamples samples;
         WrapMode wrapMode;
@@ -31,14 +31,14 @@ namespace S3DE.Engine.Graphics.OpGL
         }
         internal OpenGL_Texture2D(int width, int height)
         {
-            size = new Vector2(width, height);
+            size = new S3DE_Vector2(width, height);
             pixels = new Color[width, height];
             internalFormat = Enums.InternalFormat.RGBA;
             pixelFormat = Enums.PixelFormat.RGBA;
             pixelType = Enums.PixelType.UByte;
         }
 
-        public override Vector2 Resolution => size;
+        public override S3DE_Vector2 Resolution => size;
 
         public override FilterMode FilterMode { get => filterMode; set => filterMode = value;}
         public override AnisotropicSamples AnisotropicSamples { get => samples; set => samples = value; }
@@ -49,7 +49,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
         public uint Pointer { get { if (pointer == 0) GenerateHandle(); return pointer; } }
 
-        byte[] convertToByteArray(Color[,] pixels, Vector2 size)
+        byte[] convertToByteArray(Color[,] pixels, S3DE_Vector2 size)
         {
             List<byte> result = new List<byte>();
             for (int y = 0; y < size.Y; y++)

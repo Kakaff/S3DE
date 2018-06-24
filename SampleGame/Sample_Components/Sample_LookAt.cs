@@ -11,15 +11,15 @@ namespace SampleGame.Sample_Components
 {
     public class Sample_LookAt : EntityComponent, IUpdateLogic
     {
-        Vector3 target;
+        System.Numerics.Vector3 target;
 
-        public Vector3 Target
+        public System.Numerics.Vector3 Target
         {
             get => target;
             set => target = value;
         }
 
-        protected override void OnCreation() { target = Vector3.Zero; }
+        protected override void OnCreation() { target = VectorExtensions.Vec3_Zero; }
 
         public void EarlyUpdate() { }
         public void LateUpdate() { }

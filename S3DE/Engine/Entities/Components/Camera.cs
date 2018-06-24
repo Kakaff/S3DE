@@ -2,6 +2,7 @@
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
 using S3DE.Maths;
+using S3DE.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +92,9 @@ namespace S3DE.Engine.Entities.Components
                 if (ubo == null)
                     ubo = S3DE_UniformBuffer.Create();
                 updateUBO = false;
-                ubo.SetData(Matrix4x4.ToByteArray(ViewMatrix, ProjectionMatrix));
+                ByteBuffer buff = Matrix4x4.ToByteBuffer(ViewMatrix, ProjectionMatrix);
+                ubo.SetData(buff);
+                buff.Dispose();
             }
         }
         

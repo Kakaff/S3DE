@@ -69,7 +69,7 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override void SetUniform(string uniformName, Matrix4x4 m) =>
                 DrawCallSorter.AddCommandToCurrent(new SetMatrix4x4Command((uint)prog.GetUniformLocation(uniformName), m));
 
-        protected override void SetUniform(string uniformName, Vector3 v) =>
+        protected override void SetUniform(string uniformName, System.Numerics.Vector3 v) =>
                 DrawCallSorter.AddCommandToCurrent(new SetVector3Command((uint)prog.GetUniformLocation(uniformName), v));
 
     protected override void AddUniform(string uniformName) => prog.AddUniform(uniformName);

@@ -147,13 +147,13 @@ namespace S3DE.Engine
         static bool cursorHidden;
         static bool cursorLocked;
         static bool cursorHasMoved;
-        static Vector2 mouseDeltaRaw = Vector2.Zero;
-        static Vector2 mouseDelta = Vector2.Zero;
-        static Vector2 mousePos = Vector2.Zero;
-        static Vector2 prevMousePos = Vector2.Zero;
+        static S3DE_Vector2 mouseDeltaRaw = S3DE_Vector2.Zero;
+        static S3DE_Vector2 mouseDelta = S3DE_Vector2.Zero;
+        static S3DE_Vector2 mousePos = S3DE_Vector2.Zero;
+        static S3DE_Vector2 prevMousePos = S3DE_Vector2.Zero;
 
-        public static Vector2 MouseDeltaRaw => mouseDeltaRaw;
-        public static Vector2 MouseDelta => mouseDelta;
+        public static S3DE_Vector2 MouseDeltaRaw => mouseDeltaRaw;
+        public static S3DE_Vector2 MouseDelta => mouseDelta;
 
         public static bool CursorMoved => cursorHasMoved;
 
@@ -191,32 +191,32 @@ namespace S3DE.Engine
                 double x = 0, y = 0;
                 Glfw.GetCursorPos(S3DE.Engine.Graphics.Window.window, ref x, ref y);
 
-                mousePos = new Vector2((float)(x > Game.DisplayResolution.X ? Game.DisplayResolution.X : x < 0 ? 0 : x),
+                mousePos = new S3DE_Vector2((float)(x > Game.DisplayResolution.X ? Game.DisplayResolution.X : x < 0 ? 0 : x),
                                        (float)(y > Game.DisplayResolution.Y ? Game.DisplayResolution.Y : y < 0 ? 0 : y));
 
-                mouseDeltaRaw = new Vector2((float)x - prevMousePos.X, (float)y - prevMousePos.Y);
-                prevMousePos = new Vector2((float)x, (float)y);
+                mouseDeltaRaw = new S3DE_Vector2((float)x - prevMousePos.X, (float)y - prevMousePos.Y);
+                prevMousePos = new S3DE_Vector2((float)x, (float)y);
 
                 if (!LockedCursor && !CursorIsInsideWindow((int)x, (int)y))
                 {
-                    mouseDeltaRaw = Vector2.Zero;
+                    mouseDeltaRaw = S3DE_Vector2.Zero;
                     prevMousePos = mousePos;
                 }
                 
                 //Prevents the game from spazzing out if the user clicks somewhere on screen to get focus on the game again.
                 if (Game.RegainedFocus)
-                    mouseDeltaRaw = Vector2.Zero;
+                    mouseDeltaRaw = S3DE_Vector2.Zero;
 
-                if (mouseDeltaRaw != Vector2.Zero)
+                if (mouseDeltaRaw != S3DE_Vector2.Zero)
                     cursorHasMoved = true;
                 else
                     cursorHasMoved = false;
 
-                mouseDelta = new Vector2(mouseDeltaRaw.X / Game.DisplayResolution.X, mouseDeltaRaw.Y / Game.DisplayResolution.X);
+                mouseDelta = new S3DE_Vector2(mouseDeltaRaw.X / Game.DisplayResolution.X, mouseDeltaRaw.Y / Game.DisplayResolution.X);
             } else
             {
-                mouseDelta = Vector2.Zero;
-                mouseDeltaRaw = Vector2.Zero;
+                mouseDelta = S3DE_Vector2.Zero;
+                mouseDeltaRaw = S3DE_Vector2.Zero;
             }
 
             int[] values = (int[])Enum.GetValues(typeof(KeyCode));

@@ -15,12 +15,12 @@ namespace S3DE.Engine.Graphics.OpGL
     {
         uint pointer;
         Dictionary<BufferAttachment, OpenGL_RenderTexture2D> attachments;
-        Vector2 resolution;
+        S3DE_Vector2 resolution;
 
         internal OpenGL_Framebuffer(int width, int height)
         {
             Console.WriteLine($"Creating new Framebuffer with resolution: {width}x{height}");
-            resolution = new Vector2(width, height);
+            resolution = new S3DE_Vector2(width, height);
             attachments = new Dictionary<BufferAttachment, OpenGL_RenderTexture2D>();
         }
 

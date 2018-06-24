@@ -27,7 +27,7 @@ namespace S3DE.Engine.Graphics.OpGL
         //Deferred Lighting Material For DirectionalLights.
         //Deferred Lighting Material For PointLight.
 
-        protected override RenderCall CreateRenderCall(Vector2 resolution)
+        protected override RenderCall CreateRenderCall(S3DE_Vector2 resolution)
         {
             RenderCall rc = new RenderCall(resolution);
 
@@ -175,7 +175,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 fbs[1].SetDrawBuffers(attachments);
             }
 
-            DualFrameBuffer(Vector2 res)
+            DualFrameBuffer(S3DE_Vector2 res)
             {
                 fbs = new Framebuffer[2];
                 fbs[0] = Framebuffer.Create(res);
@@ -183,7 +183,7 @@ namespace S3DE.Engine.Graphics.OpGL
             }
 
             //I'm lazy so this will suffice.
-            public static new DualFrameBuffer Create(Vector2 resolution)
+            public static new DualFrameBuffer Create(S3DE_Vector2 resolution)
             {
                 DualFrameBuffer dfb = new DualFrameBuffer(resolution);
                 return dfb;
@@ -426,7 +426,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
             class TestDirLight : IDirectionalLight
             {
-                public Vector3 LightDirection => new Vector3(-0.35f,-0.5f,0.5f).normalized;
+                public System.Numerics.Vector3 LightDirection => new System.Numerics.Vector3(-0.35f,-0.5f,0.5f).Normalized();
 
                 public bool CastsShadows => false;
 

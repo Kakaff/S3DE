@@ -34,6 +34,7 @@ namespace S3DE.Engine.Graphics.OpGL.BufferObjects
 
         public override void SetData(byte[] data)
         {
+
             Gl.BindBuffer(BufferTarget.UniformBuffer, identifier);
             OpenGL_Renderer.TestForGLErrors();
             using (MemoryLock ml = new MemoryLock(data))

@@ -74,15 +74,24 @@ namespace S3DE.Engine.Data
             }
         }
 
-        public T Dequeu()
+        public T Dequeue()
         {
             QueueListEntry<T> res = head;
             if (res != null)
             {
                 head = res.Child;
-                res.SetChild(null);
-                head.SetParent(null);
-                length -= 1;
+                if (head != null)
+                {
+                    res.SetChild(null);
+                    head.SetParent(null);
+                    length -= 1;
+                }
+                else
+                {
+                    length = 0;
+                    tail = null;
+                    head = null;
+                }
                 return res.Value;
             }
             else

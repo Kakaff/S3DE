@@ -21,7 +21,7 @@ namespace S3DE.Engine.Graphics
 
         internal static RenderCall CreateRenderCall_Internal() => ActivePipeline.CreateRenderCall(Renderer.RenderResolution);
 
-        protected abstract RenderCall CreateRenderCall(Vector2 resolution);
+        protected abstract RenderCall CreateRenderCall(S3DE_Vector2 resolution);
 
         protected abstract void RenderScene(GameScene scene, RenderCall renderCall);
 

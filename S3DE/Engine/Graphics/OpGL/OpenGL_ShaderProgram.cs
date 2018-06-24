@@ -91,7 +91,7 @@ namespace S3DE.Engine.Graphics.OpGL
             TestForGLErrors();
         }
 
-        internal void SetUniform(string uniformName, Vector3 v)
+        internal void SetUniform(string uniformName, System.Numerics.Vector3 v)
         {
             Gl.Uniform3(GetUniformLocation(uniformName), v.ToArray());
             TestForGLErrors();

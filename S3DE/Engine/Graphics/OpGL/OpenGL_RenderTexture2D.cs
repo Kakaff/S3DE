@@ -14,7 +14,7 @@ namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_RenderTexture2D : RenderTexture2D, IOpenGL_Texture
     {
-        Vector2 size;
+        S3DE_Vector2 size;
         uint pointer;
 
         internal uint Pointer {
@@ -36,14 +36,14 @@ namespace S3DE.Engine.Graphics.OpGL
                 $"InternalFormat {internalFormat} | " +
                 $"PixelFormat {pixelFormat} | " +
                 $"PixelType {pixelType}");
-            size = new Vector2(width, height);
+            size = new S3DE_Vector2(width, height);
             this.internalFormat = internalFormat;
             this.pixelFormat = pixelFormat;
             this.pixelType = pixelType;
             this.filterMode = filterMode;
         }
 
-        public override Vector2 Size => throw new NotImplementedException();
+        public override S3DE_Vector2 Size => throw new NotImplementedException();
 
         public override FilterMode FilterMode => filterMode;
         public override Enums.InternalFormat InternalFormat => internalFormat;

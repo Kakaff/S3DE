@@ -13,17 +13,17 @@ namespace S3DE.Engine.Graphics
     public class RenderCall
     {
         Dictionary<int, Framebuffer> frameBuffers;
-        Vector2 res;
+        S3DE_Vector2 res;
 
         private RenderCall() { }
 
-        public RenderCall(Vector2 res)
+        public RenderCall(S3DE_Vector2 res)
         {
             this.res = res;
             frameBuffers = new Dictionary<int, Framebuffer>();
         }
 
-        public Vector2 Resolution
+        public S3DE_Vector2 Resolution
         {
             get => res;
             protected set => res = value;

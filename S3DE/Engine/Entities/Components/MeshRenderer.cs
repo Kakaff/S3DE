@@ -74,13 +74,12 @@ namespace S3DE.Engine.Entities
                     if (mat.UsesRotationMatrix)
                         mat.SetRotationMatrix(gameEntity.transform.WorldRotationMatrix);
 
-                    
-                    if (mat.UsesCameraMatrices)
+                    if (mat.UsesTransformMatrices && mat.UsesCameraMatrices)
+                        mat.SetCameraAndTransformBlocks(transform.UniformBuffer, Scene.ActiveCamera.UniformBuffer);
+                    else if (mat.UsesCameraMatrices)
                         mat.SetCameraBlock(Scene.ActiveCamera.UniformBuffer);
-
-                    if (mat.UsesTransformMatrices)
+                    else if (mat.UsesTransformMatrices)
                         mat.SetTransformBlock(transform.UniformBuffer);
-                    
 
                     api_mr.Render_Internal();
                 } else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))

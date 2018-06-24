@@ -104,9 +104,9 @@ namespace S3DE.Engine.Graphics
             if (!tex.IsBound(out t))
             {
                 if (UnboundTextureUnits.Count > 0)
-                    t = UnboundTextureUnits.Dequeu();
+                    t = UnboundTextureUnits.Dequeue();
                 else
-                    t = BoundTextureUnits.Dequeu();
+                    t = BoundTextureUnits.Dequeue();
 
                 tex.Bind(t);
             }

@@ -35,7 +35,7 @@ namespace S3DE.Engine.Graphics.Textures
         bool isBound;
         TextureUnit boundTexUnit;
         
-        public abstract Vector2 Resolution { get; }
+        public abstract S3DE_Vector2 Resolution { get; }
         public TextureUnit BoundTextureUnit => boundTexUnit;
         public abstract FilterMode FilterMode { get; set; }
         public abstract AnisotropicSamples AnisotropicSamples { get; set;}
@@ -82,10 +82,10 @@ namespace S3DE.Engine.Graphics.Textures
 
         public static Texture2D Create(int width, int height) => Renderer.CreateTexture2D_Internal(width, height);
 
-        protected int CalcMaxNumberMipmaps(Vector2 size)
+        protected int CalcMaxNumberMipmaps(S3DE_Vector2 size)
         {
             //Floor size to power of two.
-            Vector2 floored = new Vector2(EngineMath.FloorToPowerOfTwo((int)size.X), EngineMath.FloorToPowerOfTwo((int)size.Y));
+            S3DE_Vector2 floored = new S3DE_Vector2(EngineMath.FloorToPowerOfTwo((int)size.X), EngineMath.FloorToPowerOfTwo((int)size.Y));
             int smallest = (int)(floored.X > floored.Y ? floored.X : floored.Y);
             
             return (int)(Math.Log(smallest) / Math.Log(2)) - 1;

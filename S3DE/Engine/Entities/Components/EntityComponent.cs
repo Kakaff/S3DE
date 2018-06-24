@@ -30,6 +30,7 @@ namespace S3DE.Engine.Entities
                         l.OnDisable();
 
                     isActive = value;
+                    entity.ChangeComponentActivity(this, value);
                 }
             }
         }

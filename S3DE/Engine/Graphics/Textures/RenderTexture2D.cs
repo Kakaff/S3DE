@@ -14,7 +14,7 @@ namespace S3DE.Engine.Graphics
         bool isBound;
         TextureUnit boundTexUnit;
 
-        public abstract Vector2 Size { get; }
+        public abstract S3DE_Vector2 Size { get; }
         public abstract Texture2D ToTexture2D();
         public TextureUnit BoundTextureUnit => boundTexUnit;
         public abstract FilterMode FilterMode {get;}

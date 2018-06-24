@@ -227,7 +227,8 @@ namespace S3DE.Engine.Graphics.Materials
         internal void SetRotationMatrix(Matrix4x4 m) => SetUniform("rotation", m);
         internal void SetTransformBlock(S3DE_UniformBuffer ubo) => SetUniformBlock(TransformUniformBlockName, ubo);
         internal void SetCameraBlock(S3DE_UniformBuffer ubo) => SetUniformBlock(CameraUniformBlockName, ubo);
-
+        internal void SetCameraAndTransformBlocks(S3DE_UniformBuffer tubo, S3DE_UniformBuffer cubo) =>
+            SetUniformBlocks(new string[] { TransformUniformBlockName, CameraUniformBlockName }, new S3DE_UniformBuffer[] {tubo,cubo});
         internal void UpdateUniforms_Internal(RenderPass pass)
         {
             UpdateUniforms(pass);
@@ -278,7 +279,7 @@ namespace S3DE.Engine.Graphics.Materials
         protected void SetUniform(string uniformName, IDirectionalLight directionalLight) => _rActMaterial.Internal_SetUniform(uniformName, directionalLight);
         protected void SetUniform(string uniformName, int value) => _rActMaterial.Internal_SetUniformi(uniformName, value);
         protected void SetUniform(string uniformName, float[] value) => _rActMaterial.Internal_SetUniformf(uniformName, value);
-        protected void SetUniform(string uniformName, Vector3 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
+        protected void SetUniform(string uniformName, System.Numerics.Vector3 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
         protected void SetUniform(string uniformName, Matrix4x4 value) => _rActMaterial.Internal_SetUniform(uniformName, value);
         protected void SetTexture(string samplerName, TextureUnit TextureUnit, ITexture texture) => _rActMaterial.Internal_SetTexture(samplerName,TextureUnit, texture);
         protected void SetTexture(string samplerName, ITexture texture)
@@ -293,9 +294,17 @@ namespace S3DE.Engine.Graphics.Materials
         {
             if (!buffer.IsBound)
                 buffer.Bind();
+            _rActMaterial.Internal_SetUniformBlock(blockName, buffer.BoundUniformBlockBindingPoint);
+        }
 
-            _rActMaterial.Internal_SetUniformBlock(blockName, buffer.BoundUniformBlockBinding);
-            
+        protected void SetUniformBlocks(string[] blockNames, S3DE_UniformBuffer[] buffers)
+        {
+            if (blockNames.Length != buffers.Length)
+                throw new ArgumentException("The blockNames and buffer arrays have to be the same length!");
+
+            S3DE_UniformBuffer.BindBuffers(buffers);
+            for (int i = 0; i < blockNames.Length; i++)
+                _rActMaterial.Internal_SetUniformBlock(blockNames[i], buffers[i].BoundUniformBlockBindingPoint);
         }
     }
 }

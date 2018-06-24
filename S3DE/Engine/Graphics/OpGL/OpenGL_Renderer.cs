@@ -81,6 +81,12 @@ namespace S3DE.Engine.Graphics.OpGL
             TestForGLErrors();
         }
 
+        protected override void Unbind_UniformBuffer(S3DE_UniformBuffer buffer)
+        {
+            Gl.BindBufferBase(BufferTarget.UniformBuffer, (uint)0, buffer.Identifier);
+            TestForGLErrors();
+        }
+
         protected override S3DE_UniformBuffer Create_UniformBuffer() => OpenGL_BufferObject.CreateBuffer(BufferTarget.UniformBuffer) as S3DE_UniformBuffer;
         protected override void SetCapabilities()
         {
@@ -160,7 +166,7 @@ namespace S3DE.Engine.Graphics.OpGL
             
         }
 
-        protected override void SetViewportSize(Vector2 size)
+        protected override void SetViewportSize(S3DE_Vector2 size)
         {
             Gl.Viewport(0, 0, (int)size.X, (int)size.Y);
             TestForGLErrors();
