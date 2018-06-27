@@ -61,7 +61,7 @@ namespace S3DE.Engine.Data
                 t = UnboundUniformBuffers.Dequeue();
             else
             {
-                while (reservedLocations.Contains((t = BoundUniformBuffers.Dequeue()))) ;
+                while (reservedLocations.Contains((t = BoundUniformBuffers.Dequeue()))) { BoundUniformBuffers.Enqueue(t); }
                 Unbind(t);
                 t = UnboundUniformBuffers.Dequeue();
             }

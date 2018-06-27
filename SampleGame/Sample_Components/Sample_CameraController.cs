@@ -6,6 +6,7 @@ using S3DE.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using static S3DE.Engine.Enums;
@@ -40,16 +41,19 @@ namespace SampleGame.Sample_Components
 
             if (Input.CursorMoved)
             {
+                
                 xRot += Input.MouseDelta.X * 45f;
                 yRot += Input.MouseDelta.Y * 45f;
 
+                
                 xRot = EngineMath.Normalize(-180, 180, xRot);
                 yRot = EngineMath.Clamp(-90, 90, yRot);
+                
 
-                System.Numerics.Quaternion q1 = VectorExtensions.Quat_CreateFromAxisAngle(VectorExtensions.Vec3_Up, xRot);
-                System.Numerics.Quaternion q2 = VectorExtensions.Quat_CreateFromAxisAngle(VectorExtensions.Vec3_Right, yRot);
+                Quaternion q1 = VectorExtensions.Quat_CreateFromAxisAngle(VectorExtensions.Vec3_Up, xRot);
+                Quaternion q2 = VectorExtensions.Quat_CreateFromAxisAngle(VectorExtensions.Vec3_Right, yRot);
 
-                transform.SetRotation(q1 * q2,Space.Local);
+                transform.SetRotation(q1 * q2, Space.Local);
             }
 
             if (Input.GetKeyReleased(KeyCode.F11))

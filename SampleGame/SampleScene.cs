@@ -24,7 +24,7 @@ namespace SampleGame
             Material mat = new SimpleMaterial_UBO();
             Mesh m = Mesh.CreateCube(new System.Numerics.Vector3(1, 1, 1));
             
-            const int s = 20;
+            const int s = 10;
             Console.WriteLine($"Testing {(s*2) * (s*2)} rotating cubes");
             
             for (int x = -s; x < s; x++)
@@ -45,9 +45,6 @@ namespace SampleGame
             sunLight1.LightDirection = new System.Numerics.Vector3(1, -1, 0).Normalized();
             
             MainCamera.gameEntity.AddComponent<Sample_CameraController>();
-            //MainCamera.gameEntity.AddComponent<Sample_FrameMonitor>();
-
-
         }
 
         protected override void UnloadScene()

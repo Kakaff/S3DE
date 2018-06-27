@@ -166,7 +166,7 @@ namespace S3DE.Engine.Entities.Components
 
         public void Rotate(System.Numerics.Vector3 axis, float angle, Space space) => Rotate(VectorExtensions.Quat_CreateFromAxisAngle(axis, angle), space);
 
-        public void Rotate(System.Numerics.Quaternion q, Space s) => SetRotation((s == Space.World ? worldQuatRotation : localQuatRotation) * q, s);
+        public void Rotate(System.Numerics.Quaternion q, Space s) => SetRotation(q * (s == Space.World ? worldQuatRotation : localQuatRotation), s);
 
         public void LookAt(System.Numerics.Vector3 target) => SetRotation(VectorExtensions.Quat_CreateLookAt(transform.Position, target, VectorExtensions.Vec3_Up), Space.World);
         

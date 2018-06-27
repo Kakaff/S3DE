@@ -152,7 +152,6 @@
     <Compile Include="Maths\EngineMath.cs" />
     <Compile Include="Maths\Matrix3x3.cs" />
     <Compile Include="Maths\Matrix4x4.cs" />
-    <Compile Include="Maths\Quaternion.cs" />
     <Compile Include="Maths\Vector2.cs" />
     <Compile Include="Maths\VectorExtensions.cs" />
     <Compile Include="Utility\ByteBuffer.cs" />
