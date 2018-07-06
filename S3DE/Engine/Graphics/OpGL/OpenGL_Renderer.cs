@@ -14,8 +14,7 @@ using static S3DE.Engine.Enums;
 using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
-using S3DE.Engine.Graphics.OpGL.DC;
-using S3DE.Engine.Data;
+using S3DE.Engine.Collections;
 using S3DE.Engine.Graphics.OpGL.BufferObjects;
 
 namespace S3DE.Engine.Graphics.OpGL
@@ -88,6 +87,7 @@ namespace S3DE.Engine.Graphics.OpGL
         }
 
         protected override S3DE_UniformBuffer Create_UniformBuffer() => OpenGL_BufferObject.CreateBuffer(BufferTarget.UniformBuffer) as S3DE_UniformBuffer;
+
         protected override void SetCapabilities()
         {
             string s = $"GPU | Vendor: {Gl.GetString(StringName.Vendor)} | Model: {Gl.GetString(StringName.Renderer)}";
@@ -141,9 +141,7 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             ErrorCode err = Gl.GetError();
             if (err != ErrorCode.NoError)
-            {
                 throw new Exception("GL Operation Failed, Error: " + err);
-            }
         }
 
         protected override void FinishFrame()
@@ -218,6 +216,11 @@ namespace S3DE.Engine.Graphics.OpGL
             TestForGLErrors();
         }
 
+        protected override void FinalizePass()
+        {
+            //throw new NotImplementedException();
+        }
+
         protected override int MaxSupportedTextureUnits()
         {
             return textureUnits;
@@ -226,12 +229,6 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override int MaxSupportedUniformBlockBindingPoints()
         {
             return uniformBlockBindingPoints;
-        }
-
-        protected override void FinalizePass()
-        {
-            DrawCallSorter.IssueDrawCalls();
-            DrawCallSorter.FlushContainers();
         }
     }
 }

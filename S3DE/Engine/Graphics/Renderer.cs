@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using static S3DE.Engine.Enums;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
-using S3DE.Engine.Data;
+using S3DE.Engine.Collections;
 
 namespace S3DE.Engine.Graphics
 {

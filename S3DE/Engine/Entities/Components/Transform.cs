@@ -1,4 +1,4 @@
-﻿using S3DE.Engine.Data;
+﻿using S3DE.Engine.Collections;
 using S3DE.Maths;
 using S3DE.Utility;
 using System;
@@ -14,7 +14,7 @@ namespace S3DE.Engine.Entities.Components
     {
         Transform parent;
         List<Transform> children;
-        bool hasChanged,updateUBO;
+        bool hasChanged, updateUBO;
         S3DE_UniformBuffer ubo;
 
         public S3DE_UniformBuffer UniformBuffer
@@ -27,23 +27,26 @@ namespace S3DE.Engine.Entities.Components
             }
         }
         public bool HasChanged => hasChanged;
+        bool isUpdated = false;
+        bool rotUpdated, scaleUpdated, posUpdated;
 
         public Transform Parent => parent;
+
         public System.Numerics.Vector3 Position
         {
-            get => worldPosition;
+            get { CheckUpdate(); return worldPosition; }
             set => SetPosition(value, Space.World);
         }
 
         public System.Numerics.Quaternion Rotation
         {
-            get => worldQuatRotation;
+            get { CheckUpdate(); return worldQuatRotation; }
             set => SetRotation(value, Space.World);
         }
 
         public System.Numerics.Vector3 Scale
         {
-            get => worldScale;
+            get { CheckUpdate(); return worldScale; }
             set => SetScale(value, Space.World);
         }
 
@@ -79,11 +82,11 @@ namespace S3DE.Engine.Entities.Components
         System.Numerics.Vector3 forward, up, right;
 
         Matrix4x4 worldTranslationMatrix, worldRotMatrix, worldScaleMatrix, worldTransformMatrix;
-        
-        public Matrix4x4 WorldTranslationMatrix => worldTranslationMatrix;
-        public Matrix4x4 WorldRotationMatrix => worldRotMatrix;
-        public Matrix4x4 WorldScaleMatrix => worldScaleMatrix;
-        public Matrix4x4 WorldTransformMatrix => worldTransformMatrix;
+
+        public Matrix4x4 WorldTranslationMatrix { get { CheckUpdate(); return worldTranslationMatrix; } }
+        public Matrix4x4 WorldRotationMatrix { get { CheckUpdate(); return worldRotMatrix; } }
+        public Matrix4x4 WorldScaleMatrix { get { CheckUpdate(); return worldScaleMatrix; } }
+        public Matrix4x4 WorldTransformMatrix { get { CheckUpdate(); return worldTransformMatrix; } }
 
         protected override void PreRender()
         {
@@ -94,13 +97,38 @@ namespace S3DE.Engine.Entities.Components
 
         protected override void PostRender() => hasChanged = false;
 
+
+        void CheckUpdate()
+        {
+            if (hasChanged && !(rotUpdated & posUpdated & scaleUpdated))
+            {
+                if (!rotUpdated)
+                    UpdateWorldRotation();
+
+                if (!scaleUpdated)
+                    UpdateWorldScale();
+
+                if (!posUpdated)
+                    UpdateWorldPosition();
+                else
+                    UpdateWorldTransform();
+
+                UpdateChildren();
+                rotUpdated = true;
+                scaleUpdated = true;
+                posUpdated = true;
+            }
+        }
+
         void UpdateUniformBuffer()
         {
             if (updateUBO)
             {
                 updateUBO = false;
+
                 if (ubo == null)
-                    ubo = S3DE_UniformBuffer.Create();
+                    ubo = S3DE_UniformBuffer.Create(256);
+                
                 ByteBuffer buff = Matrix4x4.ToByteBuffer(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix);
                 ubo.SetData(buff);
                 buff.Dispose();
@@ -113,7 +141,7 @@ namespace S3DE.Engine.Entities.Components
         {
             switch (space)
             {
-                case Space.World : {SetPosition(worldPosition + (direction * distance), Space.World); break;}
+                case Space.World : {SetPosition(this.Position + (direction * distance), Space.World); break;}
                 case Space.Local : {SetPosition(localPosition + (direction * distance), Space.Local); break;}
             }
         }
@@ -136,8 +164,7 @@ namespace S3DE.Engine.Entities.Components
                     }
             }
 
-            UpdateWorldPosition();
-            UpdateChildren();
+            posUpdated = false;
         }
 
         public void SetRotation(System.Numerics.Quaternion quat, Space space)
@@ -147,7 +174,7 @@ namespace S3DE.Engine.Entities.Components
             {
                 case Space.World:
                     {
-                        localQuatRotation = (parent == null) ? quat : parent.worldQuatRotation.conjugate() * quat;
+                        localQuatRotation = (parent == null) ? quat : parent.Rotation.conjugate() * quat;
                         break;
                     }
                 case Space.Local:
@@ -157,8 +184,7 @@ namespace S3DE.Engine.Entities.Components
                     }
             }
 
-            UpdateWorldRotation();
-            UpdateChildren();
+            rotUpdated = false;
         }
 
         public void Rotate(System.Numerics.Quaternion q) => Rotate(q, Space.World);
@@ -166,7 +192,7 @@ namespace S3DE.Engine.Entities.Components
 
         public void Rotate(System.Numerics.Vector3 axis, float angle, Space space) => Rotate(VectorExtensions.Quat_CreateFromAxisAngle(axis, angle), space);
 
-        public void Rotate(System.Numerics.Quaternion q, Space s) => SetRotation(q * (s == Space.World ? worldQuatRotation : localQuatRotation), s);
+        public void Rotate(System.Numerics.Quaternion q, Space s) => SetRotation(q * (s == Space.World ? Rotation : localQuatRotation), s);
 
         public void LookAt(System.Numerics.Vector3 target) => SetRotation(VectorExtensions.Quat_CreateLookAt(transform.Position, target, VectorExtensions.Vec3_Up), Space.World);
         
@@ -175,8 +201,7 @@ namespace S3DE.Engine.Entities.Components
         {
             localScale = scale;
             hasChanged = true;
-            UpdateWorldScale();
-            UpdateChildren();
+            scaleUpdated = false;
         }
 
         public void SetParent(Transform nParent)
@@ -244,17 +269,16 @@ namespace S3DE.Engine.Entities.Components
         private void UpdateWorldTransform()
         {
             Matrix4x4 transformMatrix = Matrix4x4.CreateTransformMatrix(localPosition, localScale, localQuatRotation);
-            worldTransformMatrix = (parent == null) ? transformMatrix : transformMatrix * parent.worldTransformMatrix;
+            worldTransformMatrix = (parent == null) ? transformMatrix : transformMatrix * parent.WorldTransformMatrix;
         }
         private void UpdateWorldRotation()
         {
-            worldQuatRotation = (parent == null) ? localQuatRotation : parent.worldQuatRotation * localQuatRotation;
+            worldQuatRotation = (parent == null) ? localQuatRotation : parent.Rotation * localQuatRotation;
             worldRotMatrix = Matrix4x4.CreateRotationMatrix(worldQuatRotation);
 
             right = VectorExtensions.Vec3_Right.Transform(worldRotMatrix);
             up = VectorExtensions.Vec3_Up.Transform(worldRotMatrix);
             forward = VectorExtensions.Vec3_Forward.Transform(worldRotMatrix);
-            UpdateWorldTransform();
         }
 
         private void UpdateWorldScale()
@@ -262,8 +286,6 @@ namespace S3DE.Engine.Entities.Components
             Matrix4x4 m = Matrix4x4.CreateScaleMatrix(localScale);
             worldScaleMatrix = (parent == null) ? m : parent.WorldScaleMatrix * m;
             worldScale = VectorExtensions.Vec3_One.Transform(worldScaleMatrix);
-
-            UpdateWorldTransform();
         }
 
         private void UpdateChildren()
@@ -275,10 +297,13 @@ namespace S3DE.Engine.Entities.Components
         private void RecalculateMatrices()
         {
             hasChanged = true;
+            
             UpdateWorldScale();
             UpdateWorldRotation();
             UpdateWorldPosition();
-
+            rotUpdated = true;
+            posUpdated = true;
+            scaleUpdated = true;
             UpdateChildren();
         }
 

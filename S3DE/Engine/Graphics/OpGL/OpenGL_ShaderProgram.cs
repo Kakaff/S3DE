@@ -11,6 +11,8 @@ namespace S3DE.Engine.Graphics.OpGL
 {
     internal sealed class OpenGL_ShaderProgram
     {
+        static OpenGL_ShaderProgram shadProg;
+
         OpenGL_Shader vertexShader;
         OpenGL_Shader fragmentShader;
         Dictionary<string, int> Uniforms;
@@ -44,8 +46,12 @@ namespace S3DE.Engine.Graphics.OpGL
 
         internal void UseProgram()
         {
-            Gl.UseProgram(pointer);
-            TestForGLErrors();
+            if (shadProg == null || shadProg.Pointer != Pointer)
+            {
+                Gl.UseProgram(Pointer);
+                TestForGLErrors();
+                shadProg = this;
+            }
         }
 
         internal void Dispose()

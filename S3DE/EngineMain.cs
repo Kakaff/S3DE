@@ -10,7 +10,7 @@ using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
 using S3DE.Engine.Debug.RenderingDebugging;
 using S3DE.Engine.IO;
-using S3DE.Engine.Data;
+using S3DE.Engine.Collections;
 
 namespace S3DE
 {
@@ -99,9 +99,9 @@ namespace S3DE
                 windowResized = false;
                 if (reziseWindow)
                 {
+                    Engine.Graphics.Window.ResizeWindow();
                     reziseWindow = false;
                     windowResized = true;
-                    Engine.Graphics.Window.ResizeWindow();
                 }
             }
         }

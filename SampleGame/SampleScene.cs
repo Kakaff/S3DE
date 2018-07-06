@@ -22,9 +22,9 @@ namespace SampleGame
         protected override void LoadScene()
         {
             Material mat = new SimpleMaterial_UBO();
-            Mesh m = Mesh.CreateCube(new System.Numerics.Vector3(1, 1, 1));
+            //Mesh m = Mesh.CreateCube(new System.Numerics.Vector3(1, 1, 1));
             
-            const int s = 10;
+            const int s = 15;
             Console.WriteLine($"Testing {(s*2) * (s*2)} rotating cubes");
             
             for (int x = -s; x < s; x++)
@@ -34,7 +34,7 @@ namespace SampleGame
                     ge.transform.Position = new System.Numerics.Vector3(x * 2, 0, y * 2);
                     MeshRenderer mr = ge.AddComponent<MeshRenderer>();
                     ge.AddComponent<Sample_ObjectRotator>();
-                    mr.mesh = m;
+                    mr.mesh = Mesh.CreateCube(new System.Numerics.Vector3(1));
                     mr.Material = mat;
                 }
             

@@ -1,4 +1,4 @@
-﻿using S3DE.Engine.Data;
+﻿using S3DE.Engine.Collections;
 using S3DE.Engine.Graphics.Textures;
 using System;
 using System.Collections.Generic;
@@ -113,13 +113,36 @@ namespace S3DE.Engine.Graphics
             return t;
         }
 
+        static TextureUnit FindAvailableTextureUnit(HashSet<TextureUnit> reservedUnits)
+        {
+            TextureUnit tu;
+
+            if (UnboundTextureUnits.Count > 0)
+                tu = UnboundTextureUnits.Dequeue();
+            else
+            {
+                while (reservedUnits.Contains(tu = BoundTextureUnits.Dequeue())) { BoundTextureUnits.Enqueue(tu); }
+            }
+            UnbindTextureUnit(tu);
+
+            return tu;
+        }
         public static void BindTextures(params ITexture[] tex)
         {
-            //Find multiple free textureunits.
-            //or bind over other textureunits.
-            //keep track of which ones we've already bound to so we don't overwrite the textures we are trying to bind.
-            //Also skip binding if the texture is already bound.
-        }
+            HashSet<TextureUnit> reservedUnits = new HashSet<TextureUnit>();
+            
+            foreach (ITexture itex in tex)
+                if (itex.IsBound(out TextureUnit texUnit))
+                    reservedUnits.Add(texUnit);
+            
+            foreach (ITexture itex in tex)
+                if (!itex.IsBound(out TextureUnit tu))
+                {
+                    tu = FindAvailableTextureUnit(reservedUnits);
+                    reservedUnits.Add(tu);
+                    BindTextureUnit(itex, tu);
+                }
+            }
 
         public static void UnbindTextureUnit(TextureUnit texUnit)
         {
@@ -130,7 +153,6 @@ namespace S3DE.Engine.Graphics
                 Textures[(int)texUnit] = null;
                 BoundTextureUnits.Remove(texUnit);
                 UnboundTextureUnits.Enqueue(texUnit);
-                Renderer.UnbindTextureUnit(texUnit);
             }
         }
     }

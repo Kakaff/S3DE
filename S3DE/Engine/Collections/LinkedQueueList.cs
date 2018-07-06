@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Data
+namespace S3DE.Engine.Collections
 {
     //This could easily be done with just a normal list but meh. Writing classes is fun sometimes.
     public class LinkedQueueList<T>

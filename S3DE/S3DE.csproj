@@ -62,16 +62,22 @@
     <None Include="WrapperGLFW.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\Data\DualList.cs" />
+    <Compile Include="Engine\Collections\DualList.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\Batch.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\BatchedMember_Mesh.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\BatchedMesh.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\Batched_Material.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\BatchMember.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\BatchRenderer.cs" />
+    <Compile Include="Engine\Debug\Batched_Rendering\Batch_MeshRenderer.cs" />
     <Compile Include="Engine\Graphics\BoundingBox.cs" />
     <Compile Include="Engine\Graphics\Frustrum\ViewFrustrum.cs" />
     <Compile Include="Engine\Graphics\S3DE_UniformBuffer.cs" />
-    <Compile Include="Engine\Data\LinkedQueueList.cs" />
+    <Compile Include="Engine\Collections\LinkedQueueList.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\ColoredFullScreenTest.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\RenderFramebufferTest.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\TexturedFullScreenTest.cs" />
     <Compile Include="Engine\Entities\Components\DirectionalLight.cs" />
-    <Compile Include="Engine\Entities\Components\DrawCall_MeshRenderer.cs" />
     <Compile Include="Engine\Entities\Components\IEnableLogic.cs" />
     <Compile Include="Engine\Entities\Components\IRenderLogic.cs" />
     <Compile Include="Engine\Entities\Components\IUpdateLogic.cs" />
@@ -86,20 +92,7 @@
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ArrayBufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ElementArrayBufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_UniformBufferObject.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\BindMeshCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\DrawCall.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\DrawCallSorter.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\DrawElementsCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\IDrawCallCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\SetFloatArrayCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\SetFloatCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\SetIntegerCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\SetMatrixCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\SetTextureSamplerCommand.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\SetVector3Command.cs" />
-    <Compile Include="Engine\Graphics\OpGL\DC\UseRendererMaterialCommand.cs" />
     <Compile Include="Engine\Graphics\OpGL\IOpenGL_Texture.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Material_DC.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_StandardPipeline.cs" />
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_BufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Framebuffer.cs" />

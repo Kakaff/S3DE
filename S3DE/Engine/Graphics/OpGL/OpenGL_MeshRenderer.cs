@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using S3DE.Maths;
 using S3DE.Engine.Graphics;
-using S3DE.Engine.Graphics.OpGL.DC;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
@@ -21,6 +20,7 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void PrepareRender()
         {
+
         }
 
         protected override void Render()
@@ -30,16 +30,6 @@ namespace S3DE.Engine.Graphics.OpGL
                 mesh.Bind();
                 Renderer.DrawMesh(mesh);
                 OpenGL_Renderer.TestForGLErrors();
-            }
-        }
-
-        protected override void Render_DC()
-        {
-            if (mesh != null)
-            {
-                DrawCallSorter.AddCommandToCurrent(new BindMeshCommand(mesh));
-                DrawCallSorter.AddCommandToCurrent(new DrawElementsCommand());
-                DrawCallSorter.EnqueueCurrentDrawCall();
             }
         }
 

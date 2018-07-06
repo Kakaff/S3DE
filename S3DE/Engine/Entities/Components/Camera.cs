@@ -1,4 +1,4 @@
-﻿using S3DE.Engine.Data;
+﻿using S3DE.Engine.Collections;
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Scenes;
 using S3DE.Maths;
@@ -90,7 +90,8 @@ namespace S3DE.Engine.Entities.Components
             if (updateUBO)
             {
                 if (ubo == null)
-                    ubo = S3DE_UniformBuffer.Create();
+                    ubo = S3DE_UniformBuffer.Create(128);
+
                 updateUBO = false;
                 ByteBuffer buff = Matrix4x4.ToByteBuffer(ViewMatrix, ProjectionMatrix);
                 ubo.SetData(buff);

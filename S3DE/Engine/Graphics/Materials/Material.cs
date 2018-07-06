@@ -1,4 +1,4 @@
-﻿using S3DE.Engine.Data;
+﻿using S3DE.Engine.Collections;
 using S3DE.Engine.Entities;
 using S3DE.Engine.Graphics.Lights;
 using S3DE.Engine.Graphics.Textures;
@@ -288,6 +288,14 @@ namespace S3DE.Engine.Graphics.Materials
             if (!isbound)
                 texUnit = texture.Bind();
             _rActMaterial.Internal_SetTexture(samplerName, texUnit, texture);
+        }
+
+        protected void SetTextures(string[] samplers, ITexture[] textures)
+        {
+            TextureUnits.BindTextures(textures);
+
+            for (int i = 0; i < samplers.Length; i++)
+                _rActMaterial.Internal_SetTexture(samplers[i], textures[i].BoundTextureUnit, textures[i]);
         }
 
         protected void SetUniformBlock(string blockName,S3DE_UniformBuffer buffer)

@@ -63,12 +63,14 @@ namespace S3DE.Utility
             return Create(InitSize);
         }
 
-        public void Resize(int newSize) => Array.Resize(ref data, newSize);
+        void Resize(int newSize) => Array.Resize(ref data, newSize);
+
         public void ResizeToTarget(int targetSize)
         {
             if (data.Length < targetSize)
                 Resize(targetSize);
         }
+
         public void Clear() {
             if (length > InitSize)
             {
@@ -96,6 +98,7 @@ namespace S3DE.Utility
 
             Buffer.BlockCopy(arr, 0, data, length, arr.Length);
             length += arr.Length;
+            
             hasChanged = true;
         }
 
@@ -108,8 +111,6 @@ namespace S3DE.Utility
             Buffer.BlockCopy(values, 0, data, length, bytes);
             length += bytes;
             hasChanged = true;
-
-
         }
 
         public void AddRange<T>(int ByteSize, T[,] values)
@@ -125,8 +126,9 @@ namespace S3DE.Utility
         
         void Apply()
         {
-            if (data.Length > length)
+            if (length < data.Length)
                 Resize(length);
+            
             hasChanged = false;
         }
 

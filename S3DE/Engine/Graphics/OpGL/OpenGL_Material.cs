@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using S3DE.Maths;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
-using S3DE.Engine.Graphics.OpGL.DC;
 
 namespace S3DE.Engine.Graphics.OpGL
 {

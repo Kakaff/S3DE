@@ -2,7 +2,6 @@
 using S3DE;
 using S3DE.Engine.Graphics;
 using S3DE.Engine.Graphics.OpGL.BufferObjects;
-using S3DE.Engine.Graphics.OpGL.DC;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;

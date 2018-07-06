@@ -117,7 +117,6 @@ namespace S3DE.Engine.Graphics.Shaders
             tex.FilterMode = FilterMode.Trilinear;
             tex.AnisotropicSamples = AnisotropicSamples.x16;
             tex.CalculateMipMapCount();
-            Console.WriteLine($"Target mipmap count: " + tex.MipMapLevels);
             tex.Apply();
             return tex;
         }
@@ -148,8 +147,9 @@ namespace S3DE.Engine.Graphics.Shaders
 
         protected override void UpdateUniforms(RenderPass pass)
         {
-            SetTexture("tex",texture);
-            SetTexture("normalMap", normal);
+            SetTextures(new string[] { "tex", "normalMap" }, new ITexture[] { texture, normal });
+            //SetTexture("tex",texture);
+            //SetTexture("normalMap", normal);
         }
     }
 }

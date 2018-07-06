@@ -6,23 +6,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Data
+namespace S3DE.Engine.Collections
 {
     public abstract class S3DE_UniformBuffer
     {
-
         static S3DE_UniformBuffer[] Buffers;
 
         static LinkedQueueList<int> UnboundUniformBuffers, BoundUniformBuffers;
 
         private int boundBlockBindingPoint;
         private bool isBound;
+        private uint size;
+
+        public int Size => (int)size;
 
         public abstract uint Identifier { get; }
         public bool IsBound { get => isBound; private set => isBound = value; }
         public int BoundUniformBlockBindingPoint { get => boundBlockBindingPoint; set => boundBlockBindingPoint = value; }
 
         public abstract void SetData(byte[] data);
+        protected abstract void Resize(uint size);
+
+        public void SetSize(uint size)
+        {
+            Resize(size);
+            this.size = size;
+        }
 
         public void SetData(params byte[][] dataArrays)
         {
@@ -136,6 +145,12 @@ namespace S3DE.Engine.Data
         }
 
         public static S3DE_UniformBuffer Create() => Renderer.CreateUniformBuffer();
+        public static S3DE_UniformBuffer Create(uint size)
+        {
+            S3DE_UniformBuffer ubo = Create();
+            ubo.SetSize(size);
+            return ubo;
+        }
 
 
         protected S3DE_UniformBuffer() { }

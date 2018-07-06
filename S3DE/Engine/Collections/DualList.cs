@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Data
+namespace S3DE.Engine.Collections
 {
     public sealed class DualList<T> : IEnumerable
     {

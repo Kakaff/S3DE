@@ -35,9 +35,10 @@ namespace SampleGame
 
         protected override void Start()
         {
-            DisplayResolution = new S3DE_Vector2(1280, 720);
-            RenderResolution = new S3DE_Vector2(1280, 720);
+            DisplayResolution = new S3DE_Vector2(1600, 900);
+            RenderResolution = new S3DE_Vector2(800, 450);
             RefreshRate = 60;
+            SetTargetFPS(60);
             SetVSync(false);
             Input.LockCursor();
             SetStartScene<SampleScene>();

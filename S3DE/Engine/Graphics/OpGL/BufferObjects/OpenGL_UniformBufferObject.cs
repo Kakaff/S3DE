@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenGL;
-using S3DE.Engine.Data;
+using S3DE.Engine.Collections;
 using S3DE.Engine.Graphics.Materials;
 
 namespace S3DE.Engine.Graphics.OpGL.BufferObjects
@@ -32,15 +32,30 @@ namespace S3DE.Engine.Graphics.OpGL.BufferObjects
             throw new NotImplementedException();
         }
 
-        public override void SetData(byte[] data)
+        protected override void Resize(uint size)
         {
-
             Gl.BindBuffer(BufferTarget.UniformBuffer, identifier);
             OpenGL_Renderer.TestForGLErrors();
-            using (MemoryLock ml = new MemoryLock(data))
-                Gl.BufferData(BufferTarget.UniformBuffer, (uint)data.Length, ml.Address, BufferUsage.DynamicDraw);
-
+            Gl.BufferData(BufferTarget.UniformBuffer, size, IntPtr.Zero, BufferUsage.DynamicDraw);
             OpenGL_Renderer.TestForGLErrors();
+        }
+
+        public override void SetData(byte[] data)
+        {
+            if (Size >= data.Length)
+            {
+                Gl.BindBuffer(BufferTarget.UniformBuffer, identifier);
+                OpenGL_Renderer.TestForGLErrors();
+                using (MemoryLock ml = new MemoryLock(data))
+                {
+                    //Gl.BufferData is faster on Intel GPU but slower on Nvidia/AMD... Stupid Intel.
+                    //Gl.BufferData(BufferTarget.UniformBuffer, (uint)data.Length, ml.Address, BufferUsage.DynamicDraw);
+                    Gl.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (uint)data.Length, ml.Address);
+                }
+                OpenGL_Renderer.TestForGLErrors();
+            }
+            else
+                throw new ArgumentOutOfRangeException($"Trying to set {data.Length} bytes but the UniformBuffer is only {Size} bytes");
         }
     }
 }
