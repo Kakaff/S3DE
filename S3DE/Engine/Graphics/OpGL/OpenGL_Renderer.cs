@@ -20,30 +20,18 @@ using S3DE.Engine.Graphics.OpGL.BufferObjects;
 namespace S3DE.Engine.Graphics.OpGL
 {
 
-    public sealed class OpenGL_Renderer : Renderer
+    public sealed partial class OpenGL_Renderer : Renderer
     {
 
-        int textureUnits, uniformBlockBindingPoints;
+        int uniformBlockBindingPoints;
 
         public override RenderingAPI GetRenderingAPI() => RenderingAPI.OpenGL;
-
-        Dictionary<Type, OpenGL_Material> ShaderPrograms;
+        
 
         protected override void Clear()
         {
             Gl.Clear(ClearBufferMask.ColorBufferBit | 
                      ClearBufferMask.DepthBufferBit);
-        }
-
-        protected override Renderer_Material CreateMaterial(Type materialType,RenderPass pass)
-        {
-            if (!ShaderPrograms.TryGetValue(materialType,out OpenGL_Material mat))
-            {
-                mat = new OpenGL_Material();
-                ShaderPrograms.Add(materialType, mat);
-            }
-
-            return mat;
         }
 
         protected override Renderer_MeshRenderer CreateMeshRenderer()
@@ -66,27 +54,13 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override void Init()
         {
             Console.WriteLine("Initializing OpenGL_Renderer");
-            ShaderPrograms = new Dictionary<Type, OpenGL_Material>();
+            shaders = new Dictionary<uint, OpenGL_ShaderProgram>();
 
             Console.WriteLine("Creating dummy DeviceContext");
             DeviceContext dc = DeviceContext.Create();
             Gl.Initialize();
             dc.Dispose();
         }
-
-        protected override void Bind_UniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint)
-        {
-            Gl.BindBufferBase(BufferTarget.UniformBuffer, (uint)bindingPoint, buffer.Identifier);
-            TestForGLErrors();
-        }
-
-        protected override void Unbind_UniformBuffer(S3DE_UniformBuffer buffer)
-        {
-            Gl.BindBufferBase(BufferTarget.UniformBuffer, (uint)0, buffer.Identifier);
-            TestForGLErrors();
-        }
-
-        protected override S3DE_UniformBuffer Create_UniformBuffer() => OpenGL_BufferObject.CreateBuffer(BufferTarget.UniformBuffer) as S3DE_UniformBuffer;
 
         protected override void SetCapabilities()
         {
@@ -184,18 +158,6 @@ namespace S3DE.Engine.Graphics.OpGL
         protected override RenderTexture2D CreateRenderTexture2D(S3DE.Engine.Enums.InternalFormat internalFormat, S3DE.Engine.Enums.PixelFormat pixelFormat, S3DE.Engine.Enums.PixelType pixelType,FilterMode filter, int width, int height) => 
             new OpenGL_RenderTexture2D(internalFormat,pixelFormat,pixelType,filter,width, height);
 
-        protected override void BindTexUnit(ITexture tex, TextureUnit tu)
-        {
-            Gl.ActiveTexture(OpenGL.TextureUnit.Texture0 + (int)tu);
-            Gl.BindTexture(TextureTarget.Texture2d, ((IOpenGL_Texture)tex).Pointer);
-            TestForGLErrors();
-        }
-        protected override void UnbindTexUnit(TextureUnit textureUnit)
-        {
-            Gl.ActiveTexture(OpenGL.TextureUnit.Texture0 + (int)textureUnit);
-            Gl.BindTexture(TextureTarget.Texture2d,0);
-            TestForGLErrors();
-        }
         protected override void SetAlphaFunction(S3DE.Engine.Graphics.AlphaFunction function, float value)
         {
             Gl.AlphaFunc(OpenGL_Utility.Convert(function), value);

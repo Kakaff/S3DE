@@ -29,6 +29,7 @@ namespace S3DE.Engine.Graphics.OpGL
             {
                 AttribStatus ^= val;
                 Gl.EnableVertexAttribArray(AttribIndex);
+                OpenGL_Renderer.TestForGLErrors();
             }
         }
 
@@ -38,6 +39,7 @@ namespace S3DE.Engine.Graphics.OpGL
             {
                 AttribStatus ^= val;
                 Gl.DisableVertexAttribArray(AttribIndex);
+                OpenGL_Renderer.TestForGLErrors();
             }
             
         }
@@ -46,7 +48,7 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             uint val = AttribIndex > 0 ? (uint)Math.Pow(2, AttribIndex) : 1;
             maskVal = val;
-            return (AttribStatus & val) > 0;
+            return (AttribStatus & val) != 0;
         }
 
         bool GetAttributeStatus(uint AttribIndex)
@@ -97,6 +99,7 @@ namespace S3DE.Engine.Graphics.OpGL
         internal void SetAttributePointer(uint location,int size, VertexAttribType attribType,bool normalized,int stride,int offset)
         {
             Gl.VertexAttribPointer(location, size, attribType, normalized, stride, (IntPtr)offset);
+            OpenGL_Renderer.TestForGLErrors();
         }
 
         internal void Bind()
@@ -112,6 +115,7 @@ namespace S3DE.Engine.Graphics.OpGL
         internal void Unbind()
         {
             Gl.BindVertexArray(0);
+            OpenGL_Renderer.TestForGLErrors();
             Bound_VAO = null;
         }
 

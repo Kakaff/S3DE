@@ -9,6 +9,7 @@ using static S3DE.Engine.Enums;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Lights;
+using S3DE.Engine.Graphics.Shaders;
 
 namespace S3DE.Engine.Graphics.OpGL
 {
@@ -229,15 +230,17 @@ namespace S3DE.Engine.Graphics.OpGL
             dirLightMat.Position = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Position);
             dirLightMat.Specular = Framebuffer.ActiveFrameBuffer.GetBuffer(TargetBuffer.Specular);
             DualFrameBuffer dfb = (DualFrameBuffer)fb;
+            dfb.Swap();
             dfb.Bind();
             dfb.SetAsActive();
             dfb.Clear(true,false,false);
             Renderer.Disable(Function.DepthTest);
             Renderer.Disable(Function.AlphaTest);
-            ambientMat.UseMaterial(RenderPass.Deferred);
+            ambientMat.UseMaterial(RenderPass.Deferred,null);
             ScreenQuad.RenderToScreenQuad();
-            FinalizeRenderPass();
+
             //DirectionalLightPass
+            
             IDirectionalLight[] dirLights = scene.DirectionalLights;
             foreach (IDirectionalLight dl in dirLights)
             {
@@ -245,7 +248,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 dfb.Bind();
                 dirLightMat.Diffuse = dfb.GetAlternativeBuffer(TargetBuffer.Diffuse);
                 dirLightMat.DirectionalLight = dl;
-                dirLightMat.UseMaterial(RenderPass.Deferred);
+                dirLightMat.UseMaterial(RenderPass.Deferred, null);
                 ScreenQuad.RenderToScreenQuad();
                 FinalizeRenderPass();
             }
@@ -253,11 +256,10 @@ namespace S3DE.Engine.Graphics.OpGL
             dfb.Unbind();
         }
 
-        class Deferred_Vertex_Source : MaterialSource
+        class Deferred_Vertex_Source : ShaderSource
         {
-            public Deferred_Vertex_Source()
+            public Deferred_Vertex_Source() : base(ShaderStage.Vertex)
             {
-                SetStage(ShaderStage.Vertex);
                 SetSource(
                   "#version 330 " + '\n'
                 + "layout(location = 0)in vec3 position; " + '\n'
@@ -278,11 +280,15 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             public RenderTexture2D ColorTex;
 
-            class Deferred_Ambient_Fragment_Source : MaterialSource
+            protected override ShaderSource[] GetShaderSources(RenderPass pass)
             {
-                public Deferred_Ambient_Fragment_Source()
+                return new ShaderSource[] { new Deferred_Vertex_Source(), new Deferred_Ambient_Fragment_Source() };
+            }
+
+            class Deferred_Ambient_Fragment_Source : ShaderSource
+            {
+                public Deferred_Ambient_Fragment_Source() : base(ShaderStage.Fragment)
                 {
-                    SetStage(ShaderStage.Fragment);
                     SetSource(
                         "#version 330 " + '\n'
                       + "uniform sampler2D color;" + '\n'
@@ -310,41 +316,10 @@ namespace S3DE.Engine.Graphics.OpGL
                 }
             }
 
-            public Deferred_Ambient_Material() : base()
-            {
-                UsesProjectionMatrix = false;
-                UsesRotationMatrix = false;
-                UsesTransformMatrix = false;
-                UsesViewMatrix = false;
-                SupportsDeferredRendering = true;
-            }
-
-            protected override string[] GetUniforms()
-            {
-                return new string[] {"Ambient.color", "Ambient.intensity", "color" };
-            }
-
-            protected override MaterialSource GetSource(ShaderStage stage, RenderPass pass)
-            {
-                switch (stage)
-                {
-                    case ShaderStage.Vertex:
-                        {
-                            return new Deferred_Vertex_Source();
-                        }
-                    case ShaderStage.Fragment:
-                        {
-                            return new Deferred_Ambient_Fragment_Source();
-                        }
-                }
-
-                throw new NotSupportedException($"ShaderStage: {stage.ToString()} is not supported by the deferred light pass of the StandardPipeline");
-            }
-
             protected override void UpdateUniforms(RenderPass pass)
             {
-                SetUniform("Ambient", SceneHandler.ActiveScene.Ambient);
-                SetTexture("color", ColorTex);
+                Shader.SetUniform("Ambient", SceneHandler.ActiveScene.Ambient);
+                Shader.SetTextureSampler("color", ColorTex);
             }
         }
 
@@ -352,12 +327,20 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             public RenderTexture2D Color, Normal, Diffuse, Position, Specular;
 
-            class Deferred_Directional_Fragment_Source : MaterialSource
+            protected override ShaderSource[] GetShaderSources(RenderPass pass)
             {
-                public Deferred_Directional_Fragment_Source()
+                switch (pass)
                 {
-                    SetStage(ShaderStage.Fragment);
-                    SetSource(
+                    
+                    default: return new ShaderSource[] {new Deferred_Vertex_Source(),new Deferred_Directional_Fragment_Source()};
+                }
+            }
+
+            class Deferred_Directional_Fragment_Source : ShaderSource
+            {
+                public Deferred_Directional_Fragment_Source() : base(ShaderStage.Fragment)
+                {
+                    Source =
                         "#version 330 core " + '\n'
                       + "uniform sampler2D color;" + '\n'
                       + "uniform sampler2D normal;" + '\n'
@@ -397,13 +380,13 @@ namespace S3DE.Engine.Graphics.OpGL
 
                       + "float intensity = max(dot(norm,-DirLight.direction),0.0) * DirLight.intensity;" + '\n'
                       + "vec3 spec = specMap.xyz * calcSpecular(specMap.w,norm,pos,camPos,DirLight.direction);" + '\n'
-                      
+
                       + "vec4 diffColor = vec4((texture(color,frag.uv).rgb * DirLight.color) * intensity,0);" + '\n'
                       + "gDiffuse = texture(diffuse,frag.uv) + diffColor + "
                       + "vec4(spec * DirLight.color * intensity,0);" + '\n'
                       + "" + '\n'
-                      + "}" + '\n'
-                        );
+                      + "}" + '\n';
+                        
                 }
             }
 
@@ -415,15 +398,7 @@ namespace S3DE.Engine.Graphics.OpGL
                 set => dirLight = value;
             }
 
-            public Deferred_Directional_Material()
-            {
-                UsesProjectionMatrix = false;
-                UsesRotationMatrix = false;
-                UsesTransformMatrix = false;
-                UsesViewMatrix = false;
-                SupportsDeferredRendering = true;
-            }
-
+            
             class TestDirLight : IDirectionalLight
             {
                 public System.Numerics.Vector3 LightDirection => new System.Numerics.Vector3(-0.35f,-0.5f,0.5f).Normalized();
@@ -435,30 +410,15 @@ namespace S3DE.Engine.Graphics.OpGL
                 public float Intensity => 1f;
             }
 
-            protected override MaterialSource GetSource(ShaderStage stage,RenderPass pass)
-            {
-                switch (stage)
-                {
-                    case ShaderStage.Vertex: return new Deferred_Vertex_Source();
-                    case ShaderStage.Fragment: return new Deferred_Directional_Fragment_Source();
-                }
-                throw new NotImplementedException();
-            }
-
             protected override void UpdateUniforms(RenderPass pass)
             {
-                SetTexture("color", Color);
-                SetTexture("normal", Normal);
-                SetTexture("diffuse", Diffuse);
-                SetTexture("position", Position);
-                SetTexture("specular", Specular);
-                SetUniform("DirLight", dirLight);
-                SetUniform("camPos", SceneHandler.ActiveScene.ActiveCamera.transform.Position);
-            }
-
-            protected override string[] GetUniforms()
-            {
-                return new string[] {"color", "normal","diffuse","position","specular","camPos", "DirLight.intensity", "DirLight.color", "DirLight.direction" };
+                Shader.SetTextureSampler("color", Color);
+                Shader.SetTextureSampler("normal", Normal);
+                Shader.SetTextureSampler("diffuse", Diffuse);
+                Shader.SetTextureSampler("position", Position);
+                Shader.SetTextureSampler("specular", Specular);
+                Shader.SetUniform("DirLight", dirLight);
+                Shader.SetUniform("camPos", SceneHandler.ActiveScene.ActiveCamera.transform.Position);
             }
         }
     }

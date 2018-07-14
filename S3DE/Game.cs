@@ -51,7 +51,7 @@ namespace S3DE
         protected void SetTargetRenderPipleline<T>() where T : RenderPipeline => RenderPipeline.CreatePipeline<T>();
 
         protected void SetTargetFPS(uint fps) => FrameSync.SetTargetFPS(fps);
-        public void Run() => EngineMain.RunGame(this);
+        public void Run(bool singleFrame) => EngineMain.RunGame(this,singleFrame);
         protected void SetVSync(bool value) => Window.SetVSync(value);
         internal void InitGame() => Initialize();
         internal void StartGame() => Start();

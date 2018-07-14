@@ -18,7 +18,7 @@ namespace S3DE.Utility
         int length;
         bool hasChanged,isDisposed;
 
-        bool HasChanged => hasChanged;
+        public bool HasChanged => hasChanged;
 
         public int Length => data.Length;
 

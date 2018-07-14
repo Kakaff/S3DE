@@ -35,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,6 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -63,20 +64,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\Collections\DualList.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\Batch.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\BatchedMember_Mesh.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\BatchedMesh.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\Batched_Material.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\BatchMember.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\BatchRenderer.cs" />
-    <Compile Include="Engine\Debug\Batched_Rendering\Batch_MeshRenderer.cs" />
     <Compile Include="Engine\Graphics\BoundingBox.cs" />
     <Compile Include="Engine\Graphics\Frustrum\ViewFrustrum.cs" />
-    <Compile Include="Engine\Graphics\S3DE_UniformBuffer.cs" />
+    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Buffers.cs" />
+    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Materials.cs" />
+    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Textures.cs" />
+    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Uniforms.cs" />
+    <Compile Include="Engine\Graphics\Shaders\ShaderProgram.cs" />
+    <Compile Include="Engine\Graphics\Renderer_Buffers.cs" />
+    <Compile Include="Engine\Graphics\Renderer_Materials.cs" />
+    <Compile Include="Engine\Graphics\Renderer_Textures.cs" />
+    <Compile Include="Engine\Graphics\Renderer_Uniforms.cs" />
     <Compile Include="Engine\Collections\LinkedQueueList.cs" />
-    <Compile Include="Engine\Debug\RenderingDebugging\ColoredFullScreenTest.cs" />
     <Compile Include="Engine\Debug\RenderingDebugging\RenderFramebufferTest.cs" />
-    <Compile Include="Engine\Debug\RenderingDebugging\TexturedFullScreenTest.cs" />
     <Compile Include="Engine\Entities\Components\DirectionalLight.cs" />
     <Compile Include="Engine\Entities\Components\IEnableLogic.cs" />
     <Compile Include="Engine\Entities\Components\IRenderLogic.cs" />
@@ -91,37 +91,33 @@
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\IOpenGL_BufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ArrayBufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ElementArrayBufferObject.cs" />
-    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_UniformBufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\IOpenGL_Texture.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_StandardPipeline.cs" />
     <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_BufferObject.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Framebuffer.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Material.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Mesh.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_MeshRenderer.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_RenderTexture2D.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_ScreenQuad.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Shader.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_ShaderProgram.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Texture2D.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_Utility.cs" />
     <Compile Include="Engine\Graphics\OpGL\OpenGL_VertexArrayObject.cs" />
     <Compile Include="Engine\Graphics\Renderer_Mesh.cs" />
-    <Compile Include="Engine\Graphics\Shaders\SimpleMaterial.cs" />
+    <Compile Include="Engine\Graphics\Shaders\ShaderSource.cs" />
     <Compile Include="Engine\Graphics\RenderPipeline.cs" />
     <Compile Include="Engine\Graphics\RenderCall.cs" />
-    <Compile Include="Engine\Graphics\Materials\Renderer_Material.cs" />
-    <Compile Include="Engine\Graphics\Shaders\SimpleMaterial_UBO.cs" />
+    <Compile Include="Engine\Graphics\Shaders\SimpleMaterial.cs" />
     <Compile Include="Engine\Graphics\Textures\ITexture.cs" />
     <Compile Include="Engine\Graphics\Textures\ITexture2D.cs" />
     <Compile Include="Engine\Graphics\Textures\RenderTexture2D.cs" />
     <Compile Include="Engine\Graphics\ScreenQuad.cs" />
-    <Compile Include="Engine\Graphics\Materials\MaterialSource.cs" />
     <Compile Include="Engine\Graphics\Textures\Texture2D.cs" />
     <Compile Include="Engine\Graphics\TextureUnits.cs" />
     <Compile Include="Engine\Graphics\UI\UI_Canvas.cs" />
     <Compile Include="Engine\Graphics\UI\UI_Panel.cs" />
+    <Compile Include="Engine\Graphics\UniformBuffer.cs" />
     <Compile Include="Engine\HighResClock.cs" />
     <Compile Include="Engine\Input.cs" />
     <Compile Include="Engine\IO\ImageLoader.cs" />

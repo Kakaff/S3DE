@@ -19,7 +19,7 @@ namespace S3DE.Engine.Scenes
 
         Camera mainCamera;
         Camera activeCamera;
-        AmbientLight ambient = new AmbientLight(Color.White,0.3f);
+        AmbientLight ambient = new AmbientLight(Color.White,0.225f);
         List<IDirectionalLight> directionalLights = new List<IDirectionalLight>();
 
         /// <summary>
@@ -139,7 +139,6 @@ namespace S3DE.Engine.Scenes
         /// <param name="canDraw">Specifies wether or not this scene will be drawn</param>
         internal void Run(bool canDraw)
         {
-
             EarlyUpdate();
             Update();
             LateUpdate();
@@ -161,6 +160,7 @@ namespace S3DE.Engine.Scenes
                 
                 
             }
+            
         }
 
         internal void ReloadScene()

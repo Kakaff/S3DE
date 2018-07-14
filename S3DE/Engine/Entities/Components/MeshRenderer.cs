@@ -62,31 +62,16 @@ namespace S3DE.Engine.Entities
         {
             if (Uses(Renderer.CurrentRenderPass))
             {
-                if (mat != null && m != null && mat.SupportsRenderPass(Renderer.CurrentRenderPass))
+                if (mat != null && m != null)
                 {
-                    mat.UseMaterial(Renderer.CurrentRenderPass);
-                    if (mat.UsesTransformMatrix)
-                        mat.SetTransformMatrix(gameEntity.transform.WorldTransformMatrix);
-                    if (mat.UsesViewMatrix)
-                        mat.SetViewMatrix(Scene.ActiveCamera.ViewMatrix);
-                    if (mat.UsesProjectionMatrix)
-                        mat.SetProjectionMatrix(Scene.ActiveCamera.ProjectionMatrix);
-                    if (mat.UsesRotationMatrix)
-                        mat.SetRotationMatrix(gameEntity.transform.WorldRotationMatrix);
-
-                    if (mat.UsesTransformMatrices && mat.UsesCameraMatrices)
-                        mat.SetCameraAndTransformBlocks(transform.UniformBuffer, Scene.ActiveCamera.UniformBuffer);
-                    else if (mat.UsesCameraMatrices)
-                        mat.SetCameraBlock(Scene.ActiveCamera.UniformBuffer);
-                    else if (mat.UsesTransformMatrices)
-                        mat.SetTransformBlock(transform.UniformBuffer);
-
+                    mat.UseMaterial(Renderer.CurrentRenderPass,this);
                     api_mr.Render_Internal();
-                } else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))
+                } /*else if (mat != null && !mat.SupportsRenderPass(Renderer.CurrentRenderPass))
                 {
                     throw new InvalidOperationException($"Material {mat.GetType().Name} does not support " +
                         $"{Renderer.CurrentRenderPass} but is attached to a MeshRenderer set to use this RenderPass");
                 }
+                */
             }
         }
 

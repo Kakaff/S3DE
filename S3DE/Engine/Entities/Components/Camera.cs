@@ -21,9 +21,9 @@ namespace S3DE.Engine.Entities.Components
 
         Matrix4x4 viewMatrix, projMatrix;
         float zNear, zFar, fov;
-        S3DE_UniformBuffer ubo;
+        UniformBuffer ubo;
 
-        public S3DE_UniformBuffer UniformBuffer {
+        public UniformBuffer UniformBuffer {
             get {
                 if (updateUBO)
                     UpdateUniformBuffer();
@@ -90,7 +90,7 @@ namespace S3DE.Engine.Entities.Components
             if (updateUBO)
             {
                 if (ubo == null)
-                    ubo = S3DE_UniformBuffer.Create(128);
+                    ubo = Renderer.CreateUniformBuffer();
 
                 updateUBO = false;
                 ByteBuffer buff = Matrix4x4.ToByteBuffer(ViewMatrix, ProjectionMatrix);

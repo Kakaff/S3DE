@@ -1,6 +1,7 @@
 ﻿using OpenGL;
 using S3DE;
 using S3DE.Engine.Graphics;
+using S3DE.Engine.Graphics.Shaders;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.IO;
 using S3DE.Maths;
@@ -14,12 +15,32 @@ namespace S3DE.Engine.Graphics.OpGL
 {
     internal class OpenGL_ScreenQuad : ScreenQuad
     {
-        ScreenQuadShader shader;
         OpenGL_Mesh quadMesh;
-        
+        ShaderProgram shader;
         internal OpenGL_ScreenQuad()
         {
-            shader = new ScreenQuadShader();
+            shader = Renderer.Create_ShaderProgram();
+            shader.SetSource(Materials.ShaderStage.Vertex,
+              "#version 400 " + '\n'
+            + "layout(location = 0)in vec3 position; " + '\n'
+            + "layout(location = 1)in vec2 uvs;" + '\n'
+            + "out vec2 uv;" + '\n'
+            + "void main()" + '\n'
+            + "{ " + '\n'
+            + "uv = uvs;" + '\n'
+            + "gl_Position = vec4(position,1.0);" + '\n'
+            + "}");
+
+            shader.SetSource(Materials.ShaderStage.Fragment,
+            "#version 400" + '\n'
+          + "in vec2 uv;" + '\n'
+          + "out vec4 fragColor; " + '\n'
+          + "uniform sampler2D tex;" + '\n'
+          + "void main() { " + '\n'
+          + "fragColor = vec4(texture(tex,uv).rgb,1);" + '\n'
+          + "} " + '\n');
+
+            shader.Compile();
 
             quadMesh = new OpenGL_Mesh();
             quadMesh.SetData(
@@ -35,9 +56,9 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void RenderFrameToScreen(RenderTexture2D frame)
         {
-            shader.Use();
+            shader.Bind();
             quadMesh.Bind();
-            shader.SetFrameTexture((int)frame.Bind());
+            shader.SetTextureSampler("tex",frame);
             Gl.DrawElements(PrimitiveType.Triangles, quadMesh.Indicies, DrawElementsType.UnsignedShort, IntPtr.Zero);
             OpenGL_Renderer.TestForGLErrors();
         }
@@ -51,42 +72,6 @@ namespace S3DE.Engine.Graphics.OpGL
 
         protected override void BindMesh() => quadMesh.Bind();
         protected override void UnbindMesh() => quadMesh.Unbind();
-
-        private sealed class ScreenQuadShader
-        {
-            OpenGL_ShaderProgram shaderProgram;
-            OpenGL_Shader vertShader, fragShader;
-            
-            public ScreenQuadShader()
-            {
-                vertShader = OpenGL_Shader.Create(ShaderType.VertexShader,
-                 "#version 400 " + '\n'
-                + "layout(location = 0)in vec3 position; " + '\n'
-                + "layout(location = 1)in vec2 uvs;" + '\n'
-                + "out vec2 uv;" + '\n'
-                + "void main()" + '\n'
-                + "{ " + '\n'
-                + "uv = uvs;" + '\n'
-                + "gl_Position = vec4(position,1.0);" + '\n'
-                + "}");
-
-                fragShader = OpenGL_Shader.Create(ShaderType.FragmentShader,
-                "#version 400" + '\n'
-              + "in vec2 uv;" + '\n'
-              + "out vec4 fragColor; " + '\n'
-              + "uniform sampler2D tex;" + '\n'
-              + "void main() { " + '\n'
-              + "fragColor = vec4(texture(tex,uv).rgb,1);" + '\n'
-              + "} " + '\n');
-
-                shaderProgram = new OpenGL_ShaderProgram(vertShader, fragShader);
-                shaderProgram.Compile();
-            }
-
-            public void Use() => shaderProgram.UseProgram();
-
-            public void SetFrameTexture(int textureUnit) => Gl.Uniform1(0, textureUnit);
-        }
     }
 
     

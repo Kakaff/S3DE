@@ -9,7 +9,7 @@ namespace S3DE.Engine.Collections
     //This could easily be done with just a normal list but meh. Writing classes is fun sometimes.
     public class LinkedQueueList<T>
     {
-        private class QueueListEntry<T>
+        private class QueueListEntry
         {
             T value;
             int index;
@@ -17,10 +17,10 @@ namespace S3DE.Engine.Collections
             public int Index => index;
             public T Value => value;
 
-            public QueueListEntry<T> Parent => parent;
-            public QueueListEntry<T> Child => child;
+            public QueueListEntry Parent => parent;
+            public QueueListEntry Child => child;
 
-            QueueListEntry<T> parent, child;
+            QueueListEntry parent, child;
 
             public QueueListEntry(T val) {
                 value = val;
@@ -32,13 +32,13 @@ namespace S3DE.Engine.Collections
                 this.index = index;
             }
 
-            public void SetParent(QueueListEntry<T> p) => parent = p;
-            public void SetChild(QueueListEntry<T> c) => child = c;
+            public void SetParent(QueueListEntry p) => parent = p;
+            public void SetChild(QueueListEntry c) => child = c;
             public void SetIndex(int index) => this.index = index;
         }
 
         int length;
-        QueueListEntry<T> head,tail;
+        QueueListEntry head,tail;
 
         public int Count => length;
 
@@ -49,7 +49,7 @@ namespace S3DE.Engine.Collections
 
         public void Remove(T value)
         {
-            QueueListEntry<T> qle = head;
+            QueueListEntry qle = head;
 
             while (qle != null)
             {
@@ -76,7 +76,7 @@ namespace S3DE.Engine.Collections
 
         public T Dequeue()
         {
-            QueueListEntry<T> res = head;
+            QueueListEntry res = head;
             if (res != null)
             {
                 head = res.Child;
@@ -100,7 +100,7 @@ namespace S3DE.Engine.Collections
 
         public void Enqueue(T val)
         {
-            QueueListEntry<T> qle = new QueueListEntry<T>(val);
+            QueueListEntry qle = new QueueListEntry(val);
             if (head == null)
             {
                 qle.SetIndex(0);

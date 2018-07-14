@@ -37,7 +37,7 @@ namespace S3DE
 
         public static bool IsRunning => isRunning;
 
-        public static void RunGame(Game game)
+        public static void RunGame(Game game, bool singleFrame)
         {
             EngineMain.game = game;
 
@@ -61,7 +61,7 @@ namespace S3DE
             Console.WriteLine("Initializing TextureUnits");
             TextureUnits.Initialize();
             Console.WriteLine("Intiializing BindingPoints");
-            S3DE_UniformBuffer.Initialize_BindingPoints();
+            UniformBuffers.Initialize_BindingPoints();
             Console.WriteLine("Initializing RenderPipeline");
             RenderPipeline.Init_Internal();
             Console.WriteLine($"Vectors are {(System.Numerics.Vector.IsHardwareAccelerated ? "" : "not")} hardware accelerated.");
@@ -78,31 +78,37 @@ namespace S3DE
             Console.WriteLine("------------------------------------------------------------");
             Console.WriteLine("----------------Intialization Completed---------------------");
             Console.WriteLine("------------------------------------------------------------");
-            MainLoop();
+
+            if (singleFrame)
+            {
+                MainLoop();
+                Console.WriteLine("End of frame.");
+                Console.WriteLine("Press Enter To Exit");
+                Console.Read();
+            }
+            else
+                while (!Engine.Graphics.Window.IsCloseRequested) MainLoop();
         }
 
         private static void MainLoop()
         {
-            while (!Engine.Graphics.Window.IsCloseRequested)
+            Engine.Graphics.Window.PollEvents();
+
+            Input.PollInput();
+            SceneHandler.RunScenes();
+
+            Renderer.Finish_Internal();
+            FrameSync.WaitForTargetFPS();
+            Engine.Graphics.Window.SwapBuffer();
+
+            Time.UpdateDeltaTime(Time.CurrentTick);
+
+            windowResized = false;
+            if (reziseWindow)
             {
-                Engine.Graphics.Window.PollEvents();
-                
-                Input.PollInput();
-                SceneHandler.RunScenes();
-
-                Renderer.Finish_Internal();
-                FrameSync.WaitForTargetFPS();
-                Engine.Graphics.Window.SwapBuffer();
-
-                Time.UpdateDeltaTime(Time.CurrentTick);
-                
-                windowResized = false;
-                if (reziseWindow)
-                {
-                    Engine.Graphics.Window.ResizeWindow();
-                    reziseWindow = false;
-                    windowResized = true;
-                }
+                Engine.Graphics.Window.ResizeWindow();
+                reziseWindow = false;
+                windowResized = true;
             }
         }
 

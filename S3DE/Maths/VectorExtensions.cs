@@ -68,6 +68,7 @@ namespace S3DE.Maths
         #endregion
 
         #region Vector4
+        public static Vector4 Vec4_Zero => new Vector4(0, 0, 0, 0);
         public static Vector3 XYZ(this Vector4 v) => new Vector3(v.X, v.Y, v.Z);
         public static Quaternion ToQuaternion(this Vector4 v) => new Quaternion(v.X, v.Y, v.Z, v.W);
         public static float Sum(this Vector4 v) => (new System.Numerics.Vector2(v.X, v.Y) + new System.Numerics.Vector2(v.Z, v.W)).Sum();

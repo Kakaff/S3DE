@@ -16,7 +16,6 @@ namespace S3DE.Engine.Graphics.OpGL.BufferObjects
             {
                 case BufferTarget.ArrayBuffer: { return new OpenGL_ArrayBufferObject(Gl.GenBuffer());}
                 case BufferTarget.ElementArrayBuffer: { return new OpenGL_ElementArrayBufferObject(Gl.GenBuffer());}
-                case BufferTarget.UniformBuffer: {return new OpenGL_UniformBufferObject(Gl.GenBuffer());}
 
                 default: throw new NotSupportedException("");
             }

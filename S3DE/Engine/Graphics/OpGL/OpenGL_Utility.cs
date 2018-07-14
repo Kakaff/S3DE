@@ -13,6 +13,19 @@ namespace S3DE.Engine.Graphics.OpGL
     internal static class OpenGL_Utility
     {
 
+        internal static ShaderType Convert(Materials.ShaderStage stage)
+        {
+            switch (stage)
+            {
+                case Materials.ShaderStage.Geometry: return ShaderType.GeometryShader;
+                case Materials.ShaderStage.Tessalation: return ShaderType.TessControlShader;
+                case Materials.ShaderStage.Tessalation_Evaluation: return ShaderType.TessEvaluationShader;
+                case Materials.ShaderStage.Vertex: return ShaderType.VertexShader;
+                case Materials.ShaderStage.Fragment: return ShaderType.FragmentShader;
+                
+                default: throw new NotSupportedException($"No conversion exists for ShaderStage.{stage} to OpenGL.ShaderType");
+            }
+        }
         internal static EnableCap Convert(Function func)
         {
 

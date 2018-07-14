@@ -1,4 +1,5 @@
 ﻿using OpenGL;
+using S3DE.Engine.Graphics.Materials;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -11,52 +12,120 @@ namespace S3DE.Engine.Graphics.OpGL
 {
     internal sealed class OpenGL_ShaderProgram
     {
-        static OpenGL_ShaderProgram shadProg;
+        class ShaderSource
+        {
+            string code;
+            ShaderStage stage;
 
-        OpenGL_Shader vertexShader;
-        OpenGL_Shader fragmentShader;
+            bool isCompiled;
+            uint identifier;
+            
+            public uint Identifier => identifier;
+            public bool IsCompiled => isCompiled;
+            public ShaderStage Stage => stage;
+            public string Source => code;
+
+            private ShaderSource() { }
+
+            public ShaderSource(ShaderStage s, string src)
+            {
+                code = src;
+                stage = s;
+                isCompiled = false;
+            }
+
+            public void Compile()
+            {
+                identifier = Gl.CreateShader(OpenGL_Utility.Convert(Stage));
+                OpenGL_Renderer.TestForGLErrors();
+
+                Gl.ShaderSource(identifier, new string[] {Source});
+                OpenGL_Renderer.TestForGLErrors();
+
+                Gl.CompileShader(identifier);
+                OpenGL_Renderer.TestForGLErrors();
+                int compileStatus;
+                Gl.GetShader(identifier, ShaderParameterName.CompileStatus, out compileStatus);
+                OpenGL_Renderer.TestForGLErrors();
+                if (compileStatus != Gl.TRUE)
+                {
+                    Gl.GetShader(identifier, ShaderParameterName.InfoLogLength, out int logLength);
+                    OpenGL_Renderer.TestForGLErrors();
+                    StringBuilder sb = new StringBuilder(logLength);
+                    Gl.GetShaderInfoLog(identifier, logLength, out int l, sb);
+                    OpenGL_Renderer.TestForGLErrors();
+                    throw new Exception("Failed to compile Shader | " + sb.ToString());
+                }
+                else
+                    isCompiled = true;
+            }
+        }
+        
+        static OpenGL_ShaderProgram boundShaderProgram;
+
         Dictionary<string, int> Uniforms;
+        Dictionary<string, uint> UniformBlocks;
+        ShaderSource[] sources;
+        bool isCompiled;
         uint pointer;
 
+        internal bool IsCompiled => isCompiled;
         internal uint Pointer => pointer;
+        internal static OpenGL_ShaderProgram BoundShaderProgram => boundShaderProgram;
 
-        internal OpenGL_ShaderProgram(OpenGL_Shader VertexShader, OpenGL_Shader FragmentShader)
+        internal OpenGL_ShaderProgram(uint identifier)
         {
-            this.vertexShader = VertexShader;
-            this.fragmentShader = FragmentShader;
             Uniforms = new Dictionary<string, int>();
-            pointer = Gl.CreateProgram();
+            UniformBlocks = new Dictionary<string, uint>();
+            pointer = identifier;
+            sources = new ShaderSource[5];
+        }
+
+        internal void SetSource(ShaderStage stage,string src)
+        {
+            ShaderSource ss = new ShaderSource(stage, src);
+
+            switch (stage)
+            {
+                case ShaderStage.Vertex:
+                    {
+                        sources[0] = ss;
+                        break;
+                    }
+                case ShaderStage.Fragment:
+                    {
+                        sources[1] = ss;
+                        break;
+                    }
+            }
         }
 
         internal void Compile()
         {
             Console.WriteLine("Compiling shaderprogram");
 
-            if (!vertexShader.IsCompiled)
-                vertexShader.Compile();
-
-            if (!fragmentShader.IsCompiled)
-                fragmentShader.Compile();
-
-            Gl.AttachShader(pointer, vertexShader.Pointer);
-            Gl.AttachShader(pointer, fragmentShader.Pointer);
-
+            for (int i = 0; i < sources.Length; i++)
+            {
+                if (sources[i] != null)
+                {
+                    sources[i].Compile();
+                    Gl.AttachShader(pointer, sources[i].Identifier);
+                    TestForGLErrors();
+                }
+            }
             Gl.LinkProgram(pointer);
+            TestForGLErrors();
+            isCompiled = true;
         }
 
         internal void UseProgram()
         {
-            if (shadProg == null || shadProg.Pointer != Pointer)
+            if (boundShaderProgram == null || boundShaderProgram.Pointer != Pointer)
             {
                 Gl.UseProgram(Pointer);
                 TestForGLErrors();
-                shadProg = this;
+                boundShaderProgram = this;
             }
-        }
-
-        internal void Dispose()
-        {
-            //Free all shaders.
         }
 
         internal int GetUniformLocation(string uniformName)
@@ -64,56 +133,82 @@ namespace S3DE.Engine.Graphics.OpGL
             if (Uniforms.TryGetValue(uniformName, out int _loc))
                 return _loc;
             else
-                throw new ArgumentNullException($"Unknown Uniform '{uniformName}'");
+                return AddUniform(uniformName);
+        }
+
+        internal uint GetUniformBlockLocation(string uniformBlockName)
+        {
+            if (UniformBlocks.TryGetValue(uniformBlockName, out uint loc))
+                return loc;
+            else
+                return AddUniformBlock(uniformBlockName);
         }
 
         internal void SetUniformf(string uniformName, float value)
         {
-            Gl.Uniform1(GetUniformLocation(uniformName), value);
-            TestForGLErrors();
+            Renderer.Set_Uniform(GetUniformLocation(uniformName), value);
         }
 
         internal void SetUniformf(string uniformName, float[] values)
         {
-            Gl.Uniform1(GetUniformLocation(uniformName), values);
-            TestForGLErrors();
+            Renderer.Set_Uniform(GetUniformLocation(uniformName), values);
         }
 
         internal void SetUniformi(string uniformName, int value)
         {
-            Gl.Uniform1(GetUniformLocation(uniformName), value);
-            TestForGLErrors();
+            Renderer.Set_Uniform(GetUniformLocation(uniformName), value);
         }
 
-        internal void SetUniformi(string uniformName, int[] value)
+        internal void SetUniformi(string uniformName, int[] values)
         {
-            Gl.Uniform1(GetUniformLocation(uniformName), value);
-            TestForGLErrors();
+            Renderer.Set_Uniform(GetUniformLocation(uniformName), values);
         }
 
         internal void SetUniform(string uniformName, Matrix4x4 m)
         {
-            Gl.UniformMatrix4(GetUniformLocation(uniformName),false,m.ToArray());
-            TestForGLErrors();
+            Renderer.Set_Uniform(GetUniformLocation(uniformName),m);
         }
 
         internal void SetUniform(string uniformName, System.Numerics.Vector3 v)
         {
-            Gl.Uniform3(GetUniformLocation(uniformName), v.ToArray());
+            Renderer.Set_Uniform(GetUniformLocation(uniformName), v);
+        }
+
+        internal void SetUniform(string uniformName,Color color)
+        {
+            Renderer.Set_Uniform(GetUniformLocation(uniformName), color);
+        }
+
+        internal void SetUniformBlock(string uniformBlockName,UniformBuffer buff)
+        {
+            Gl.UniformBlockBinding(Pointer, GetUniformBlockLocation(uniformBlockName), (uint)buff.BoundUniformBlockBindingPoint);
             TestForGLErrors();
         }
         
-        internal void AddUniform(string uniformName)
+        internal int AddUniform(string uniformName)
         {
             UseProgram();
 
             int loc = Gl.GetUniformLocation(Pointer, uniformName);
-            if (loc != -0x1) {
+            if (loc != -0x1)
                 Uniforms.Add(uniformName, loc);
-            }
             else
-                throw new ArgumentException($"Unable to find uniform: {uniformName}");
+                throw new ArgumentNullException($"Uniform: '{uniformName}' does not exist.");
+
+            Console.WriteLine($"Found Uniform {uniformName} at location {loc}");
+            return loc;
+        }
+
+        internal uint AddUniformBlock(string uniformBlockName)
+        {
+            uint loc = Gl.GetUniformBlockIndex(Pointer, uniformBlockName);
             TestForGLErrors();
+            if (loc == Gl.INVALID_INDEX)
+                throw new ArgumentNullException($"UniformBlock: '{uniformBlockName}' does not exist.");
+            UniformBlocks.Add(uniformBlockName, loc);
+
+            Console.WriteLine($"Found UniformBlock {uniformBlockName} at location {loc}");
+            return loc;
         }
         
         

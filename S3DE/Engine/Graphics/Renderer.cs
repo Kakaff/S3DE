@@ -18,7 +18,7 @@ namespace S3DE.Engine.Graphics
         //Still in planning phase.
         ShadowMap = 0x01, //Only operates on objects within range of light.
         Deferred = 0x02, //Only operates on objects that use deferred rendering.
-        Forward = 0x04, //Only operates on objects that use forward rendering, is sorted from far to near.
+        Forward = 0x03, //Only operates on objects that use forward rendering, is sorted from far to near.
     }
 
     public enum FrameBufferTarget
@@ -42,9 +42,9 @@ namespace S3DE.Engine.Graphics
     {
         AlphaTest,
         DepthTest,
-
     }
-    public abstract class Renderer
+
+    public abstract partial class Renderer
     {
         static RenderPass renderPass = RenderPass.Deferred;
         static RenderCall mainRenderCall;
@@ -100,13 +100,11 @@ namespace S3DE.Engine.Graphics
         protected abstract void Init();
         protected abstract void SetAlphaFunction(AlphaFunction function, float value);
         protected abstract Renderer_MeshRenderer CreateMeshRenderer();
-        protected abstract Renderer_Material CreateMaterial(Type materialType,RenderPass pass);
         protected abstract Texture2D CreateTexture2D(int width, int height);
         protected abstract RenderTexture2D CreateRenderTexture2D(InternalFormat internalFormat, PixelFormat pixelFormat, PixelType pixelType, FilterMode filter,int width, int height);
         protected abstract Framebuffer CreateFrameBuffer(int width, int height);
         protected abstract ScreenQuad CreateScreenQuad();
         protected abstract Renderer_Mesh CreateRendererMesh();
-        protected abstract S3DE_UniformBuffer Create_UniformBuffer();
 
         protected abstract int MaxSupportedTextureUnits();
         protected abstract int MaxSupportedUniformBlockBindingPoints();
@@ -119,15 +117,11 @@ namespace S3DE.Engine.Graphics
         protected abstract void disable(Function func);
         protected abstract void SetViewportSize(S3DE_Vector2 size);
         protected abstract void BindTexUnit(ITexture tex, TextureUnit tu);
-        protected abstract void Bind_UniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint);
-        protected abstract void Unbind_UniformBuffer(S3DE_UniformBuffer buffer);
         protected abstract void UnbindTexUnit(TextureUnit tu);
-        protected abstract void SetDrawBuffers(BufferAttachment[] buffers);
         protected abstract void FinalizePass();
         protected abstract void FinishFrame();
-
+        
         protected void SetApiVersion(int version) => apiVer = version;
-
         internal static Renderer ActiveRenderer => activeRenderer;
         internal static RenderCall MainRenderCall => mainRenderCall;
         public static void Enable(Function func) => ActiveRenderer.enable(func);
@@ -153,19 +147,12 @@ namespace S3DE.Engine.Graphics
             return ActiveRenderer.CreateMeshRenderer();
         }
 
-        internal static Renderer_Material CreateMaterial_Internal(Type materialType,RenderPass pass)
-        {
-            return ActiveRenderer.CreateMaterial(materialType,pass);
-        }
-
         internal static Texture2D CreateTexture2D_Internal(int width, int height)
         {
             return ActiveRenderer.CreateTexture2D(width, height);
         }
 
         public static Renderer_Mesh CreateMesh() => ActiveRenderer.CreateRendererMesh();
-
-        public static S3DE_UniformBuffer CreateUniformBuffer() => ActiveRenderer.Create_UniformBuffer();
 
         internal static void DrawMesh(Renderer_Mesh m) => ActiveRenderer.Draw_Mesh(m);
 
@@ -175,8 +162,6 @@ namespace S3DE.Engine.Graphics
 
         internal static ScreenQuad CreateScreenQuad_Internal() => ActiveRenderer.CreateScreenQuad();
 
-        internal static Framebuffer CreateFramebuffer_Internal(S3DE_Vector2 size) => ActiveRenderer.CreateFrameBuffer((int)size.X, (int)size.Y);
-        
         public static void AlphaFunction(AlphaFunction function, float value) => ActiveRenderer.SetAlphaFunction(function, value);
 
         internal static void SetCapabilities_Internal() => ActiveRenderer.SetCapabilities();
@@ -214,8 +199,6 @@ namespace S3DE.Engine.Graphics
             OnRefreshRateChanged_Internal();
         }
 
-        internal static void SetDrawBuffers_Internal(params BufferAttachment[] buffers) => ActiveRenderer.SetDrawBuffers(buffers);
-
         internal static void OnWindowResized_Internal() => ActiveRenderer.OnWindowResized();
         internal static void OnRenderResolutionChanged_Internal() => ActiveRenderer.OnRenderResolutionChanged();
         internal static void OnRefreshRateChanged_Internal() => ActiveRenderer.OnRefreshRateChanged();
@@ -224,8 +207,6 @@ namespace S3DE.Engine.Graphics
         internal static int RefreshRate => ActiveRenderer.refreshRate;
         public static void UnbindTextureUnit(TextureUnit tu) => ActiveRenderer.UnbindTexUnit(tu);
         public static void BindTextureUnit(ITexture tex, TextureUnit tu) => ActiveRenderer.BindTexUnit(tex, tu);
-        public static void BindUniformBuffer(S3DE_UniformBuffer buffer, int bindingPoint) => ActiveRenderer.Bind_UniformBuffer(buffer, bindingPoint);
-        public static void UnbindUniformBuffer(S3DE_UniformBuffer buffer) => ActiveRenderer.Unbind_UniformBuffer(buffer);
         public static int TextureUnitCount { get => ActiveRenderer.MaxSupportedTextureUnits(); }
         public static int UniformBlockBindingPoints { get => ActiveRenderer.MaxSupportedUniformBlockBindingPoints(); }
     }

@@ -1,4 +1,4 @@
-﻿using S3DE.Engine.Graphics;
+﻿using S3DE.Engine.Collections;
 using S3DE.Engine.Graphics.Materials;
 using S3DE.Engine.Graphics.Textures;
 using S3DE.Engine.IO;
@@ -13,13 +13,12 @@ namespace S3DE.Engine.Graphics.Shaders
 {
     public class SimpleMaterial : Material
     {
-        Texture2D texture,normal;
+        Texture2D diffuse, normal;
 
-        private class SimpleVertSource : MaterialSource
+        private class SimpleVertSource : ShaderSource
         {
-            public SimpleVertSource()
+            public SimpleVertSource() : base(ShaderStage.Vertex)
             {
-                SetStage(ShaderStage.Vertex);
                 SetSource(
                     "#version 330",
 
@@ -28,18 +27,13 @@ namespace S3DE.Engine.Graphics.Shaders
                     "layout(location = 2)in vec3 normal;",
                     "layout(location = 3)in vec3 tangent;",
                     "layout(location = 4)in vec3 bitangent;",
-
-                    "uniform mat4 view;",
-                    "uniform mat4 projection;",
-                    "uniform mat4 transform;",
-                    "uniform mat4 rotation;",
-
-                    "uniform CameraMatrices {",
+                    
+                    "layout(std140) uniform CameraMatrices {",
                     "mat4 view;",
                     "mat4 projection;",
                     "} Camera;",
 
-                    "uniform TransformMatrices {",
+                    "layout(std140) uniform TransformMatrices {",
                     "mat4 transform;",
                     "mat4 translation;",
                     "mat4 rotation;",
@@ -53,20 +47,18 @@ namespace S3DE.Engine.Graphics.Shaders
                     "} frag;",
 
                     "void main() {",
-                    "frag.pos = (transform * vec4(position,1.0)).xyz;",
+                    "frag.pos = (Transform.transform * vec4(position,1.0)).xyz;",
                     "frag.uv = uvs;",
-                    "frag.TBN = mat3(rotation) * mat3(tangent,bitangent,normal);",
-                    "gl_Position = (projection * view) * vec4(frag.pos,1.0);",
+                    "frag.TBN = mat3(Transform.rotation) * mat3(tangent,bitangent,normal);",
+                    "gl_Position = (Camera.projection * Camera.view) * vec4(frag.pos,1.0);",
                     "}");
             }
         }
 
-        private class SimpleFragSource : MaterialSource
+        private class SimpleFragSource : ShaderSource
         {
-            public SimpleFragSource()
+            public SimpleFragSource() : base (ShaderStage.Fragment)
             {
-                SetStage(ShaderStage.Fragment);
-
                 SetSource(
                     "#version 330",
 
@@ -81,75 +73,37 @@ namespace S3DE.Engine.Graphics.Shaders
                     "mat3 TBN;",
                     "} frag;",
 
-                    "uniform sampler2D tex;",
-                    "uniform sampler2D normalMap;",
+                    "uniform sampler2D diffuse;",
+                    "uniform sampler2D normal;",
 
                     "void main() {",
-                    "gFragColor = vec3(texture(tex,frag.uv).rgb);",
+                    "gFragColor = vec3(texture(diffuse,frag.uv).rgb);",
                     "gPosition = frag.pos;",
-                    "gNormal = frag.TBN * (texture(normalMap,frag.uv).rgb * 2 - 1);",
-                    "gSpecular = vec4(vec3(length(gFragColor) * 0.5773502691896258f),0.025f);",
+                    "gNormal = frag.TBN * (texture(normal,frag.uv).rgb * 2 - 1);",
+                    "gSpecular = vec4(1,1,1,0.075f);",
                     "}");
+                //vec3(length(gFragColor) * 0.5773502691896258f)
             }
         }
 
         public SimpleMaterial() : base()
         {
-            UsesProjectionMatrix = true;
-            UsesViewMatrix = true;
-            UsesTransformMatrix = true;
-            UsesRotationMatrix = true;
-            SupportsDeferredRendering = true;
             normal = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall_normal.jpg");
-            texture = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
+            diffuse = ImageLoader.LoadFromFile(Environment.CurrentDirectory + @"\brickwall.jpg");
         }
 
-        Texture2D createSampleTexture(S3DE_Vector2 resolution)
+        protected override ShaderSource[] GetShaderSources(RenderPass pass)
         {
-            Texture2D tex = Texture2D.Create((int)resolution.X, (int)resolution.Y);
-            float xMod = 255 / resolution.X;
-            float yMod = 255 / resolution.Y;
-
-            for (int x = 0; x < resolution.X; x++)
-                for (int y = 0; y < resolution.Y; y++)
-                    tex.SetPixel(x, y, new Color((byte)(x * xMod), (byte)(y * yMod), (byte)(((x * xMod) + (y * yMod)) / 2), 255));
-
-            tex.FilterMode = FilterMode.Trilinear;
-            tex.AnisotropicSamples = AnisotropicSamples.x16;
-            tex.CalculateMipMapCount();
-            tex.Apply();
-            return tex;
-        }
-
-        protected override MaterialSource GetSource(ShaderStage stage,RenderPass pass)
-        {
-            switch (stage)
-            {
-                case ShaderStage.Vertex:
-                    {
-                        return new SimpleVertSource();
-                    }
-                case ShaderStage.Fragment:
-                    {
-                        return new SimpleFragSource();
-                    }
-                default:
-                    {
-                        throw new NotSupportedException();
-                    }
-            }
-        }
-
-        protected override string[] GetUniforms()
-        {
-            return new string[] {"tex", "normalMap"};
+            return new ShaderSource[] { new SimpleVertSource(), new SimpleFragSource() };
         }
 
         protected override void UpdateUniforms(RenderPass pass)
         {
-            SetTextures(new string[] { "tex", "normalMap" }, new ITexture[] { texture, normal });
-            //SetTexture("tex",texture);
-            //SetTexture("normalMap", normal);
+            Shader.SetTextureSampler("diffuse", diffuse);
+            Shader.SetTextureSampler("normal", normal);
+            Shader.SetUniformBlocks(new string[] {"TransformMatrices","CameraMatrices"}, 
+                new UniformBuffer[] { transform.UniformBuffer, Scenes.SceneHandler.ActiveScene.ActiveCamera.UniformBuffer });
+
         }
     }
 }

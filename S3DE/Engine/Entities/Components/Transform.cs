@@ -1,4 +1,5 @@
 ﻿using S3DE.Engine.Collections;
+using S3DE.Engine.Graphics;
 using S3DE.Maths;
 using S3DE.Utility;
 using System;
@@ -15,9 +16,9 @@ namespace S3DE.Engine.Entities.Components
         Transform parent;
         List<Transform> children;
         bool hasChanged, updateUBO;
-        S3DE_UniformBuffer ubo;
+        UniformBuffer ubo;
 
-        public S3DE_UniformBuffer UniformBuffer
+        public UniformBuffer UniformBuffer
         {
             get
             {
@@ -27,7 +28,6 @@ namespace S3DE.Engine.Entities.Components
             }
         }
         public bool HasChanged => hasChanged;
-        bool isUpdated = false;
         bool rotUpdated, scaleUpdated, posUpdated;
 
         public Transform Parent => parent;
@@ -127,7 +127,7 @@ namespace S3DE.Engine.Entities.Components
                 updateUBO = false;
 
                 if (ubo == null)
-                    ubo = S3DE_UniformBuffer.Create(256);
+                    ubo = Renderer.CreateUniformBuffer();
                 
                 ByteBuffer buff = Matrix4x4.ToByteBuffer(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix);
                 ubo.SetData(buff);

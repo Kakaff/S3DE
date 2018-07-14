@@ -15,7 +15,7 @@ namespace SampleGame
 
         public static void Main(String[] args)
         {
-            new MyGame().Run();
+            new MyGame().Run(false);
         }
 
         public override string GameName()
@@ -36,7 +36,7 @@ namespace SampleGame
         protected override void Start()
         {
             DisplayResolution = new S3DE_Vector2(1600, 900);
-            RenderResolution = new S3DE_Vector2(800, 450);
+            RenderResolution = new S3DE_Vector2(1280, 720);
             RefreshRate = 60;
             SetTargetFPS(60);
             SetVSync(false);
