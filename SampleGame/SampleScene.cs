@@ -22,9 +22,8 @@ namespace SampleGame
         protected override void LoadScene()
         {
             Material mat = new SimpleMaterial();
-            //Mesh m = Mesh.CreateCube(new System.Numerics.Vector3(1, 1, 1));
             
-            const int s = 25;
+            const int s = 3;
             Console.WriteLine($"Testing {(s*2) * (s*2)} rotating cubes");
             
             for (int x = -s; x < s; x++)

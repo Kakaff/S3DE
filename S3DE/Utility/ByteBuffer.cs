@@ -134,7 +134,8 @@ namespace S3DE.Utility
 
         void Init(int size)
         {
-            data = ArrPool.Rent(size);
+            if (data == null)
+                data = ArrPool.Rent(size);
             isDisposed = false;
         }
 
@@ -142,9 +143,19 @@ namespace S3DE.Utility
         {
             if (!isDisposed)
             {
-                ArrPool.Return(data, false);
                 length = 0;
+                ArrPool.Return(data);
                 data = null;
+                BuffPool.Enqueue(this);
+                isDisposed = true;
+            }
+        }
+
+        public void Return()
+        {
+            if (!isDisposed)
+            {
+                length = 0;
                 BuffPool.Enqueue(this);
                 isDisposed = true;
             }

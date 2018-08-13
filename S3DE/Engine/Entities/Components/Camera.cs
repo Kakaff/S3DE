@@ -95,7 +95,7 @@ namespace S3DE.Engine.Entities.Components
                 updateUBO = false;
                 ByteBuffer buff = Matrix4x4.ToByteBuffer(ViewMatrix, ProjectionMatrix);
                 ubo.SetData(buff);
-                buff.Dispose();
+                buff.Return();
             }
         }
         

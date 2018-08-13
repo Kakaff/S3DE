@@ -12,10 +12,11 @@ namespace S3DE.Engine.Graphics
         uint identifier;
         bool isBound;
         int boundBindingPoint;
+        uint size;
 
         public uint Identifier => identifier;
         public bool IsBound => isBound;
-        
+        public uint Size => size;
         public int BoundUniformBlockBindingPoint { get => boundBindingPoint;}
         public void Bind() => UniformBuffers.Bind(this);
 
@@ -35,6 +36,10 @@ namespace S3DE.Engine.Graphics
         }
 
         public void SetData(byte[] data) => Renderer.SetUniformBufferData(this,data);
+        public void SetDataSub(int offset, byte[] data) => Renderer.SetUniformBufferData(this, offset, data);
+        public void Resize(uint size) => Renderer.SetUniformBufferSize(this, size);
+
+        internal void SetSize(uint size) => this.size = size;
     }
 
     internal static class UniformBuffers

@@ -24,9 +24,7 @@ namespace S3DE.Engine.Graphics.OpGL
         Deferred_Ambient_Material ambientMat;
         Deferred_Directional_Material dirLightMat;
 
-        //Deferred Lighting Material For AmbientLight.
-        //Deferred Lighting Material For DirectionalLights.
-        //Deferred Lighting Material For PointLight.
+        
 
         protected override RenderCall CreateRenderCall(S3DE_Vector2 resolution)
         {

@@ -23,6 +23,11 @@ namespace S3DE.Engine.Graphics.OpGL
     public sealed partial class OpenGL_Renderer : Renderer
     {
 
+        public OpenGL_Renderer()
+        {
+
+        }
+
         int uniformBlockBindingPoints;
 
         public override RenderingAPI GetRenderingAPI() => RenderingAPI.OpenGL;
@@ -55,11 +60,7 @@ namespace S3DE.Engine.Graphics.OpGL
         {
             Console.WriteLine("Initializing OpenGL_Renderer");
             shaders = new Dictionary<uint, OpenGL_ShaderProgram>();
-
-            Console.WriteLine("Creating dummy DeviceContext");
-            DeviceContext dc = DeviceContext.Create();
             Gl.Initialize();
-            dc.Dispose();
         }
 
         protected override void SetCapabilities()

@@ -131,7 +131,7 @@ namespace S3DE.Engine.Entities.Components
                 
                 ByteBuffer buff = Matrix4x4.ToByteBuffer(WorldTransformMatrix, WorldTranslationMatrix, WorldRotationMatrix, WorldScaleMatrix);
                 ubo.SetData(buff);
-                buff.Dispose();
+                buff.Return();
             }
         }
 

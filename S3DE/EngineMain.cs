@@ -48,13 +48,14 @@ namespace S3DE
             Time.Start();
             Console.WriteLine("Initializing GLFW");
             Glfw.Init();
-
-            Console.WriteLine($"Intiializing Renderer | Name: {Renderer.GetName()} | API: {Renderer.GetAPI}");
-            Renderer.Init_Internal();
-
+            
+            
             Console.WriteLine($"Creating new Window");
             Engine.Graphics.Window.CreateWindow(game.GameName());
             Engine.Graphics.Window.MakeCurrentContext();
+
+            Console.WriteLine($"Intiializing Renderer | Name: {Renderer.GetName()} | API: {Renderer.GetAPI}");
+            Renderer.Init_Internal();
 
             Console.WriteLine($"Setting Renderer Capabilities");
             Renderer.SetCapabilities_Internal();
