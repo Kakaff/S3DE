@@ -11,7 +11,6 @@ namespace S3DE.Utility
     {
         const int SizeIncrement = 64;
         const int InitSize = 16;
-        static ArrayPool<byte> ArrPool = ArrayPool<byte>.Create();
         static Queue<ByteBuffer> BuffPool = new Queue<ByteBuffer>();
 
         byte[] data;
@@ -20,26 +19,19 @@ namespace S3DE.Utility
 
         public bool HasChanged => hasChanged;
 
-        public int Length => data.Length;
 
-        public byte this[int index]
+        public byte[] Data
         {
             get
             {
-                if (index < 0 || index > length)
-                    throw new ArgumentOutOfRangeException();
-
-                return data[index];
-            }
-
-            set
-            {
-                if (index < 0 || index > length)
-                    throw new ArgumentOutOfRangeException();
-
-                data[index] = value;
+                if (hasChanged)
+                    Apply();
+                return data;
             }
         }
+
+        public int Length => data.Length;
+        
 
         private ByteBuffer()
         {
@@ -73,10 +65,7 @@ namespace S3DE.Utility
 
         public void Clear() {
             if (length > InitSize)
-            {
-                ArrPool.Return(data, false);
-                data = ArrPool.Rent(InitSize);
-            }
+                Array.Clear(data, 0, data.Length);
             length = 0;
         }
 
@@ -135,20 +124,13 @@ namespace S3DE.Utility
         void Init(int size)
         {
             if (data == null)
-                data = ArrPool.Rent(size);
+                data = data = new byte[InitSize];
             isDisposed = false;
         }
 
         public void Dispose()
         {
-            if (!isDisposed)
-            {
-                length = 0;
-                ArrPool.Return(data);
-                data = null;
-                BuffPool.Enqueue(this);
-                isDisposed = true;
-            }
+            Return();
         }
 
         public void Return()
@@ -160,7 +142,7 @@ namespace S3DE.Utility
                 isDisposed = true;
             }
         }
-        
+
         public static implicit operator byte[] (ByteBuffer buff) {
             if (buff.HasChanged)
                 buff.Apply();

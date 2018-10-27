@@ -1,8 +1,7 @@
-﻿using S3DE.Engine;
-using S3DE.Engine.Graphics;
-using S3DE.Engine.Scenes;
-using S3DE.Engine.Utility;
+﻿using S3DE.Graphics;
+using S3DE.Graphics.Textures;
 using S3DE.Maths;
+using S3DE.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,61 +13,32 @@ namespace S3DE
     public abstract class Game
     {
         public static bool IsFocused => Window.IsFocused;
-        public static bool RegainedFocus => Window.RegainedFocus;
         public static bool LostFocus => Window.LostFocus;
+        public static bool RegainedFocus => Window.RegainedFocus;
 
-        public static S3DE_Vector2 DisplayResolution {
-           get => Renderer.DisplayResolution;
-           set => Renderer.SetDisplayResolution(value);
-        }
-
-        public static S3DE_Vector2 RenderResolution
-        {
-            get => Renderer.RenderResolution;
-            set => Renderer.SetRenderResolution(value);
-        }
-
-        public static int RefreshRate
-        {
-            get => Renderer.RefreshRate;
-            set => Renderer.SetRefreshRate(value);
-        }
-
-        public static bool IsFullScreen
-        {
-            get => Window.IsFullScreen;
-        }
-
-        public static bool ResolutionChanged => EngineMain.WindowResized;
-        public static string WindowTitle {set => Engine.Graphics.Window.SetTitle(value);}
-        public static string GameTitle => EngineMain.RunningGame.GameName();
-
-        protected void SetStartScene<T>() where T : GameScene => SceneHandler.SetMainScene<T>();
+        public static bool ResolutionChanged => Window.ResolutionChanged;
+        public static S3DE_Vector2 DisplayResolution => Window.Resolution;
+        public static S3DE_Vector2 RenderResolution => Renderer.Resolution;
         
-        protected void SetTargetRenderer<T>() where T : Renderer => Renderer.SetTargetRenderer<T>();
-        protected void SetEngineClock<T>() where T : EngineClock => Time.SetEngineClock<T>();
-        protected void SetEngineFrameSync<T>() where T : FrameSync => FrameSync.SetFrameSync = InstanceCreator.CreateInstance<T>();
-        protected void SetTargetRenderPipleline<T>() where T : RenderPipeline => RenderPipeline.CreatePipeline<T>();
-
-        protected void SetTargetFPS(uint fps) => FrameSync.SetTargetFPS(fps);
-        public void Run(bool singleFrame) => EngineMain.RunGame(this,singleFrame);
-        protected void SetVSync(bool value) => Window.SetVSync(value);
+        public void Run() => EngineMain.RunGame(this);
         internal void InitGame() => Initialize();
         internal void StartGame() => Start();
+
+        protected void LoadStartScene<Scene>() where Scene : GameScene
+        {
+            GameScene gs = SceneHandler.LoadScene<Scene>();
+            SceneHandler.SetActiveScene(gs);
+        }
 
         protected abstract void Initialize();
         protected abstract void Start();
 
-        public abstract String GameName();
+        protected abstract S3DE_Vector2 LoadDisplayResolution();
+        protected abstract S3DE_Vector2 LoadRenderResolution();
 
-        protected abstract void OnGameExit();
+        internal S3DE_Vector2 Internal_LoadDisplayResolution => LoadDisplayResolution();
+        internal S3DE_Vector2 Internal_LoadRenderResolution => LoadRenderResolution();
 
-        internal void exitGame() => OnGameExit();
-
-        public static void Exit(int exitCode) {
-            EngineMain.StopEngine(exitCode);
-        }
-
-        public static void SetFullScreen(bool fullscreen) => Window.SetFullScreen(fullscreen);
+        public abstract String GameName { get; }
     }
 }

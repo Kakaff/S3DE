@@ -46,7 +46,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -60,97 +61,59 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="WrapperGLFW.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\Collections\DualList.cs" />
-    <Compile Include="Engine\Graphics\BoundingBox.cs" />
-    <Compile Include="Engine\Graphics\Frustrum\ViewFrustrum.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Buffers.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Materials.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Textures.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer_Uniforms.cs" />
-    <Compile Include="Engine\Graphics\Shaders\ShaderProgram.cs" />
-    <Compile Include="Engine\Graphics\Renderer_Buffers.cs" />
-    <Compile Include="Engine\Graphics\Renderer_Materials.cs" />
-    <Compile Include="Engine\Graphics\Renderer_Textures.cs" />
-    <Compile Include="Engine\Graphics\Renderer_Uniforms.cs" />
-    <Compile Include="Engine\Collections\LinkedQueueList.cs" />
-    <Compile Include="Engine\Debug\RenderingDebugging\RenderFramebufferTest.cs" />
-    <Compile Include="Engine\Entities\Components\DirectionalLight.cs" />
-    <Compile Include="Engine\Entities\Components\IEnableLogic.cs" />
-    <Compile Include="Engine\Entities\Components\IRenderLogic.cs" />
-    <Compile Include="Engine\Entities\Components\IUpdateLogic.cs" />
-    <Compile Include="Engine\Enums.cs" />
-    <Compile Include="Engine\Graphics\Lights\AmbientLight.cs" />
-    <Compile Include="Engine\Graphics\Color.cs" />
-    <Compile Include="Engine\Graphics\Framebuffer.cs" />
-    <Compile Include="Engine\Graphics\Lights\IDirectionalLight.cs" />
-    <Compile Include="Engine\Graphics\Lights\ILight.cs" />
-    <Compile Include="Engine\Graphics\Materials\Material.cs" />
-    <Compile Include="Engine\Graphics\OpGL\BufferObjects\IOpenGL_BufferObject.cs" />
-    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ArrayBufferObject.cs" />
-    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_ElementArrayBufferObject.cs" />
-    <Compile Include="Engine\Graphics\OpGL\IOpenGL_Texture.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_StandardPipeline.cs" />
-    <Compile Include="Engine\Graphics\OpGL\BufferObjects\OpenGL_BufferObject.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Framebuffer.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Mesh.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_MeshRenderer.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Renderer.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_RenderTexture2D.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_ScreenQuad.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_ShaderProgram.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Texture2D.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_Utility.cs" />
-    <Compile Include="Engine\Graphics\OpGL\OpenGL_VertexArrayObject.cs" />
-    <Compile Include="Engine\Graphics\Renderer_Mesh.cs" />
-    <Compile Include="Engine\Graphics\Shaders\ShaderSource.cs" />
-    <Compile Include="Engine\Graphics\RenderPipeline.cs" />
-    <Compile Include="Engine\Graphics\RenderCall.cs" />
-    <Compile Include="Engine\Graphics\Shaders\SimpleMaterial.cs" />
-    <Compile Include="Engine\Graphics\Textures\ITexture.cs" />
-    <Compile Include="Engine\Graphics\Textures\ITexture2D.cs" />
-    <Compile Include="Engine\Graphics\Textures\RenderTexture2D.cs" />
-    <Compile Include="Engine\Graphics\ScreenQuad.cs" />
-    <Compile Include="Engine\Graphics\Textures\Texture2D.cs" />
-    <Compile Include="Engine\Graphics\TextureUnits.cs" />
-    <Compile Include="Engine\Graphics\UI\UI_Canvas.cs" />
-    <Compile Include="Engine\Graphics\UI\UI_Panel.cs" />
-    <Compile Include="Engine\Graphics\UniformBuffer.cs" />
-    <Compile Include="Engine\HighResClock.cs" />
-    <Compile Include="Engine\Input.cs" />
-    <Compile Include="Engine\IO\ImageLoader.cs" />
-    <Compile Include="Engine\Scenes\SceneHandler.cs" />
+    <Compile Include="Collections\DualList.cs" />
+    <Compile Include="Collections\LinkedQueueList.cs" />
+    <Compile Include="EngineMain_Imports.cs" />
+    <Compile Include="Entities\Components\IEnableLogic.cs" />
+    <Compile Include="Entities\Components\IRenderLogic.cs" />
+    <Compile Include="Entities\Components\IUpdateLogic.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Graphics\Color.cs" />
+    <Compile Include="Graphics\GLEnums.cs" />
+    <Compile Include="Graphics\Material.cs" />
+    <Compile Include="Graphics\Mesh.cs" />
+    <Compile Include="Graphics\Mesh_Imports.cs" />
+    <Compile Include="Graphics\Renderer.cs" />
+    <Compile Include="Graphics\Renderer_Imports.cs" />
+    <Compile Include="Graphics\Shaders\Shader.cs" />
+    <Compile Include="Graphics\Shaders\ShaderProgram.cs" />
+    <Compile Include="Graphics\Shaders\ShaderProgram_Imports.cs" />
+    <Compile Include="Graphics\Textures\ITexture.cs" />
+    <Compile Include="Graphics\Textures\ITexture_Statics.cs" />
+    <Compile Include="Graphics\Textures\Texture2D.cs" />
+    <Compile Include="Graphics\Textures\TextureImports.cs" />
+    <Compile Include="Input\Input_Handler.cs" />
+    <Compile Include="Input\Input_Imports.cs" />
+    <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Input\Mouse.cs" />
+    <Compile Include="Scenes\SceneHandler.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Engine\Graphics\Window.cs" />
-    <Compile Include="Engine\EngineClock.cs" />
-    <Compile Include="Engine\Entities\Components\Camera.cs" />
-    <Compile Include="Engine\Entities\Components\EntityComponent.cs" />
-    <Compile Include="Engine\Entities\Components\MeshRenderer.cs" />
-    <Compile Include="Engine\Graphics\Renderer_MeshRenderer.cs" />
-    <Compile Include="Engine\Graphics\Mesh.cs" />
-    <Compile Include="Engine\Entities\Components\Transform.cs" />
-    <Compile Include="Engine\Entities\GameEntity.cs" />
-    <Compile Include="Engine\FrameSync.cs" />
+    <Compile Include="Entities\Components\Camera.cs" />
+    <Compile Include="Entities\Components\EntityComponent.cs" />
+    <Compile Include="Entities\Components\MeshRenderer.cs" />
+    <Compile Include="Entities\Components\Transform.cs" />
+    <Compile Include="Entities\GameEntity.cs" />
     <Compile Include="EngineMain.cs" />
-    <Compile Include="Engine\Graphics\Renderer.cs" />
-    <Compile Include="Engine\Scenes\GameScene.cs" />
-    <Compile Include="Engine\Time.cs" />
+    <Compile Include="Scenes\GameScene.cs" />
+    <Compile Include="Time.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\EngineMath.cs" />
     <Compile Include="Maths\Matrix3x3.cs" />
     <Compile Include="Maths\Matrix4x4.cs" />
     <Compile Include="Maths\Vector2.cs" />
     <Compile Include="Maths\VectorExtensions.cs" />
+    <Compile Include="Time_Imports.cs" />
     <Compile Include="Utility\ByteBuffer.cs" />
     <Compile Include="Utility\FloatBuffer.cs" />
     <Compile Include="Utility\InstanceCreator.cs" />
+    <Compile Include="Utility\PinnedMemory.cs" />
+    <Compile Include="Window\Window.cs" />
+    <Compile Include="Window\GlfwEnums.cs" />
+    <Compile Include="Window\Window_Imports.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="OpenGL.Net, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenGL.Net.0.7.1\lib\net461\OpenGL.Net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
@@ -161,17 +124,18 @@
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="WrapperGLFW, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GLFW.NET.0.9.7.1\lib\net45\WrapperGLFW.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Engine\Debug\KnownIssues.txt" />
-    <Content Include="Engine\Debug\RenderPass_Explanation.txt" />
-    <Content Include="Engine\Debug\Todo.txt" />
+    <Content Include="glew32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="glfw3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="S3DECore.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

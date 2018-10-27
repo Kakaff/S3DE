@@ -4,23 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S3DE.Engine.Utility
+namespace S3DE.Utility
 {
     internal static class InstanceCreator
     {
         internal static T CreateInstance<T>() where T : class
         {
             T instance;
-            try
-            {
-                instance = (T)Activator.CreateInstance(typeof(T));
-                return instance;
-            } catch (Exception ex)
-            {
-                throw ex;
-                EngineMain.StopEngine(-1);
-                return null;
-            }
+            instance = (T)Activator.CreateInstance(typeof(T));
+            return instance;
         }
     }
 }

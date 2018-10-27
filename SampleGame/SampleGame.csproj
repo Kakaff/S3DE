@@ -29,11 +29,12 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SampleGame.MyGame</StartupObject>
@@ -43,15 +44,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Debug\AlternativeFrameSync.cs" />
+    <Compile Include="Debug\Debug_FrameMonitor.cs" />
+    <Compile Include="Debug\ObjectRotator.cs" />
+    <Compile Include="Debug\SimpleCameraController.cs" />
+    <Compile Include="Debug\SimpleMat.cs" />
     <Compile Include="MyGame.cs" />
-    <Compile Include="SampleFrameSync.cs" />
-    <Compile Include="Sample_Components\Sample_CameraController.cs" />
-    <Compile Include="Sample_Components\Sample_FrameMonitor.cs" />
-    <Compile Include="Sample_Components\Sample_LookAt.cs" />
-    <Compile Include="Sample_Components\Sample_ObjectRotator.cs" />
     <Compile Include="SampleScene.cs" />
-    <Compile Include="Sample_Components\Sample_TitleChanger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\S3DE\S3DE.csproj">

@@ -1,6 +1,5 @@
 ﻿using S3DE;
-using S3DE.Engine;
-using S3DE.Engine.Graphics;
+using S3DE.Input;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -12,41 +11,42 @@ namespace SampleGame
 {
     public class MyGame : Game
     {
-
         public static void Main(String[] args)
         {
-            new MyGame().Run(false);
+            try
+            {
+                new MyGame().Run();
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine("Press Any Key To Exit...");
+                Console.ReadKey();
+            }
         }
 
-        public override string GameName()
-        {
-            return "Sample Game";
-        }
+        public override string GameName => "Sample Game";
 
         protected override void Initialize()
         {
-            SetEngineClock<HighResClock>();
-            SetEngineFrameSync<SampleFrameSync>();
-            SetTargetRenderer<S3DE.Engine.Graphics.OpGL.OpenGL_Renderer>();
-            SetTargetRenderPipleline<S3DE.Engine.Graphics.OpGL.OpenGL_StandardPipeline>();
-            
-            SetTargetFPS(60);
+
         }
 
         protected override void Start()
         {
-            DisplayResolution = new S3DE_Vector2(1600, 900);
-            RenderResolution = new S3DE_Vector2(1280, 720);
-            RefreshRate = 60;
-            SetTargetFPS(60);
-            SetVSync(false);
-            Input.LockCursor();
-            SetStartScene<SampleScene>();
+            Mouse.SetCursor(CursorMode.LockedAndHidden);
+            Time.EnableOversleepAdjustment(true);
+            LoadStartScene<SampleScene>();
         }
 
-        protected override void OnGameExit()
+        protected override S3DE_Vector2 LoadDisplayResolution()
         {
-            
+            return new S3DE_Vector2(1280, 720);
+        }
+
+        protected override S3DE_Vector2 LoadRenderResolution()
+        {
+            return new S3DE_Vector2(1280, 720);
         }
     }
 }
