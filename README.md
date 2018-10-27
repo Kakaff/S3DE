@@ -2,4 +2,6 @@
 
 Simple 3D Engine
 
-A simple 3D engine written in C# and OpenGL, using OpenGL.Net and GLFW.Net
+A simple 3D engine written in C/C++ C#, using OpenGL and GLFW.
+
+
