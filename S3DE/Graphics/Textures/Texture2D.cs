@@ -1,121 +1,41 @@
 ﻿using S3DE.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Graphics.Textures
 {
-    public sealed partial class Texture2D : ITexture
+    public sealed partial class Texture2D : RenderTexture2D, ITexture2D
     {
+        byte[] data;
 
-        static FilterMode dfltFm = FilterMode.TriLinear;
-        static WrapMode dfltWm = WrapMode.Repeat;
-        static AnisotropicSamples dfltAs = AnisotropicSamples.x16;
+        ColorFormat colfrmt;
 
-        public static FilterMode DefaultTextureFiltering
+        public ColorFormat ColorFormat => colfrmt;
+
+        public byte[] PixelData => data;
+
+        public Color this[int x, int y]
         {
-            get => dfltFm;
-            set => dfltFm = value;
+            get => GetPixel(x, y);
+            set => SetPixel(x, y,value);
         }
 
-        public static WrapMode DefaultWrapMode
+        public Texture2D(int width, int height, ColorFormat colorFormat) 
+            : base(width,height,GetInternalFormat(colorFormat),GetPixelFormat(colorFormat))
         {
-            get => dfltWm;
-            set => dfltWm = value;
-        }
-
-        public static AnisotropicSamples DefaultAnisotropicFiltering
-        {
-            get => dfltAs;
-            set => dfltAs = value;
-        }
-
-        ColorFormat frmt;
-        FilterMode filterMode;
-        WrapMode wrapMode;
-        AnisotropicSamples anisoSamples;
-        
-        byte[] data; 
-        int width, height,mipmapCount,boundTexUnit;
-        
-        bool isBound,hasChanged,resChanged, dataChanged, wrapChanged, filterChanged, anisoChanged, mipmapChanged;
-
-        IntPtr handle;
-
-        protected override IntPtr Handle => handle;
-
-        public override int BoundTexUnit {
-            get => boundTexUnit;
-            protected set => boundTexUnit = value;
-        }
-
-        public override bool IsBound {
-            get => isBound;
-            protected set => isBound = value;
-        }
-
-        public override int Width => width;
-
-        public override int Height => height;
-
-        public override ColorFormat ColorFormat => frmt;
-
-        public override byte[] PixelData => data;
-
-        public FilterMode FilterMode
-        {
-            get => filterMode;
-            set
-            {
-                filterChanged = true;
-                hasChanged = true;
-                filterMode = value;
-            }
-        }
-
-        public WrapMode WrapMode
-        {
-            get => wrapMode;
-            set
-            {
-                wrapChanged = true;
-                hasChanged = true;
-                wrapMode = value;
-            }
-        }
-
-        public AnisotropicSamples AnisotropicSamples
-        {
-            get => anisoSamples;
-            set
-            {
-                hasChanged = true;
-                anisoChanged = true;
-                anisoSamples = value;
-
-            }
-        }
-
-        private Texture2D() { }
-
-        public Texture2D(int width, int height, ColorFormat colorFormat)
-        {
-            frmt = colorFormat;
-            this.width = width;
-            this.height = height;
+            colfrmt = colorFormat;
             data = new byte[(width * height) * (int)colorFormat];
-            dataChanged = true;
-            handle = Extern_CreateTexture(TextureTarget.TEXTURE_2D);
-            AnisotropicSamples = DefaultAnisotropicFiltering;
-            WrapMode = DefaultWrapMode;
-            FilterMode = DefaultTextureFiltering;
         }
 
+        public Texture2D(int width, int height, ColorFormat colorFormat, InternalFormat internalFormat) 
+            : base(width,height,internalFormat,GetPixelFormat(colorFormat))
+        {
+            colfrmt = colorFormat;
+            data = new byte[(width * height) * (int)colorFormat];
+        }
+        
         public void SetPixel(int x, int y,Color c)
         {
-            int frstIndx = (x + (y * width)) * (int)ColorFormat;
+            int frstIndx = (x + (y * Width)) * (int)ColorFormat;
             
             switch (ColorFormat)
             {
@@ -123,12 +43,13 @@ namespace S3DE.Graphics.Textures
                 case ColorFormat.RGB: { data[frstIndx] = c.R; data[frstIndx + 1] = c.G; data[frstIndx + 2] = c.B; break; }
                 case ColorFormat.RGBA: { data[frstIndx] = c.R; data[frstIndx + 1] = c.G; data[frstIndx + 2] = c.B; data[frstIndx + 3] = c.A; break;}
             }
-            dataChanged = true;
+
+            DataChanged = true;
         }
 
         public Color GetPixel(int x, int y)
         {
-            int frstIndx = (x + (y * width)) * (int)ColorFormat;
+            int frstIndx = (x + (y * Width)) * (int)ColorFormat;
             switch (ColorFormat)
             {
                 case ColorFormat.Red: return new Color(data[frstIndx], 0, 0);
@@ -143,150 +64,41 @@ namespace S3DE.Graphics.Textures
             Array.Clear(data, 0, data.Length);
         }
 
-        public void Apply()
-        {
-            if (hasChanged)
-            {
-                if (!isBound)
-                    Bind();
-                if (boundTexUnit != ITexture.ActiveTextureUnit)
-                    SetActiveTexture(this);
-
-                if (dataChanged)
-                    UploadPixelData();
-
-                if (mipmapChanged)
-                {
-                    throw new NotImplementedException("Mipmaps not yet implemented");
-                    if (mipmapCount > 0)
-                    {
-                        
-                    }
-                }
-
-                
-                hasChanged = false;
-
-                Console.WriteLine("Applying filtermode");
-                if (filterChanged)
-                    ApplyFilterMode();
-                Console.WriteLine("Applying anisotropic filtering");
-                if (anisoChanged)
-                    ApplyAnisoSettings();
-                Console.WriteLine("Applying wrapmode");
-                if (wrapChanged)
-                    ApplyWrapMode();
-            }
-        }
-
-        void UploadPixelData()
+        
+        protected override void UploadPixelData()
         {
             Console.WriteLine("Uploading pixeldata");
-            PixelFormat pxfrmt;
-
-            switch (ColorFormat)
-            {
-                case ColorFormat.Red: pxfrmt = PixelFormat.RED; break;
-                case ColorFormat.RG: pxfrmt = PixelFormat.RG; break;
-                case ColorFormat.RGB: pxfrmt = PixelFormat.RGB; break;
-                case ColorFormat.RGBA: pxfrmt = PixelFormat.RGBA; break;
-                default: throw new NotSupportedException("Texture2D has a unkown/unsupported ColorFormat");
-            }
             
             using (PinnedMemory pm = new PinnedMemory(data))
             {
-                Extern_SetTexImage2D_Data(handle, Texture2DTarget.TEXTURE_2D, 0,
-                    InternalFormat.RGB, width, height, 0,
+                Extern_SetTexImage2D_Data(Handle, Texture2DTarget.TEXTURE_2D, 0,
+                    InternalFormat, Width, Height, 0,
                     pxfrmt, PixelType.UNSIGNED_BYTE, data);
             }
-
-            dataChanged = false;
         }
 
-        void ApplyAnisoSettings()
+        static InternalFormat GetInternalFormat(ColorFormat colfrmt)
         {
-            SetTexParameter(TextureParameter.TEXTURE_MAX_ANISOTROPY, (float)anisoSamples);
-            anisoChanged = false;
-        }
-
-        void ApplyFilterMode()
-        {
-            int min = 0, max = 0;
-            switch (FilterMode)
+            switch (colfrmt)
             {
-                case FilterMode.Nearest:
-                    {
-                        min = (int)((mipmapCount > 0) ?
-                            InternalFilterMode.NEAREST_MIPMAP_LINEAR :
-                            InternalFilterMode.NEAREST
-                            );
-                        max = (int)InternalFilterMode.NEAREST;
-                        break;
-                    }
-                case FilterMode.BiLinear:
-                    {
-                        min = (int)((mipmapCount > 0) ?
-                            InternalFilterMode.LINEAR_MIPMAP_NEAREST :
-                            InternalFilterMode.NEAREST
-                            );
-                        max = (int)InternalFilterMode.LINEAR;
-                        break;
-                    }
-                case FilterMode.TriLinear:
-                    {
-                        min = (int)((mipmapCount > 0) ?
-                            InternalFilterMode.LINEAR_MIPMAP_NEAREST :
-                            InternalFilterMode.LINEAR
-                            );
-                        max = (int)InternalFilterMode.LINEAR;
-                        break;
-                    }
+                case ColorFormat.Red: return InternalFormat.RED;
+                case ColorFormat.RG: return InternalFormat.RG;
+                case ColorFormat.RGB: return InternalFormat.RGB;
+                case ColorFormat.RGBA: return InternalFormat.RGBA;
+                default: throw new NotSupportedException("Texture2D has a unkown/unsupported ColorFormat");
             }
-            SetTexParameter(TextureParameter.TEXTURE_MIN_FILTER, min);
-            SetTexParameter(TextureParameter.TEXTURE_MAG_FILTER, max);
-            filterChanged = false;
         }
-    
 
-        void ApplyWrapMode()
+        static PixelFormat GetPixelFormat(ColorFormat colfrmt)
         {
-            switch (wrapMode)
+            switch (colfrmt)
             {
-                case WrapMode.None: { break; }
-                case WrapMode.Clamp:
-                    {
-                        SetTexParameter(TextureParameter.TEXTURE_WRAP_S, (int)WrapMode.Clamp);
-                        SetTexParameter(TextureParameter.TEXTURE_WRAP_T, (int)WrapMode.Clamp);
-                        break;
-                    }
-                case WrapMode.Repeat:
-                    {
-                        SetTexParameter(TextureParameter.TEXTURE_WRAP_S, (int)WrapMode.Repeat);
-                        SetTexParameter(TextureParameter.TEXTURE_WRAP_T, (int)WrapMode.Repeat);
-                        break;
-                    }
+                case ColorFormat.Red: return PixelFormat.RED;
+                case ColorFormat.RG: return PixelFormat.RG;
+                case ColorFormat.RGB: return PixelFormat.RGB;
+                case ColorFormat.RGBA: return PixelFormat.RGBA;
+                default: throw new NotSupportedException("Texture2D has a unkown/unsupported ColorFormat");
             }
-            wrapChanged = false;
-        }
-
-        void CreateHandle()
-        {
-            handle = Extern_CreateTexture(TextureTarget.TEXTURE_2D);
-        }
-
-        void SetTexParameter(TextureParameter parameter, int value)
-        {
-            Extern_SetTexParameteri(handle,parameter, value);
-        }
-
-        void SetTexParameter(TextureParameter parameter, float value)
-        {
-            Extern_SetTexParameterf(handle, parameter, value);
-        }
-
-        void Bind()
-        {
-            ITexture.Bind(this);
         }
     }
 }

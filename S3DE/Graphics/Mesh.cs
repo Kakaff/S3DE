@@ -1,10 +1,6 @@
-﻿using S3DE.Utility;
+﻿using S3DE.Maths;
+using S3DE.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Graphics
 {
@@ -49,8 +45,8 @@ namespace S3DE.Graphics
                     {
                         Vector3 v = verts[i];
                         Vector2 uv = uvs[i];
-                        V_BB.AddRange(4, v.X, v.Y, v.Z);
-                        V_BB.AddRange(4, uv.X, uv.Y);
+                        V_BB.AddRange(4, v.x, v.y, v.z);
+                        V_BB.AddRange(4, uv.x, uv.y);
                     }
                     I_BB.AddRange(2, indicies);
                     using (PinnedMemory vpm = new PinnedMemory(V_BB.Data)) {

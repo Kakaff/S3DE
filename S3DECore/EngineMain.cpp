@@ -30,6 +30,11 @@ DLL_Export void CreateWindow() {
 }
 
 static void(*func)();
+static void(*errFunc)();
+
+DLL_Export void RegisterErrorFunc(void(*fun)()) {
+	errFunc = fun;
+}
 
 DLL_Export void RegisterUpdateFunc(void(*fun)()) {
 	func = fun;
@@ -60,7 +65,7 @@ DLL_Export void RunEngine() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
+	glFrontFace(GL_CCW);
 
 	while (!S3DECore::Window::IsCloseRequested()) {
 		glfwPollEvents();

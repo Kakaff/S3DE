@@ -1,7 +1,7 @@
-﻿using S3DE.Utility;
+﻿using S3DE.Maths;
+using S3DE.Utility;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 
 namespace S3DE.Graphics.Shaders
 {
@@ -128,15 +128,15 @@ namespace S3DE.Graphics.Shaders
             Extern_SetUniform4f(location, f1, f2, f3, f4);
         }
 
-        public void SetUniform(uint location, Vector2 v) => SetUniform_2(location, v.X, v.Y);
+        public void SetUniform(uint location, Vector2 v) => SetUniform_2(location, v.x, v.y);
 
-        public void SetUniform(uint location, Vector3 v) => SetUniform_3(location, v.X, v.Y, v.Z);
+        public void SetUniform(uint location, Vector3 v) => SetUniform_3(location, v.x, v.y, v.z);
 
-        public void SetUniform(uint location, Vector4 v) => SetUniform_4(location, v.X, v.Y, v.Z, v.W);
+        //public void SetUniform(uint location, Vector4 v) => SetUniform_4(location, v.X, v.Y, v.Z, v.W);
 
-        public void SetUniform(uint location, Quaternion q) => SetUniform_4(location, q.X, q.Y, q.Z, q.W);
+        public void SetUniform(uint location, Quaternion q) => SetUniform_4(location, q.x, q.y, q.z, q.w);
 
-        public void SetUniform(uint location, S3DE.Maths.Matrix4x4 m)
+        public void SetUniform(uint location, Matrix4x4 m)
         {
             float[] arr = m.ToArray();
             using (PinnedMemory pm = new PinnedMemory(arr))

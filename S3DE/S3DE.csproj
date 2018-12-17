@@ -12,6 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,7 +56,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -71,6 +73,9 @@
     <Compile Include="Entities\Components\IUpdateLogic.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Graphics\Color.cs" />
+    <Compile Include="Graphics\FrameBuffers\FrameBuffer.cs" />
+    <Compile Include="Graphics\FrameBuffers\FramebufferAttachment.cs" />
+    <Compile Include="Graphics\FrameBuffers\FrameBuffer_Imports.cs" />
     <Compile Include="Graphics\GLEnums.cs" />
     <Compile Include="Graphics\Material.cs" />
     <Compile Include="Graphics\Mesh.cs" />
@@ -80,14 +85,23 @@
     <Compile Include="Graphics\Shaders\Shader.cs" />
     <Compile Include="Graphics\Shaders\ShaderProgram.cs" />
     <Compile Include="Graphics\Shaders\ShaderProgram_Imports.cs" />
-    <Compile Include="Graphics\Textures\ITexture.cs" />
-    <Compile Include="Graphics\Textures\ITexture_Statics.cs" />
+    <Compile Include="Graphics\Textures\Texture.cs" />
+    <Compile Include="Graphics\Textures\ITexture2D.cs" />
+    <Compile Include="Graphics\Textures\Texture_Statics.cs" />
+    <Compile Include="Graphics\Textures\RenderTexture2D.cs" />
     <Compile Include="Graphics\Textures\Texture2D.cs" />
     <Compile Include="Graphics\Textures\TextureImports.cs" />
     <Compile Include="Input\Input_Handler.cs" />
     <Compile Include="Input\Input_Imports.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
+    <Compile Include="Maths\Matrix4x4.cs" />
+    <Compile Include="Maths\Quaternion.cs" />
+    <Compile Include="Maths\SIMD\Vec128.cs" />
+    <Compile Include="Maths\SIMD\Vec256.cs" />
+    <Compile Include="Maths\Vector2.cs" />
+    <Compile Include="Maths\Vector3.cs" />
+    <Compile Include="Maths\Vector4.cs" />
     <Compile Include="Scenes\SceneHandler.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Entities\Components\Camera.cs" />
@@ -100,10 +114,8 @@
     <Compile Include="Time.cs" />
     <Compile Include="Maths\Constants.cs" />
     <Compile Include="Maths\EngineMath.cs" />
-    <Compile Include="Maths\Matrix3x3.cs" />
-    <Compile Include="Maths\Matrix4x4.cs" />
-    <Compile Include="Maths\Vector2.cs" />
-    <Compile Include="Maths\VectorExtensions.cs" />
+    <Compile Include="Maths\Deprecated\Matrix3x3.cs" />
+    <Compile Include="Maths\Deprecated\Matrix4x4.cs" />
     <Compile Include="Time_Imports.cs" />
     <Compile Include="Utility\ByteBuffer.cs" />
     <Compile Include="Utility\FloatBuffer.cs" />
@@ -115,17 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Debug\Todo.txt" />
     <Content Include="glew32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

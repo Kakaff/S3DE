@@ -1,9 +1,4 @@
 ﻿using S3DE.Maths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Input
 {
@@ -47,11 +42,11 @@ namespace S3DE.Input
         internal static void Update()
         {
             Extern_GetCursorPos(out double x, out double y);
-            x -= Window.Resolution.X * 0.5f;
-            y -= Window.Resolution.Y * 0.5f;
+            x -= Window.Resolution.x * 0.5f;
+            y -= Window.Resolution.y * 0.5f;
 
-            x /= Window.Resolution.X * 0.5f;
-            y /= Window.Resolution.Y * 0.5f;
+            x /= Window.Resolution.x * 0.5f;
+            y /= Window.Resolution.y * 0.5f;
             
             prevX = currX;
             prevY = currY;
@@ -81,6 +76,14 @@ namespace S3DE.Input
 
             virtualX = EngineMath.Clamp(-1, 1, virtualX + deltaX);
             virtualY = EngineMath.Clamp(-1, 1, virtualY + deltaY);
+        }
+
+        internal static void ClearMouseState()
+        {
+            deltaX = 0;
+            deltaY = 0;
+            hasMoved = false;
+            isInsideWindow = false;
         }
     }
 }

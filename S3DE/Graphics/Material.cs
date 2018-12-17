@@ -1,14 +1,9 @@
 ﻿using S3DE.Components;
 using S3DE.Graphics.Shaders;
 using S3DE.Graphics.Textures;
-using S3DE.Scenes;
-using S3DE.Utility;
+using S3DE.Maths;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Graphics
 {
@@ -115,11 +110,10 @@ namespace S3DE.Graphics
 
         protected void SetUniform(string name, Vector2 v) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), v);
         protected void SetUniform(string name, Vector3 v) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), v);
-        protected void SetUniform(string name, Vector4 v) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), v);
         protected void SetUniform(string name, Quaternion q) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), q);
 
-        protected void SetUniform(string name, S3DE.Maths.Matrix4x4 m) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), m);
-        protected void SetUniform(string name, ITexture tex)
+        protected void SetUniform(string name, Matrix4x4 m) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), m);
+        protected void SetUniform(string name, ITexture2D tex)
         {
             if (tex != null)
                 SetUniform(name, tex.Bind());

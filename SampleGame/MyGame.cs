@@ -2,10 +2,6 @@
 using S3DE.Input;
 using S3DE.Maths;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SampleGame
 {
@@ -29,24 +25,24 @@ namespace SampleGame
 
         protected override void Initialize()
         {
-
+            
         }
 
         protected override void Start()
         {
+            Enable_Powersaving(true);
             Mouse.SetCursor(CursorMode.LockedAndHidden);
-            Time.EnableOversleepAdjustment(true);
             LoadStartScene<SampleScene>();
         }
 
-        protected override S3DE_Vector2 LoadDisplayResolution()
+        protected override Vector2 LoadDisplayResolution()
         {
-            return new S3DE_Vector2(1280, 720);
+            return new Vector2(1280, 720);
         }
 
-        protected override S3DE_Vector2 LoadRenderResolution()
+        protected override Vector2 LoadRenderResolution()
         {
-            return new S3DE_Vector2(1280, 720);
+            return new Vector2(1280, 720);
         }
     }
 }

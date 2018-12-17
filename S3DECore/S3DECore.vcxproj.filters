@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Entities">
       <UniqueIdentifier>{dfe990ab-6627-4f2f-ac75-2b7675bdd110}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{95df656b-c59f-4e65-b33b-6f83fe0d71b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineMain.cpp">
@@ -51,6 +54,12 @@
     <ClCompile Include="Textures.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Vecf128.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Framebuffer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineMacros.h">
@@ -77,5 +86,13 @@
     <ClInclude Include="Textures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Framebuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="VecMath.h">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

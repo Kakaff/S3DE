@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 
 namespace S3DE
 {
@@ -14,5 +9,11 @@ namespace S3DE
 
         [DllImport("S3DECore.dll")]
         private static extern void RegisterUpdateFunc(OnFrameUpdate func);
+
+        [DllImport("S3DECore.dll")]
+        internal static extern void Extern_EnablePowerSaving(bool val);
+
+        [DllImport("S3DECore.dll")]
+        internal static extern void Extern_SetTargetFramerate(int value);
     }
 }

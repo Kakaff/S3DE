@@ -1,25 +1,33 @@
+
 #include <Windows.h>
 #include <stdbool.h>
 
-LARGE_INTEGER start, end, eslaped, curr, freq;
-long long int oversleep = 0;
+static LARGE_INTEGER curr, freq,prevFrameEnd;
+static long long int sleepErrorHigh = 0, sleepErrorLow = 0;
+static int sleepErrLowerCounter,sleepErrResetCounter, SLEEP_DECREASE_ERR_COUNTER_MAX = 10,SLEEP_ERR_RESET_COUNTER_MAX = 5;
 
-bool isInitiated = false;
-bool oslpadj = false;
+static long long int deltaTime = 0;
 bool pwrsav = true;
 
-long long int yieldTime = 2000, sleepTime = 3500, pwrsvTime = 5000,frqchkintv = 500;
+HANDLE tmr = NULL;
+
+long long int yieldTime = 1500,frqchkintv = 500;
+long long int SLEEP_ERR_THRESHOLD = 500;
+
+long long int eslaped, remainder,overlseep;
+
+int trgFps = 60;
+
+__declspec(dllexport) long long int Extern_GetDeltaTime() {
+	return deltaTime;
+}
+
+__declspec(dllexport) void Extern_EnablePowerSaving(bool val) {
+	pwrsav = val;
+}
 
 __declspec(dllexport) void Extern_SetYieldTime(long long int v) {
 	yieldTime = v < 0 ? 0 : v;
-}
-
-__declspec(dllexport) void Extern_SetSleepTime(long long int v) {
-	sleepTime = v < 0 ? 0 : v;;
-}
-
-__declspec(dllexport) void Extern_SetPowerSaveTime(long long int v) {
-	pwrsvTime = v < 0 ? 0 : v;;
 }
 
 __declspec(dllexport) void Extern_SetFreqCheckInterval(long long int v) {
@@ -27,64 +35,108 @@ __declspec(dllexport) void Extern_SetFreqCheckInterval(long long int v) {
 }
 
 void WaitForNextFrame(void) {
-	long long int oslp = oversleep - (oversleep % 50);
-	long long int frqchk = 0;
-	oversleep = oversleep - oslp;
 
-	long long int remainder;
-	long long int eslpMod;
-	QueryPerformanceCounter(&start);
-	if (end.QuadPart == 0)
-		end.QuadPart = start.QuadPart;
+	if (tmr == NULL) {
+		tmr = CreateWaitableTimer(NULL, true, NULL);
+		if (NULL == tmr)
+			printf("Failed creating timer");
+	}
+
+	long long int frqchk = 0;
+
+	long long int trgDur = (1000000LL / trgFps) - overlseep;
+
+	bool resetCounterFlag = false;
+
+	overlseep = 0;
+	if (trgDur < 0)
+		trgDur = 0;
+
+	if (prevFrameEnd.QuadPart == 0)
+		QueryPerformanceCounter(&prevFrameEnd);
 
 	QueryPerformanceFrequency(&freq);
-	eslpMod = start.QuadPart - end.QuadPart;
-
+	
 	while (1) {
-		QueryPerformanceCounter(&end);
+		QueryPerformanceCounter(&curr);
 
-		eslaped.QuadPart = (((end.QuadPart - start.QuadPart) + eslpMod) * 1000000) / freq.QuadPart;
-		remainder = (16666 - oslp) - eslaped.QuadPart;
+		eslaped = ((curr.QuadPart - prevFrameEnd.QuadPart) * 1000000) / freq.QuadPart;
+		remainder = trgDur - eslaped;
 
-		if (eslaped.QuadPart - frqchk >= frqchkintv) {
+		if (eslaped - frqchk >= frqchkintv) {
 			QueryPerformanceFrequency(&freq);
-			frqchk = eslaped.QuadPart;
+			frqchk = eslaped;
 		}
 		
 		if (remainder <= 0) {
-			if (oslpadj)
-				oversleep += -remainder;
-			else
-				oversleep = 0;
+			deltaTime = eslaped;
+			prevFrameEnd = curr;
+			overlseep = -remainder;
 			break;
 		}
-		else if (pwrsav || remainder >= pwrsvTime) {
-			long int sleepDur = (remainder - sleepTime) / 1000; //Remove 2500 microsecs (2.5ms, to be used as yield/sleep(0) time).
-			if (sleepDur > 0) {
-				Sleep((DWORD)sleepDur);
-				QueryPerformanceFrequency(&freq);
+		else if (pwrsav) {
+			LARGE_INTEGER dur;
+			dur.QuadPart = -remainder + (yieldTime + sleepErrorHigh);
+			if (dur.QuadPart < 0) {
+				SetWaitableTimer(tmr, &dur, 0, NULL, NULL, 0);
+				WaitForSingleObject(tmr, INFINITE);
+
+				LARGE_INTEGER sleepEnd;
+				QueryPerformanceCounter(&sleepEnd);
+				long long int sleepErr = ((sleepEnd.QuadPart - curr.QuadPart) * 1000000LL) / freq.QuadPart;
+				sleepErr -= -dur.QuadPart;
+				sleepErr = sleepErr < 0 ? 0 : sleepErr;
+
+				if (sleepErr > SLEEP_ERR_THRESHOLD) {
+					sleepErrResetCounter = 0;
+					if (sleepErr >= sleepErrorHigh) {
+						sleepErrorLow = sleepErrorHigh;
+						sleepErrorHigh = sleepErr;
+						sleepErrLowerCounter = 0;
+					}
+					else {
+						sleepErrLowerCounter++;
+						if (sleepErr > sleepErrorLow)
+							sleepErrorLow = sleepErr;
+
+						if (sleepErrLowerCounter > SLEEP_DECREASE_ERR_COUNTER_MAX) {
+							sleepErrLowerCounter = 0;
+							sleepErrorHigh = sleepErrorLow;
+							sleepErrorLow = 0;
+						}
+					}
+				}
 			}
-			else if (remainder >= yieldTime) {
+			else {
+				if (remainder > yieldTime && !resetCounterFlag) {
+					sleepErrResetCounter++;
+					resetCounterFlag = true;
+					if (sleepErrResetCounter >= SLEEP_ERR_RESET_COUNTER_MAX) {
+						sleepErrorHigh = 0;
+						sleepErrorLow = 0;
+						sleepErrLowerCounter = 0;
+						sleepErrResetCounter = 0;
+					}
+				}
 				Sleep(0);
 			}
-
 		}
 	}
 }
 
-__declspec(dllexport) void Extern_EnableOversleepAdjustment(bool flag) {
-	oslpadj = flag;
+
+__declspec(dllexport) void Extern_SetOverSleepErrorThreshold(int val) {
+	SLEEP_ERR_THRESHOLD = val;
 }
 
-__declspec(dllexport) void InitClock(void) {
-	QueryPerformanceFrequency(&freq);
-	isInitiated = true;
+__declspec(dllexport) void Extern_SetSleepResetCounterMax(int val) {
+	SLEEP_ERR_RESET_COUNTER_MAX = val;
 }
 
-__declspec(dllexport) long long int Extern_Time_GetTick() {
-	if (!isInitiated)
-		InitClock();
+__declspec(dllexport) void Extern_SetSleepErrDecreaseCounterMax(int val) {
+	SLEEP_DECREASE_ERR_COUNTER_MAX = val;
+}
 
-	QueryPerformanceCounter(&curr);
-	return (curr.QuadPart * 10000000) / freq.QuadPart;
+__declspec(dllexport) void Extern_SetTargetFramerate(int value) {
+	trgFps = value;
 }

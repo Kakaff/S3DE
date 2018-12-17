@@ -1,10 +1,4 @@
 ﻿using S3DE.Maths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Graphics
 {
@@ -50,17 +44,17 @@ namespace S3DE.Graphics
 
         public static implicit operator Color(Vector4 v)
         {
-            return new Color((byte)(EngineMath.Normalize(0, 1, v.X) * 255),
-                (byte)(EngineMath.Normalize(0, 1, v.Y) * 255),
-                (byte)(EngineMath.Normalize(0, 1, v.Z) * 255),
-                (byte)(EngineMath.Normalize(0,1,v.W) * 255));
+            return new Color((byte)(EngineMath.Normalize(0, 1, v.x) * 255),
+                (byte)(EngineMath.Normalize(0, 1, v.y) * 255),
+                (byte)(EngineMath.Normalize(0, 1, v.z) * 255),
+                (byte)(EngineMath.Normalize(0,1,v.w) * 255));
         }
 
         public static implicit operator Color(Vector3 v)
         {
-            return new Color((byte)(EngineMath.Normalize(0, 1, v.X) * 255),
-                (byte)(EngineMath.Normalize(0, 1, v.Y) * 255),
-                (byte)(EngineMath.Normalize(0, 1, v.Z) * 255),
+            return new Color((byte)(EngineMath.Normalize(0, 1, v.x) * 255),
+                (byte)(EngineMath.Normalize(0, 1, v.y) * 255),
+                (byte)(EngineMath.Normalize(0, 1, v.z) * 255),
                 1);
         }
     }

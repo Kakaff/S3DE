@@ -1,10 +1,4 @@
 ﻿using S3DE.Maths;
-using S3DE.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Components
 {
@@ -69,11 +63,20 @@ namespace S3DE.Components
             RecalculateProjectionMatrix();
         }
 
-        void RecalculateViewMatrix() =>
-            viewMatrix = Matrix4x4.CreateViewMatrix(transform.Position, transform.Forward, transform.Up);
+        public Matrix4x4 GetCameraMatrix()
+        {
+            return viewMatrix * projMatrix;
+        }
+
+        void RecalculateViewMatrix()
+        {
+            Matrix4x4 tm = Matrix4x4.CreateTranslationMatrix(-transform.Position);
+            Matrix4x4 rM = transform.Rotation.Conjugate().ToRotationMatrix();
+            viewMatrix =  tm * rM;
+        }
 
         void RecalculateProjectionMatrix() =>
-            projMatrix = Matrix4x4.CreateProjectionMatrix_FoV(fov, zNear, zFar, S3DE.Window.AspectRatio);
+            projMatrix = Matrix4x4.CreatePerspectiveFieldOfView(fov, zNear, zFar, S3DE.Window.AspectRatio);
 
 
     }

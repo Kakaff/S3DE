@@ -1,10 +1,6 @@
 ﻿using S3DE.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Graphics.Shaders
 {
@@ -49,6 +45,7 @@ namespace S3DE.Graphics.Shaders
 
         public void SetShaderSource(string src)
         {
+            
             using (PinnedMemory pm = new PinnedMemory(src))
             {
                 this.src = String.Copy(src);

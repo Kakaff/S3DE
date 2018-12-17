@@ -1,220 +1,226 @@
-﻿using S3DE.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Runtime.InteropServices;
+using S3DE.Maths.SIMD;
 
 namespace S3DE.Maths
 {
-    public sealed class Matrix4x4
+    /*
+     * Based on System.Numerics.Matrix4X4
+     * With some minor changes/tweaks here and there.
+     * .Net source found at:
+     * https://github.com/dotnet/corefx/blob/master/src/System.Numerics.Vectors/src/System/Numerics/Matrix4x4.cs
+     */
+
+    [StructLayout(LayoutKind.Sequential,Pack = 16)]
+    public struct Matrix4x4
     {
-        float[][] mV;
+        public float m00, m10, m20, m30,
+              m01, m11, m21, m31,
+              m02, m12, m22, m32,
+              m03, m13, m23, m33;
 
-        public float this[int x, int y]
-        {
-            get => mV[x][y];
-            set => mV[x][y] = value;
-        }
-
-
-        public Matrix4x4()
-        {
-            mV = new float[4][];
-            mV[0] = new float[4];
-            mV[1] = new float[4];
-            mV[2] = new float[4];
-            mV[3] = new float[4];
-        }
 
         public Matrix4x4 SetIdentity()
         {
-            mV[0][0] = 1; mV[0][1] = 0; mV[0][2] = 0; mV[0][3] = 0;
-            mV[1][0] = 0; mV[1][1] = 1; mV[1][2] = 0; mV[1][3] = 0;
-            mV[2][0] = 0; mV[2][1] = 0; mV[2][2] = 1; mV[2][3] = 0;
-            mV[3][0] = 0; mV[3][1] = 0; mV[3][2] = 0; mV[3][3] = 1;
-            
+            m00 = 1; m10 = 0; m20 = 0; m30 = 0;
+            m01 = 0; m11 = 1; m21 = 0; m31 = 0;
+            m02 = 0; m12 = 0; m22 = 1; m32 = 0;
+            m03 = 0; m13 = 0; m23 = 0; m33 = 1;
+
             return this;
         }
 
-        public static Matrix4x4 CreateProjectionMatrix_FoV(float fov, float zNear, float zFar, float aspect)
+        public static Matrix4x4 CreateScaleMatrix(Vector3 scale)
         {
             Matrix4x4 m = new Matrix4x4();
 
-            S3DE_Vector2 v2_0 = new S3DE_Vector2(zNear, -zNear) - new S3DE_Vector2(zFar);
-            S3DE_Vector2 v2_1 = new S3DE_Vector2((float)Constants.ToRadians, 2f) * new S3DE_Vector2((fov / 2f), zFar);
-            v2_1.X = (float)Math.Tan(v2_1.X);
-
-            float t = v2_1.X;
-
-            v2_1 *= new S3DE_Vector2(aspect, zNear);
-            System.Numerics.Vector4 v4_0 = new System.Numerics.Vector4(1, 1, (v2_0.Y), v2_1.Y) / new System.Numerics.Vector4(v2_1.X, t, v2_0.X, v2_0.X);
-
-            m.mV[0][0] = v4_0.X;
-            m.mV[1][1] = v4_0.Y;
-            m.mV[2][2] = v4_0.Z;
-            m.mV[3][2] = v4_0.W;
-            m.mV[2][3] = 1f;
-            m.mV[3][3] = 0;
-            return m;
-        }
-
-        public static Matrix4x4 CreateViewMatrix(System.Numerics.Vector3 cameraPosition, System.Numerics.Vector3 cameraForward, System.Numerics.Vector3 cameraUp)
-        {
-            Matrix4x4 m = new Matrix4x4();
-            Matrix4x4 tm = CreateTranslationMatrix(-cameraPosition);
-            Matrix4x4 rm = VectorExtensions.Quat_CreateLookAt(VectorExtensions.Vec3_Zero, cameraForward, cameraUp).conjugate().ToRotationMatrix();
-
-            return tm * rm;
-        }
-
-
-        public static Matrix4x4 CreateLookAtMatrix(System.Numerics.Vector3 position, System.Numerics.Vector3 target, System.Numerics.Vector3 up) =>
-            VectorExtensions.Quat_CreateLookAt(position, target, up).ToRotationMatrix();
-
-        public static Matrix4x4 CreateTransformMatrix(System.Numerics.Vector3 translation, System.Numerics.Vector3 scale, System.Numerics.Quaternion rotation) =>
-            CreateScaleMatrix(scale) * CreateRotationMatrix(rotation) * CreateTranslationMatrix(translation);
-
-
-        public static Matrix4x4 CreateTranslationMatrix(System.Numerics.Vector3 translation)
-        {
-            Matrix4x4 m = new Matrix4x4();
-            m.mV[0][0] = 1;
-            m.mV[3][0] = translation.X;
-            m.mV[1][1] = 1;
-            m.mV[3][1] = translation.Y;
-            m.mV[2][2] = 1;
-            m.mV[3][2] = translation.Z;
-            m.mV[3][3] = 1;
+            m.m00 = scale.x;
+            m.m11 = scale.y;
+            m.m22 = scale.z;
+            m.m33 = 1.0f;
 
             return m;
         }
 
-        public static Matrix4x4 CreateScaleMatrix(System.Numerics.Vector3 scale)
-        {
-            Matrix4x4 m = new Matrix4x4();
-            m.mV[0][0] = scale.X;
-            m.mV[1][1] = scale.Y;
-            m.mV[2][2] = scale.Z;
-            m.mV[3][3] = 1;
-
-            return m;
-        }
-
-        public static Matrix4x4 Transpose(Matrix4x4 m)
-        {
-            return null;
-        }
-
-        public static Matrix4x4 CreateRotationMatrix(System.Numerics.Quaternion quat)
+        public static Matrix4x4 CreateTranslationMatrix(Vector3 v)
         {
             Matrix4x4 m = new Matrix4x4();
 
-            System.Numerics.Vector4 sqv = quat.ToVector4() * quat.ToVector4();
-            System.Numerics.Vector3 xv = new System.Numerics.Vector3(quat.X, quat.X, quat.Y) * new System.Numerics.Vector3(quat.Y, quat.Z, quat.Z);
-            System.Numerics.Vector3 wv = quat.XYZ() * quat.W;
-            float invs = 1 / (new S3DE_Vector2(sqv.X, sqv.Y) + new S3DE_Vector2(sqv.Z, sqv.W)).Sum();
-
-            System.Numerics.Vector3 v1_0 = new System.Numerics.Vector3(sqv.X, -sqv.X, -sqv.X) +
-            new System.Numerics.Vector3(-sqv.Y, sqv.Y, -sqv.Y) +
-            new System.Numerics.Vector3(-sqv.Z, -sqv.Z, sqv.Z) +
-            new System.Numerics.Vector3(sqv.W) *
-            invs;
+            m.m00 = 1.0f;
+            m.m11 = 1.0f;
+            m.m22 = 1.0f;
             
-            S3DE_Vector2 v2_0 = new S3DE_Vector2(2) *
-                (new S3DE_Vector2(xv.Z) +
-                new S3DE_Vector2(-wv.X, wv.X)) *
-                invs;
-
-            System.Numerics.Vector4 v4_0 = new System.Numerics.Vector4(2) *
-                (new System.Numerics.Vector4(xv.X, xv.X, xv.Y, xv.Y) +
-                new System.Numerics.Vector4(-wv.Z, wv.Z, wv.Y, -wv.Y)) *
-                invs;
-
-            m.mV[0][0] = v1_0.X;
-            m.mV[1][1] = v1_0.Y;
-            m.mV[2][2] = v1_0.Z;
-
-            m.mV[1][0] = v4_0.X;
-            m.mV[0][1] = v4_0.Y;
-            m.mV[2][0] = v4_0.Z;
-            m.mV[0][2] = v4_0.W;
-
-            m.mV[2][1] = v2_0.X;
-            m.mV[1][2] = v2_0.Y;
-
-            m.mV[3][3] = 1;
+            m.m30 = v.x;
+            m.m31 = v.y;
+            m.m32 = v.z;
+            m.m33 = 1.0f;
 
             return m;
         }
 
-        public static Matrix4x4 operator *(Matrix4x4 m1, Matrix4x4 m2)
+        public static Matrix4x4 CreateRotationMatrix(Quaternion quaternion)
         {
-            Matrix4x4 m = new Matrix4x4();
-            
-            System.Numerics.Vector4 v4_0, rV4_0, rV4_1, rV4_2, rV4_3;
-            for (int i = 0; i < 4; i++) {
+            if (Vec128.IsEnabled)
+                return Vec128.CreateRotationMatrix(quaternion);
+            else
+            {
+                Matrix4x4 result = new Matrix4x4();
+                float xx = quaternion.x * quaternion.x;
+                float yy = quaternion.y * quaternion.y;
+                float zz = quaternion.z * quaternion.z;
 
-                rV4_0 = (new System.Numerics.Vector4(m1.mV[i][0], m1.mV[i][1], m1.mV[i][2], m1.mV[i][3]) *
-                        new System.Numerics.Vector4(m2.mV[0][0], m2.mV[1][0], m2.mV[2][0], m2.mV[3][0]));
-                rV4_1 =
-                        (new System.Numerics.Vector4(m1.mV[i][0], m1.mV[i][1], m1.mV[i][2], m1.mV[i][3]) *
-                        new System.Numerics.Vector4(m2.mV[0][1], m2.mV[1][1], m2.mV[2][1], m2.mV[3][1]));
-                rV4_2 =
-                        (new System.Numerics.Vector4(m1.mV[i][0], m1.mV[i][1], m1.mV[i][2], m1.mV[i][3]) *
-                        new System.Numerics.Vector4(m2.mV[0][2], m2.mV[1][2], m2.mV[2][2], m2.mV[3][2]));
-                rV4_3 =
-                        (new System.Numerics.Vector4(m1.mV[i][0], m1.mV[i][1], m1.mV[i][2], m1.mV[i][3]) *
-                        new System.Numerics.Vector4(m2.mV[0][3], m2.mV[1][3], m2.mV[2][3], m2.mV[3][3]));
+                float xy = quaternion.x * quaternion.y;
+                float wz = quaternion.z * quaternion.w;
+                float zx = quaternion.z * quaternion.x;
+                float wy = quaternion.y * quaternion.w;
+                float yz = quaternion.y * quaternion.z;
+                float wx = quaternion.x * quaternion.w;
 
-                v4_0 = new System.Numerics.Vector4(rV4_0.X, rV4_1.X, rV4_2.X, rV4_3.X) +
-                        new System.Numerics.Vector4(rV4_0.Y, rV4_1.Y, rV4_2.Y, rV4_3.Y) +
-                        new System.Numerics.Vector4(rV4_0.Z, rV4_1.Z, rV4_2.Z, rV4_3.Z) +
-                        new System.Numerics.Vector4(rV4_0.W, rV4_1.W, rV4_2.W, rV4_3.W);
+                result.m00 = 1.0f - 2.0f * (yy + zz);
+                result.m10 = 2.0f * (xy - wz);
+                result.m21 = 2.0f * (yz - wx);
+                result.m02 = 2.0f * (zx - wy);
+                result.m11 = 1.0f - 2.0f * (zz + xx);
+                result.m01 = 2.0f * (xy + wz);
+                result.m12 = 2.0f * (yz + wx);
+                result.m20 = 2.0f * (zx + wy);
+                result.m22 = 1.0f - 2.0f * (yy + xx);
+                result.m33 = 1.0f;
 
-                m.mV[i][0] = v4_0.X;
-                m.mV[i][1] = v4_0.Y;
-                m.mV[i][2] = v4_0.Z;
-                m.mV[i][3] = v4_0.W;
-
+                return result;
             }
+        }
+
+        public static Matrix4x4 CreateLookAt(Vector3 pos, Vector3 target, Vector3 up)
+        {
+            Vector3 zaxis = Vector3.Normalize(pos - target);
+            Vector3 xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
+            Vector3 yaxis = Vector3.Cross(zaxis, xaxis);
+
+            Matrix4x4 m = new Matrix4x4();
+
+            m.m00 = xaxis.x;
+            m.m01 = yaxis.x;
+            m.m02 = zaxis.x;
+            m.m10 = xaxis.y;
+            m.m11 = yaxis.y;
+            m.m12 = zaxis.y;
+            m.m20 = xaxis.z;
+            m.m21 = yaxis.z;
+            m.m22 = zaxis.z;
+            m.m30 = -Vector3.Dot(xaxis, pos);
+            m.m31 = -Vector3.Dot(yaxis, pos);
+            m.m32 = -Vector3.Dot(zaxis, pos);
+            m.m33 = 1.0f;
+
             return m;
         }
 
-        public static Matrix4x4 operator *(Matrix4x4 m, System.Numerics.Quaternion q) => m * q.conjugate().ToRotationMatrix();
+
+        public static Matrix4x4 CreatePerspectiveFieldOfView(float fieldOfView, 
+            float zNear, float zFar, float aspectRatio)
+        {
+            fieldOfView = (float)(fieldOfView * Constants.ToRadians);
+
+            if (fieldOfView <= 0.0f || fieldOfView >= (float)Math.PI)
+                throw new ArgumentOutOfRangeException(nameof(fieldOfView));
+
+            if (zNear <= 0.0f)
+                throw new ArgumentOutOfRangeException(nameof(zNear));
+
+            if (zFar <= 0.0f)
+                throw new ArgumentOutOfRangeException(nameof(zFar));
+
+            if (zNear >= zFar)
+                throw new ArgumentOutOfRangeException(nameof(zNear));
+
+            float yScale = (float)(1.0f / Math.Tan(fieldOfView * 0.5f));
+            float xScale = yScale / aspectRatio;
+
+            Matrix4x4 result = new Matrix4x4();
+
+            result.m00 = xScale;
+            
+            result.m11 = yScale;
+            var negFarRange = float.IsPositiveInfinity(zFar) ? -1.0f : zFar / (zNear - zFar);
+            result.m22 = negFarRange;
+            result.m23 = -1.0f;
+
+            result.m32 = zNear * negFarRange;
+
+            return result;
+        }
+
+
+        public static Matrix4x4 CreateTransformMatrix(Vector3 pos, Quaternion rot, Vector3 scale)
+        {
+            return CreateScaleMatrix(scale) * CreateRotationMatrix(rot) * CreateTranslationMatrix(pos);
+        }
+
+        public Vector3 Transform(Vector3 v) => Transform(v, this);
+
+        public static Vector3 Transform(Vector3 v, Matrix4x4 m)
+        {
+            return new Vector3(
+                v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
+                v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
+                v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
+        }
+
+
+        public static Matrix4x4 operator * (Matrix4x4 m1, Matrix4x4 m2)
+        {
+            Matrix4x4 m = new Matrix4x4();
+
+
+            /* 00 01 02 03
+             * 10 11 12 13
+             * 20 21 22 23
+             * 30 31 32 33
+             * 
+             *        m00     m10
+             *         =       =
+             *       m1_00   m1_10   _mm_load_ps(&m1_00)
+             *         *       *
+             *       m2_00   m2_00 --_mm_set_ps(m2_00)
+             *         +
+             *       m1_01
+             *         *
+             *       m2_10
+             */
+            // First row
+            m.m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30;
+            m.m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31;
+            m.m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32;
+            m.m03 = m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33;
+
+            // Second row
+            m.m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30;
+            m.m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
+            m.m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32;
+            m.m13 = m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33;
+
+            // Third row
+            m.m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30;
+            m.m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
+            m.m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32;
+            m.m23 = m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33;
+
+            // Fourth row
+            m.m30 = m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30;
+            m.m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
+            m.m32 = m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32;
+            m.m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33;
+
+            return m;
+        }
 
         public float[] ToArray()
         {
-            float[] values = new float[16];
-
-            for (int i = 0; i < 4; i++)
-                Buffer.BlockCopy(mV[i], 0, values, i * 16, 16);
-
-            return values;
-        }
-
-        public byte[] ToByteBuffer()
-        {
-            byte[] buff = new byte[64];
-            Buffer.BlockCopy(mV[0], 0, buff, 0, 16);
-            Buffer.BlockCopy(mV[1], 0, buff, 16, 16);
-            Buffer.BlockCopy(mV[2], 0, buff, 32, 16);
-            Buffer.BlockCopy(mV[3], 0, buff, 48, 16);
-
-            return buff;
-        }
-
-        public static ByteBuffer ToByteBuffer(params Matrix4x4[] matrices)
-        {
-            
-            ByteBuffer buff = ByteBuffer.Create(64 * matrices.Length);
-            ByteBuffer b;
-            foreach (Matrix4x4 m in matrices)
-            {
-                buff.AddRange(m.ToByteBuffer());
-            }
-            
-            return buff;
+            return new float[] {m00,m01,m02,m03,
+                                m10,m11,m12,m13,
+                                m20,m21,m22,m23,
+                                m30,m31,m32,m33};
         }
     }
 }

@@ -2,11 +2,8 @@
 using S3DE.Components;
 using S3DE.Scenes;
 using S3DE.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Entities
 {

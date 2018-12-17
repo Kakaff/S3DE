@@ -1,13 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Maths
 {
     public static class EngineMath
     {
+
+        public static bool IsInrange(int min, int max, int value) => value >= min && value <= max;
+        public static bool IsInrange(uint min, uint max, uint value) => value >= min && value <= max;
+        public static bool IsInrange(byte min, byte max, byte value) => value >= min && value <= max;
+        public static bool IsInrange(sbyte min, sbyte max, sbyte value) => value >= min && value <= max;
+
+        public static bool IsInrange(short min, short max, short value) => value >= min && value <= max;
+        public static bool IsInrange(ushort min, ushort max, ushort value) => value >= min && value <= max;
+
+        public static bool IsInrange(float min, float max, float value) => value >= min && value <= max;
+        public static bool IsInrange(double min, double max, double value) => value >= min && value <= max;
+        
         public static float Normalize(float start, float end, float value)
         {
             float width = end - start;

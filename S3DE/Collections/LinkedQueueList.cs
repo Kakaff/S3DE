@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Collections
 {
@@ -39,6 +35,14 @@ namespace S3DE.Collections
             public void SetParent(QueueListEntry p) => parent = p;
             public void SetChild(QueueListEntry c) => child = c;
             public void SetIndex(int index) => this.index = index;
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is T))
+                    return false;
+                
+                return ((T)obj).Equals(value);
+            }
         }
 
         int length;
@@ -50,6 +54,9 @@ namespace S3DE.Collections
         {
             length = 0;
         }
+
+        public T Head => head.Value;
+        public T Tail => tail.Value;
 
         public T this[uint index] => ElementAt(index);
 
@@ -93,13 +100,19 @@ namespace S3DE.Collections
         public void Remove(T value)
         {
             QueueListEntry qle = head;
+            
+            bool vFound = false;
 
             while (qle != null)
             {
                 if (qle.Equals(value))
                 {
+                    vFound = true;
                     if (qle.Parent != null)
                         qle.Parent.SetChild(qle.Child);
+                    else
+                        head = qle.Child;
+
                     if (qle.Child != null)
                     {
                         qle.Child.SetParent(qle.Parent);
@@ -110,12 +123,9 @@ namespace S3DE.Collections
                             qlec = qlec.Child;
                         }
                     }
-
-                    if (head.Equals(qle))
-                        head = qle.Child;
-                    if (tail.Equals(qle))
+                    else
                         tail = qle.Parent;
-
+                    
                     length -= 1;
                     return;
                 }
@@ -123,6 +133,10 @@ namespace S3DE.Collections
                     qle = qle.Child;
                 
             }
+
+            if (!vFound)
+                throw new Exception($"Unable to remove value {value.ToString()} in linked queuelist");
+            
         }
 
         public T Dequeue()

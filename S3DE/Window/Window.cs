@@ -1,9 +1,5 @@
 ﻿using S3DE.Maths;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE
 {
@@ -21,7 +17,7 @@ namespace S3DE
             MAXIMIZED = 0x00020008,
         }
 
-        static S3DE_Vector2 currRes,newRes;
+        static Vector2 currRes,newRes;
         static float aspect = 1;
         static bool resChanged = true,chApplied = true;
         static bool isFocused,lostFocus,gainedFocus;
@@ -46,12 +42,12 @@ namespace S3DE
             internal set => resChanged = value;
         }
 
-        public static S3DE_Vector2 Resolution => currRes;
+        public static Vector2 Resolution => currRes;
 
-        internal static void _CreateWindow(S3DE_Vector2 displayRes,string title)
+        internal static void _CreateWindow(Vector2 displayRes,string title)
         {
             Window.currRes = displayRes;
-            aspect = displayRes.X / displayRes.Y;
+            aspect = displayRes.x / displayRes.y;
             InitGLFW();
             Extern_SetWindowHint((int)WindowHint.SAMPLES, 0);
             Extern_SetWindowHint((int)WindowHint.CONTEXT_VERSION_MAJOR, 3);
@@ -63,7 +59,7 @@ namespace S3DE
 
         internal static void SetResolution(int width, int height)
         {
-            newRes = new S3DE_Vector2(width, height);
+            newRes = new Vector2(width, height);
             chApplied = false;
         }
 
@@ -95,7 +91,7 @@ namespace S3DE
             {
                 chApplied = true;
                 resChanged = true;
-                Extern_SetWindowSize((int)newRes.X, (int)newRes.Y);
+                Extern_SetWindowSize((int)newRes.x, (int)newRes.y);
                 currRes = newRes;
             }
         }

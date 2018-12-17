@@ -1,10 +1,4 @@
-﻿using S3DE.Engine.Entities.Components;
-using S3DE.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using S3DE.Graphics;
 
 namespace S3DE.Components
 {
@@ -35,6 +29,18 @@ namespace S3DE.Components
                 m.Draw();
                 mat.SetTransform(null);
             }
+        }
+
+        public MeshRenderer SetMaterial(Material mat)
+        {
+            this.mat = mat;
+            return this;
+        }
+
+        public MeshRenderer SetMesh(Mesh m)
+        {
+            this.m = m;
+            return this;
         }
     }
 }

@@ -1,14 +1,8 @@
 ﻿using S3DE.Graphics;
-using S3DE.Graphics.Shaders;
 using S3DE.Graphics.Textures;
 using S3DE.Input;
 using S3DE.Scenes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace S3DE
 {
@@ -22,7 +16,6 @@ namespace S3DE
 
         public static void RunGame(Game game)
         {
-
             EngineMain.game = game;
 
             Console.WriteLine("Creating window");
@@ -33,8 +26,7 @@ namespace S3DE
             delegateInstance = UpdateFrame;
             RegisterUpdateFunc(delegateInstance);
             
-            Time.InitTime();
-            ITexture.InitTextures();
+            Texture.InitTextures();
             game.InitGame();
             game.StartGame();
             Console.WriteLine("Running engine core");
