@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "EngineMacros.h"
 
+
 Mesh::Mesh(void) {
 	vao = new VertexArrayObject();
 	vb = new DataBuffer(GL_ARRAY_BUFFER);
@@ -15,57 +16,36 @@ void Mesh::Bind(void) {
 }
 
 void Mesh::Draw(void) {
-	if (!IsBound())
-		Bind();
 	glDrawElements(GL_TRIANGLES, indCount, GL_UNSIGNED_SHORT, (void*)0);
 }
 
 void Mesh::SetVertexAttrib(uint index, GLint size, GLenum type, GLboolean normalized, uint stride, uint offset) {
-	if (!IsBound())
-		Bind();
 	vao->SetAttrib(index, size, type, normalized, stride, offset);
 }
 
 void Mesh::EnableVertexAttrib(uint index) {
-	if (!IsBound())
-		Bind();
 	vao->EnableAttrib(index);
 }
 
 void Mesh::DisableVertexAttrib(uint index) {
-	if (!IsBound())
-		Bind();
 	vao->DisableAttrib(index);
 }
 
 void Mesh::SetVertexData(const uint8_t data[],uint length, GLenum usage) {
-	if (!IsBound())
-		Bind();
 	vertCount = length / 4;
 	vb->SetData(data,length, usage);
 }
 
 void Mesh::SetVertexData(std::vector<uint8_t> data, GLenum usage) {
-	if (!IsBound())
-		Bind();
 	vertCount = data.size() / 4;
 	printf("Mesh has %i vertices \n", vertCount);
 	vb->SetData(data, usage);
 }
 
 void Mesh::SetIndicies(const uint8_t data[], uint length, GLenum usage) {
-	if (!IsBound())
-		Bind();
 	eb->SetData(data, length, usage);
 	indCount = length / 2;
 	printf("Mesh has %i indicies \n", indCount);
-}
-
-bool Mesh::IsBound(void) {
-	if (vao->IsBound() && vb->IsBound() && eb->IsBound())
-		return true;
-
-	return false;
 }
 
 uint Mesh::NumVertices(void) {
@@ -99,4 +79,8 @@ DLL_Export void DisableVertexAttrib(Mesh* mesh, uint index) {
 
 DLL_Export void SetVertexAttrib(Mesh* mesh,uint index, GLint size, GLenum type, GLboolean normalized, uint stride, uint offset) {
 	mesh->SetVertexAttrib(index, size, type, normalized, stride, offset);
+}
+
+DLL_Export void Extern_Mesh_Bind(Mesh* m) {
+	m->Bind();
 }

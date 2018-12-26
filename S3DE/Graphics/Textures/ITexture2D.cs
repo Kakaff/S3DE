@@ -1,15 +1,8 @@
 ﻿namespace S3DE.Graphics.Textures
 {
-    public interface ITexture2D
+    public interface ITexture2D : IRenderTexture
     {
-        int Width {get;}
-        int Height {get;}
-        int MipmapCount {get;}
-
-        PixelFormat PixelFormat {get;}
-        InternalFormat InternalFormat {get;}
-        int BoundTexUnit {get;}
-        bool IsBound { get;}
-        int Bind();
+        void SetPixel(int x, int y, Color c);
+        Color GetPixel(int x, int y);
     }
 }

@@ -19,15 +19,28 @@ namespace S3DE.Graphics.Textures
             set => SetPixel(x, y,value);
         }
 
+        /// <summary>
+        /// Creates a new Texture2D with the same settings as another Texture2D.
+        /// </summary>
+        /// <param name="tex"></param>
+        public Texture2D(Texture2D tex) : base(tex.Width,tex.Height,tex.InternalFormat,tex.PixelFormat,tex.PixelType)
+        {
+            colfrmt = tex.ColorFormat;
+            data = new byte[(tex.Width * tex.Height) * (int)tex.ColorFormat];
+            wrapMode = tex.WrapMode;
+            anisoSamples = tex.AnisotropicSamples;
+            filterMode = tex.FilterMode;
+        }
+
         public Texture2D(int width, int height, ColorFormat colorFormat) 
-            : base(width,height,GetInternalFormat(colorFormat),GetPixelFormat(colorFormat))
+            : base(width,height,GetInternalFormat(colorFormat),GetPixelFormat(colorFormat),PixelType.UNSIGNED_BYTE)
         {
             colfrmt = colorFormat;
             data = new byte[(width * height) * (int)colorFormat];
         }
 
         public Texture2D(int width, int height, ColorFormat colorFormat, InternalFormat internalFormat) 
-            : base(width,height,internalFormat,GetPixelFormat(colorFormat))
+            : base(width,height,internalFormat,GetPixelFormat(colorFormat),PixelType.UNSIGNED_BYTE)
         {
             colfrmt = colorFormat;
             data = new byte[(width * height) * (int)colorFormat];
@@ -40,6 +53,7 @@ namespace S3DE.Graphics.Textures
             switch (ColorFormat)
             {
                 case ColorFormat.Red: { data[frstIndx] = c.R; break; }
+                case ColorFormat.RG: { data[frstIndx] = c.R; data[frstIndx + 1] = c.G; break; }
                 case ColorFormat.RGB: { data[frstIndx] = c.R; data[frstIndx + 1] = c.G; data[frstIndx + 2] = c.B; break; }
                 case ColorFormat.RGBA: { data[frstIndx] = c.R; data[frstIndx + 1] = c.G; data[frstIndx + 2] = c.B; data[frstIndx + 3] = c.A; break;}
             }
@@ -53,6 +67,7 @@ namespace S3DE.Graphics.Textures
             switch (ColorFormat)
             {
                 case ColorFormat.Red: return new Color(data[frstIndx], 0, 0);
+                case ColorFormat.RG: return new Color(data[frstIndx], data[frstIndx + 1],0);
                 case ColorFormat.RGB: return new Color(data[frstIndx], data[frstIndx + 1], data[frstIndx + 2]);
                 case ColorFormat.RGBA: return new Color(data[frstIndx], data[frstIndx + 1], data[frstIndx + 2], data[frstIndx + 3]);
             }
@@ -73,7 +88,7 @@ namespace S3DE.Graphics.Textures
             {
                 Extern_SetTexImage2D_Data(Handle, Texture2DTarget.TEXTURE_2D, 0,
                     InternalFormat, Width, Height, 0,
-                    pxfrmt, PixelType.UNSIGNED_BYTE, data);
+                    PixelFormat, PixelType, pm.Adress);
             }
         }
 
@@ -99,6 +114,14 @@ namespace S3DE.Graphics.Textures
                 case ColorFormat.RGBA: return PixelFormat.RGBA;
                 default: throw new NotSupportedException("Texture2D has a unkown/unsupported ColorFormat");
             }
+        }
+
+        public static Texture2D Copy(Texture2D tex)
+        {
+            Texture2D rTex = new Texture2D(tex);
+            Buffer.BlockCopy(tex.data, 0, rTex.data, 0, tex.data.Length);
+
+            return rTex;
         }
     }
 }

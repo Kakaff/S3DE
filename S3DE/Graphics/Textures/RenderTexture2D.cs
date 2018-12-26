@@ -2,7 +2,7 @@
 
 namespace S3DE.Graphics.Textures
 {
-    public partial class RenderTexture2D : Texture,ITexture2D
+    public partial class RenderTexture2D : Texture,IRenderTexture
     {
         static FilterMode dfltFm = FilterMode.TriLinear; //default filtermode
         static WrapMode dfltWm = WrapMode.Repeat; //default wrapmode
@@ -28,6 +28,7 @@ namespace S3DE.Graphics.Textures
 
         protected InternalFormat internfrmt;
         protected PixelFormat pxfrmt;
+        protected PixelType pxType;
         protected FilterMode filterMode;
         protected WrapMode wrapMode;
         protected AnisotropicSamples anisoSamples;
@@ -38,7 +39,7 @@ namespace S3DE.Graphics.Textures
 
         IntPtr handle;
 
-        protected override IntPtr Handle => handle;
+        public override IntPtr Handle => handle;
         
         public override int BoundTexUnit
         {
@@ -67,6 +68,8 @@ namespace S3DE.Graphics.Textures
         public int MipmapCount => mipmapCount;
         public override InternalFormat InternalFormat => internfrmt;
         public override PixelFormat PixelFormat => pxfrmt;
+        public override PixelType PixelType => pxType;
+        
 
         public FilterMode FilterMode
         {
@@ -104,14 +107,19 @@ namespace S3DE.Graphics.Textures
 
         private RenderTexture2D() { }
 
-        public RenderTexture2D(int width, int height, InternalFormat internalFormat, PixelFormat pixelFormat)
+        public RenderTexture2D(int width, int height, InternalFormat internalFormat, PixelFormat pixelFormat,PixelType pixelType)
         {
+            pxType = pixelType;
             pxfrmt = pixelFormat;
             internfrmt = internalFormat;
             this.width = width;
             this.height = height;
             dataChanged = true;
+            
             handle = Extern_Texture2D_Create();
+            if (!Renderer.NoError)
+                throw new Exception("Error creating texture2d");
+
             SetIsBound(this, ActiveTextureUnit);
 
             AnisotropicSamples = DefaultAnisotropicFiltering;
@@ -132,6 +140,8 @@ namespace S3DE.Graphics.Textures
                 if (dataChanged)
                 {
                     UploadPixelData();
+                    if (!Renderer.NoError)
+                        throw new Exception($"Error uploading pixeldata! Error:{Renderer.LatestError}");
                     dataChanged = false;
                 }
 
@@ -160,7 +170,9 @@ namespace S3DE.Graphics.Textures
 
         protected virtual void UploadPixelData()
         {
-            Extern_SetTexImage2D_Data(handle, Texture2DTarget.TEXTURE_2D, 0, InternalFormat, width, height, 0, pxfrmt, PixelType.UNSIGNED_BYTE, null);
+            Console.WriteLine($"Setting rendertexture2d data  res: {width} {height}");
+            Extern_SetTexImage2D_Data(handle, Texture2DTarget.TEXTURE_2D, 0,
+                InternalFormat, width, height, 0, PixelFormat, PixelType,IntPtr.Zero);
         }
 
         void ApplyAnisoSettings()
@@ -204,6 +216,7 @@ namespace S3DE.Graphics.Textures
             }
             SetTexParameter(TextureParameter.TEXTURE_MIN_FILTER, min);
             SetTexParameter(TextureParameter.TEXTURE_MAG_FILTER, max);
+            
             filterChanged = false;
         }
 
@@ -232,11 +245,16 @@ namespace S3DE.Graphics.Textures
         protected void SetTexParameter(TextureParameter parameter, int value)
         {
             Extern_SetTexParameteri(handle, parameter, value);
+            if (!Renderer.NoError)
+                throw new Exception("Error setting TexParameteri");
         }
 
         protected void SetTexParameter(TextureParameter parameter, float value)
         {
             Extern_SetTexParameterf(handle, parameter, value);
+
+            if (!Renderer.NoError)
+                throw new Exception("Error setting TexParameterf");
         }
     }
 }

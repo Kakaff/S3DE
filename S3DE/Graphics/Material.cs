@@ -86,6 +86,11 @@ namespace S3DE.Graphics
         protected Material() { mat_sp = Get_ShaderProgram(); }
 
 
+        internal void Use()
+        {
+            mat_sp.Use();
+        }
+
         internal void UpdateUniforms_Internal()
         {
             mat_sp.Use();

@@ -15,5 +15,6 @@ namespace S3DE
 
         [DllImport("S3DECore.dll")]
         internal static extern void Extern_SetTargetFramerate(int value);
+        
     }
 }

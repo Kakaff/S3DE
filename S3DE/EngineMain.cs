@@ -1,6 +1,8 @@
 ﻿using S3DE.Graphics;
+using S3DE.Graphics.FrameBuffers;
 using S3DE.Graphics.Textures;
 using S3DE.Input;
+using S3DE.Maths;
 using S3DE.Scenes;
 using System;
 
@@ -43,8 +45,20 @@ namespace S3DE
             if (Window.PendingChanges)
                 Window.ApplyChanges();
 
-            SceneHandler.UpdateActiveScene();
+            if (FrameBuffer.DefaultFrameBuffer == null)
+                FrameBuffer.DefaultFrameBuffer = FrameBuffer.Create_Standard_FrameBuffer(Renderer.RenderResolution);
 
+            if (FrameBuffer.ActiveFrameBuffer == null)
+            {
+                FrameBuffer.DefaultFrameBuffer.Bind();
+                FrameBuffer.ActiveFrameBuffer.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
+            }
+            
+            SceneHandler.UpdateActiveScene();
+            //Error while drawing scene!
+            FrameBuffer.ActiveFrameBuffer.PresentFrame();
+            
+            
             if (Window.ResolutionChanged && Window.ChangesApplied)
                 Window.ResolutionChanged = false;
 

@@ -28,6 +28,11 @@ DLL_Export void Extern_SetTexImage2D_Data(Texture* tex, GLint target, int level,
 	glTexImage2D(target, level, internalFormat, width, height, border, textureDataFormat, textureDataType, data);
 }
 
+DLL_Export void Extern_InitTexImage2D_Data(Texture* tex, GLint target, int level, GLint internalFormat,
+	int width, int height, int border, GLint textureDataFormat, GLint textureDataType) {
+	glTexImage2D(target, level, internalFormat, width, height, border, textureDataFormat, textureDataType, NULL);
+}
+
 DLL_Export void Extern_SetTexParameteri(Texture* tex,GLint param, int value) {
 	glTexParameteri(tex->GetTarget(), param, value);
 }

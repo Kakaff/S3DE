@@ -12,11 +12,8 @@ public:
 	void SetAttrib(uint index, GLint size, GLenum type, GLboolean normalized, uint stride, uint offset);
 	void EnableAttrib(uint index);
 	void DisableAttrib(uint index);
-	bool IsBound(void);
 private:
 	GLuint id;
-	bool isBound;
-	static VertexArrayObject* boundVAO;
 };
 
 class DataBuffer {
@@ -25,13 +22,9 @@ public:
 	DataBuffer(int target);
 	void SetData(const uint8_t data[],uint length, GLenum usage);
 	void SetData(std::vector<uint8_t> data, GLenum usage);
-	bool IsBound(void);
 private:
 	GLuint id;
 	int target;
-	bool isBound;
-	static std::map<int,DataBuffer*> boundVertexBuffers;
-	static std::map<int, DataBuffer*>::iterator iterator;
 };
 
 class Shader {

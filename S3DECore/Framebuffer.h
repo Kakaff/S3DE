@@ -7,6 +7,7 @@ public:
 	FrameBuffer(void);
 	uint GetIdentifier(void);
 	void Bind(void);
+	bool IsComplete(void);
 private:
 	uint identifier;
 };

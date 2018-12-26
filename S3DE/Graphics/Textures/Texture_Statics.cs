@@ -34,6 +34,8 @@ namespace S3DE.Graphics.Textures
             {
                 Console.WriteLine($"Setting TextureUnit : {TextureUnit} as the ActiveTextureUnit");
                 Extern_SetActiveTextureUnit(TextureUnit);
+                if (!Renderer.NoError)
+                    throw new Exception("Error setting active texture unit!");
                 activeTextureUnit = TextureUnit;
             }
         }
@@ -44,6 +46,8 @@ namespace S3DE.Graphics.Textures
             {
                 Console.WriteLine($"Binding texture to TextureUnit {TextureUnit}");
                 Extern_BindTexture(tex.Handle, TextureUnit);
+                if (!Renderer.NoError)
+                    Console.WriteLine("Error binding texture!");
                 Console.WriteLine($"TextureUnit : {TextureUnit} is now the ActiveTextureUnit");
                 activeTextureUnit = TextureUnit;
                 SetIsBound(tex, TextureUnit);

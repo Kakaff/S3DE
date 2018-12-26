@@ -38,6 +38,8 @@ namespace S3DE.Graphics.Shaders
             if (s.IsCompiled)
             {
                 Extern_Attach_Shader(handle, s.Handle);
+                if (!Renderer.NoError)
+                    throw new Exception("Error attaching shader!");
                 attachedShaders.Add(s);
             }
         }
@@ -45,7 +47,11 @@ namespace S3DE.Graphics.Shaders
         public void DetachShaders()
         {
             for (int i = 0; i < attachedShaders.Count; i++)
+            {
                 Extern_Detach_Shader(handle, attachedShaders[i].Handle);
+                if (!Renderer.NoError)
+                    throw new Exception("Error detaching shader!");
+            }
         }
 
         public bool LinkShader()
@@ -64,6 +70,8 @@ namespace S3DE.Graphics.Shaders
                     boundShadProg.isBound = false;
                 boundShadProg = this;
                 Extern_Use_Program(handle);
+                if (!Renderer.NoError)
+                    throw new Exception("Error binding shaderprogram!");
                 isBound = true;
             }
         }

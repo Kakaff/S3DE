@@ -11,7 +11,7 @@ namespace SampleGame
 {
     class SampleScene : GameScene
     {
-        const int s = 15;
+        const int s = 70;
         
         protected override void LoadScene()
         {
@@ -23,9 +23,11 @@ namespace SampleGame
             int w = 16, h = 16;
 
             Console.WriteLine("Creating texture 1");
-            Texture2D tex = new Texture2D(w, h, ColorFormat.RGBA,InternalFormat.RGBA16F);
+            Texture2D tex = new Texture2D(w, h, ColorFormat.RGB,InternalFormat.RGBA);
+            tex.FilterMode = FilterMode.TriLinear;
+            tex.WrapMode = WrapMode.Clamp;
             Console.WriteLine("Creating texture 2");
-            Texture2D tex2 = new Texture2D(w, h, ColorFormat.RGBA, InternalFormat.RGBA16F);
+            Texture2D tex2 = new Texture2D(tex);
 
             float mul = 0;
             float xMod = 0, yMod = 0;
@@ -33,6 +35,8 @@ namespace SampleGame
             float wMod = (w - 1) / 2f;
             float hMod = (h - 1) / 2f;
             float half = wMod * wMod + hMod * hMod;
+            byte colVal = 0;
+
             for (int x = 0; x < w; x++)
             {
                 xMod = (-w+1) / 2f + x;
@@ -40,58 +44,34 @@ namespace SampleGame
                 {
                     yMod = (-h+1) / 2f + y;
                     mul = (float)Math.Pow((xMod * xMod + yMod * yMod) / half,2);
-                    tex[x, y] = new Color(0, 0, (byte)(255 * mul));
-                    tex2[x,y] = new Color((byte)(255 * mul), (byte)(255 * mul), 0);
+                    colVal = (byte)(255 * mul);
+                    tex[x, y] = new Color(0, 0, colVal);
+                    tex2[x,y] = new Color(0, colVal, colVal);
                 }
             }
 
-            tex.FilterMode = FilterMode.Nearest;
-            tex.WrapMode = WrapMode.Clamp;
-            tex2.FilterMode = FilterMode.Nearest;
-            tex2.WrapMode = WrapMode.Clamp;
+            
             tex.Apply();
             tex2.Apply();
-            
-            Mesh m = new Mesh();
-            m.SetVertexAttribute(0, 3, GLType.FLOAT, false, 20, 0);
-            m.SetVertexAttribute(1, 2, GLType.FLOAT, false, 20, 12);
-            m.EnableVertexAttribute(0);
-            m.EnableVertexAttribute(1);
-            
-            m.Vertices = new Vector3[] {new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0.5f, 0.5f, -0.5f),new Vector3(0.5f,-0.5f,-0.5f),
-                                        new Vector3(-0.5f,0.5f,-0.5f),new Vector3(-0.5f,0.5f,0.5f),new Vector3(0.5f,0.5f,0.5f),new Vector3(0.5f,0.5f,-0.5f),
-                                        new Vector3(0.5f,-0.5f,-0.5f),new Vector3(0.5f,0.5f,-0.5f),new Vector3(0.5f,0.5f,0.5f),new Vector3(0.5f,-0.5f,0.5f),
-                                        new Vector3(-0.5f,-0.5f,0.5f),new Vector3(-0.5f,0.5f,0.5f),new Vector3(-0.5f,0.5f,-0.5f),new Vector3(-0.5f,-0.5f,-0.5f),
-                                        new Vector3(0.5f,-0.5f,0.5f),new Vector3(0.5f,0.5f,0.5f),new Vector3(-0.5f,0.5f,0.5f),new Vector3(-0.5f,-0.5f,0.5f),
-                                        new Vector3(-0.5f,-0.5f,0.5f),new Vector3(-0.5f,-0.5f,-0.5f),new Vector3(0.5f,-0.5f,-0.5f),new Vector3(0.5f,-0.5f,0.5f)};
-            
-            m.UVs = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0),
-                                    new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0),
-                                    new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0),
-                                    new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0),
-                                    new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0),
-                                    new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)};
-                                    
 
-            m.Indicies = new ushort[] { 0,1,2,2,3,0,
-                                        4,5,6,6,7,4,
-                                        8,9,10,10,11,8,
-                                        12,13,14,14,15,12,
-                                        16,17,18,18,19,16,
-                                        20,21,22,22,23,20};
-            m.Apply();
+            Mesh m = Mesh.CreateCube(new Vector3(1,1,1));
+            
             SimpleMat mat = new SimpleMat();
             SimpleMat mat2 = new SimpleMat();
+
             mat.Texture = tex;
             mat2.Texture = tex2;
 
-            CreateSquareOfEntities_2Mat(s, mat,mat2,m);
-
+            //CreateSquareOfEntities_2Mat(s, mat,mat2,m);
+            CreateSpinningArm(s, 
+                GetPointsInCircle(2),
+                new Material[] {mat,mat2}, 
+                m);
             
             Camera c = ActiveCamera;
 
-            c.transform.Position = new Vector3(0, 0f, 0f);
-            
+            c.transform.Position = new Vector3(0, 15f, 0f);
+            c.transform.Rotation = Quaternion.CreateFromAxisAngle(Vector3.Right, -90f);
             c.Entity.AddComponent<SimpleCameraController>();
             c.FoV = 95f;
             //c.Entity.AddComponent<Debug_FrameMonitor>();
@@ -102,19 +82,119 @@ namespace SampleGame
             
         }
 
-        void CreateSquareOfEntities_2Mat(float size, Material mat, Material mat2, Mesh m)
+
+        Vector3[] GetPointsInCircle(int points)
         {
-            for (int x = -s; x <= s; x++)
-                for (int z = -s; z <= s; z++)
+            Vector3[] res = new Vector3[points];
+            float rotMod = 360f / (float)points;
+
+            for (int i = 0; i < points; i++)
+                res[i] = Quaternion.CreateFromAxisAngle(Vector3.Up, rotMod * i).Transform(Vector3.Forward);
+
+            return res;
+        }
+        void CreateSpinningArm(int length, Vector3[] armDirections, Material[] mats, Mesh m)
+        {
+            int matCntr = 0;
+            GameEntity[] prevEnts = new GameEntity[armDirections.Length];
+            prevEnts[0] = CreateEntity();
+            prevEnts[0].AddComponent<ObjectRotator>()
+                .Entity.AddComponent<MeshRenderer>().
+                SetMaterial(mats[0])
+                .SetMesh(m);
+
+            prevEnts[0].transform.Scale = new Vector3(0.5f);
+            for (int i = 1; i < armDirections.Length; i++)
+                prevEnts[i] = prevEnts[0];
+
+            float scaleMod = 1f / (length - 1);
+            for (int i = 1; i < length; i++)
+            {
+                matCntr = (int)EngineMath.Normalize(0, mats.Length, matCntr + 1);
+                float scale = (length - i) * scaleMod;
+                float posMod = 2 * i * (1 + (0.05f * i));
+
+                for (int j = 0; j < armDirections.Length; j++)
                 {
                     GameEntity ge = CreateEntity();
                     ge.AddComponent<ObjectRotator>()
+                    .Entity.AddComponent<MeshRenderer>()
+                    .SetMaterial(mats[matCntr])
+                    .SetMesh(m);
+
+                    ge.transform.Position = armDirections[j] * posMod;
+                    ge.transform.SetParent(prevEnts[j].transform);
+                    ge.transform.SetScale(new Vector3(scale > 0.5f ? 0.5f : scale), S3DE.Space.World);
+                    prevEnts[j] = ge;
+                }
+            }
+        }
+
+        void CreateSpinningArm2Side(int length, Material mat, Material mat2,Mesh m)
+        {
+            GameEntity prevEntPos, prevEntNeg;
+
+            prevEntPos = CreateEntity();
+            prevEntNeg = prevEntPos;
+
+            bool flag = false;
+
+            prevEntPos.AddComponent<ObjectRotator>()
+                .Entity.AddComponent<MeshRenderer>().
+                SetMaterial(flag ? mat : mat2)
+                .SetMesh(m);
+
+            float scaleMod = 1f / (length - 1);
+
+            for (int i = 1; i < length; i++)
+            {
+                float scale = (length - i) * scaleMod;
+                flag = !flag;
+                GameEntity posGe = CreateEntity();
+                posGe.transform.Position = new Vector3(2 * i * (1 + (0.05f * i)), 0, 0);
+                posGe.transform.SetParent(prevEntPos.transform);
+                posGe.transform.SetScale(new Vector3(scale), S3DE.Space.World);
+                posGe.AddComponent<ObjectRotator>()
                         .Entity.AddComponent<MeshRenderer>()
-                        .SetMaterial((z % 2) * (x % 2) != 0 ? mat : mat2)
+                        .SetMaterial(flag ? mat : mat2)
+                        .SetMesh(m);
+
+                prevEntPos = posGe;
+
+                GameEntity negGe = CreateEntity();
+                negGe.transform.Position = new Vector3(-(2 * i * (1 + (0.05f * i))), 0, 0);
+                negGe.transform.SetParent(prevEntNeg.transform);
+                negGe.transform.SetScale(new Vector3(scale), S3DE.Space.World);
+
+                negGe.AddComponent<ObjectRotator>()
+                        .Entity.AddComponent<MeshRenderer>()
+                        .SetMaterial(flag ? mat : mat2)
+                        .SetMesh(m);
+
+                prevEntNeg = negGe;
+
+            }
+
+        }
+
+        void CreateSquareOfEntities_2Mat(float size, Material mat, Material mat2, Mesh m)
+        {
+
+            bool flag = false;
+            for (int x = -s; x <= s; x++)
+            {
+                for (int z = -s; z <= s; z++)
+                {
+                    flag = !flag;
+                    GameEntity ge = CreateEntity();
+                    ge.AddComponent<ObjectRotator>()
+                        .Entity.AddComponent<MeshRenderer>()
+                        .SetMaterial(flag ? mat : mat2)
                         .SetMesh(m);
 
                     ge.transform.Position = new Vector3(x * 2, 0, z * 2);
                 }
+            }
         }
 
         void CreateSquareOfEntities(float size,Material mat,Mesh m)

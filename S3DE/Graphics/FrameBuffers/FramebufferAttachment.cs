@@ -2,50 +2,21 @@
 
 namespace S3DE.Graphics.FrameBuffers
 {
-    public abstract class FramebufferAttachment
+    public abstract class FrameBufferAttachment
     {
         InternalFormat intfrmt;
 
-        private FramebufferAttachment()
+        internal abstract IRenderTexture InternalTexture {get;}
+
+        private FrameBufferAttachment()
         {
 
         }
 
-        internal FramebufferAttachment(InternalFormat frmt)
+        internal FrameBufferAttachment(InternalFormat frmt)
         {
             intfrmt = frmt;
         }
     }
 
-    public class ColorAttachment : FramebufferAttachment
-    {
-        public ColorAttachment(InternalFormat format) : base(format)
-        {
-
-        }
-    }
-
-    public class DepthAttachment : FramebufferAttachment
-    {
-        public DepthAttachment() : base(InternalFormat.DEPTH_COMPONENT)
-        {
-            
-        }
-    }
-
-    public class StencilAttachment : FramebufferAttachment
-    {
-        public StencilAttachment() : base(InternalFormat.STENCIL_INDEX)
-        {
-
-        }
-    }
-
-    public class Depth_StencilAttachment : FramebufferAttachment
-    {
-        public Depth_StencilAttachment() : base(InternalFormat.DEPTH24_STENCIL8)
-        {
-
-        }
-    }
 }

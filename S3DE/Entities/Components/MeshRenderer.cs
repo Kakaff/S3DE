@@ -21,7 +21,6 @@ namespace S3DE.Components
 
         protected override void Render()
         {
-
             if (m != null && mat != null)
             {
                 mat.SetTransform(transform);

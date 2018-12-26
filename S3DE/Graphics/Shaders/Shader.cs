@@ -43,6 +43,14 @@ namespace S3DE.Graphics.Shaders
             Compile();
         }
 
+        public Shader(ShaderStage stage, params string[] src)
+        {
+            handle = Extern_CreateShader(stage);
+            this.stage = stage;
+            SetShaderSource(string.Join("\n", src));
+            Compile();
+        }
+
         public void SetShaderSource(string src)
         {
             

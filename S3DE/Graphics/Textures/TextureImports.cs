@@ -12,7 +12,11 @@ namespace S3DE.Graphics.Textures
     {
         [DllImport("S3DECore.dll")]
         protected static extern void Extern_SetTexImage2D_Data(IntPtr tex, Texture2DTarget target, int level, InternalFormat internalFormat,
-            int widht, int height, int border, PixelFormat textureDataFormat, PixelType textureDataType, byte[] data);
+            int widht, int height, int border, PixelFormat textureDataFormat, PixelType textureDataType, IntPtr data);
+
+        [DllImport("S3DECore.dll")]
+        private static extern void Extern_InitTexImage2D_Data(IntPtr tex, Texture2DTarget target, int level, InternalFormat internalFormat,
+            int widht, int height, int border, PixelFormat textureDataFormat, PixelType textureDataType);
 
         [DllImport("S3DECore.dll")]
         private static extern IntPtr Extern_Texture2D_Create();

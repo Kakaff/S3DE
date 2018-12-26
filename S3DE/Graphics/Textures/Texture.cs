@@ -203,7 +203,8 @@ namespace S3DE.Graphics.Textures
         public abstract int Height { get; }
         public abstract InternalFormat InternalFormat { get; }
         public abstract PixelFormat PixelFormat {get;}
-        protected abstract IntPtr Handle {get;}
+        public abstract PixelType PixelType { get; }
+        public abstract IntPtr Handle {get;}
         public abstract int BoundTexUnit {get; protected set;}
         public abstract bool IsBound {get; protected set;}
 

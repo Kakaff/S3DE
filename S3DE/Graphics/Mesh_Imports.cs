@@ -19,6 +19,9 @@ namespace S3DE.Graphics
         private static extern IntPtr CreateMesh();
 
         [DllImport("S3DECore.dll")]
+        private static extern void Extern_Mesh_Bind(IntPtr handle);
+
+        [DllImport("S3DECore.dll")]
         private static extern void SetMeshData(IntPtr mesh, byte[] vertices, uint vertcount, byte[] indicies, uint indCount, BufferUsage usage);
 
     }

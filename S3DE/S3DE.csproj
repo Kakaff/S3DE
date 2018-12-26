@@ -75,7 +75,9 @@
     <Compile Include="Graphics\Color.cs" />
     <Compile Include="Graphics\FrameBuffers\FrameBuffer.cs" />
     <Compile Include="Graphics\FrameBuffers\FramebufferAttachment.cs" />
+    <Compile Include="Graphics\FrameBuffers\FrameBufferMaterial.cs" />
     <Compile Include="Graphics\FrameBuffers\FrameBuffer_Imports.cs" />
+    <Compile Include="Graphics\FrameBuffers\Standard_FrameBuffer_Material.cs" />
     <Compile Include="Graphics\GLEnums.cs" />
     <Compile Include="Graphics\Material.cs" />
     <Compile Include="Graphics\Mesh.cs" />
@@ -85,6 +87,8 @@
     <Compile Include="Graphics\Shaders\Shader.cs" />
     <Compile Include="Graphics\Shaders\ShaderProgram.cs" />
     <Compile Include="Graphics\Shaders\ShaderProgram_Imports.cs" />
+    <Compile Include="Graphics\FrameBuffers\FrameBufferAttachment2D.cs" />
+    <Compile Include="Graphics\Textures\IRenderTexture.cs" />
     <Compile Include="Graphics\Textures\Texture.cs" />
     <Compile Include="Graphics\Textures\ITexture2D.cs" />
     <Compile Include="Graphics\Textures\Texture_Statics.cs" />

@@ -13,7 +13,7 @@
 
 DLL_Export void InitGLFW() {
 	if (!glfwInit()) {
-
+		
 	}
 	else {
 
@@ -32,6 +32,10 @@ DLL_Export void CreateWindow() {
 static void(*func)();
 static void(*errFunc)();
 
+DLL_Export void Extern_SetViewPortSize(uint width, uint height) {
+	glViewport(0, 0, width, height);
+}
+
 DLL_Export void RegisterErrorFunc(void(*fun)()) {
 	errFunc = fun;
 }
@@ -43,7 +47,7 @@ DLL_Export void RegisterUpdateFunc(void(*fun)()) {
 DLL_Export void InitGlew() {
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
-
+		
 	}
 	else {
 
@@ -52,6 +56,22 @@ DLL_Export void InitGlew() {
 
 DLL_Export void Extern_GLGeti(GLint param, int& i) {
 	glGetIntegerv(param, &i);
+}
+
+DLL_Export uint Extern_CheckGLErrors(void) {
+	return glGetError();
+}
+
+DLL_Export void Extern_Enable(uint v) {
+	glEnable(v);
+}
+
+DLL_Export void Extern_Disable(uint v) {
+	glDisable(v);
+}
+
+DLL_Export void Extern_Clear(int clearval) {
+	glClear(clearval);
 }
 
 void GLAPIENTRY MessageCallBack(GLenum src, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userparam) {
@@ -69,7 +89,6 @@ DLL_Export void RunEngine() {
 
 	while (!S3DECore::Window::IsCloseRequested()) {
 		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		func();
 		S3DECore::Window::SwapBuffers();
 		WaitForNextFrame();
