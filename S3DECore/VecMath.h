@@ -13,3 +13,7 @@ public:
 private:
 	float* data;
 };
+
+__declspec(align(32)) struct Vecf256 {
+
+};

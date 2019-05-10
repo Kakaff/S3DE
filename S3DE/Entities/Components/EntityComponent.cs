@@ -37,6 +37,10 @@ namespace S3DE.Components
         protected virtual void Init() { }
         protected virtual void Start() { }
         
+        protected virtual void EarlyUpdate() { }
+        protected virtual void Update() { }
+        protected virtual void LateUpdate() { }
+
         protected virtual void PreRender() { }
         protected virtual void Render() { }
         protected virtual void PostRender() { }
@@ -67,6 +71,10 @@ namespace S3DE.Components
         }
 
         protected GameEntity CreateEntity() => Scene.CreateGameEntity_Internal();
+
+        internal void EarlyUpdate_Internal() => EarlyUpdate();
+        internal void Update_Internal() => Update();
+        internal void LateUpdate_Internal() => LateUpdate();
 
         internal void PreDraw_Internal() => PreRender();
 

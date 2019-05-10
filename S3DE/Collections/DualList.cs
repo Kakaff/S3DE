@@ -6,6 +6,12 @@ namespace S3DE.Collections
     public sealed class DualList<T> : IEnumerable
     {
         List<T> ReadList,WriteList;
+
+        public bool IsEmpty => WriteLength + ReadLength == 0;
+
+        public int WriteLength => WriteList.Count;
+        public int ReadLength => ReadList.Count;
+
         public DualList()
         {
             ReadList = new List<T>();

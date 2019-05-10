@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace S3DE.Graphics
+namespace S3DE.Graphics.Meshes
 {
     partial class Mesh
     {

@@ -1,4 +1,5 @@
-﻿using S3DE.Maths;
+﻿using S3DE.Graphics;
+using S3DE.Maths;
 
 namespace S3DE.Components
 {
@@ -53,7 +54,7 @@ namespace S3DE.Components
             if (Entity.transform.HasChanged)
                 RecalculateViewMatrix();
 
-            if (Game.ResolutionChanged)
+            if (Renderer.RenderResolutionChanged)
                 RecalculateProjectionMatrix();
         }
         

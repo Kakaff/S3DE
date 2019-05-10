@@ -14,7 +14,6 @@ namespace S3DE.Graphics
             Dictionary<string, uint> uniformLocations;
             ShaderProgram sp;
 
-
             internal ShaderProgram ShaderProg => sp;
             internal Material_ShaderProgram(ShaderProgram sp)
             {
@@ -77,14 +76,15 @@ namespace S3DE.Graphics
 
         private Material_ShaderProgram mat_sp;
 
+        bool compSuccRun;
+
         Transform trans;
 
         protected Transform transform => trans;
 
         internal void SetTransform(Transform tr) => trans = tr;
 
-        protected Material() { mat_sp = Get_ShaderProgram(); }
-
+        protected Material() { mat_sp = Get_ShaderProgram(); compSuccRun = false; }
 
         internal void Use()
         {
@@ -94,28 +94,56 @@ namespace S3DE.Graphics
         internal void UpdateUniforms_Internal()
         {
             mat_sp.Use();
+
+            if (!compSuccRun)
+            {
+                OnCompilationSuccess();
+                compSuccRun = true;
+            }
+
             UpdateUniforms();
         }
-
+        
         protected void SetUniform(string name, float f1) => mat_sp.ShaderProg.SetUniform_1(mat_sp.GetUniformLocation(name), f1);
         protected void SetUniform(string name, int i1) => mat_sp.ShaderProg.SetUniform_1(mat_sp.GetUniformLocation(name), i1);
         protected void SetUniform(string name, uint ui1) => mat_sp.ShaderProg.SetUniform_1(mat_sp.GetUniformLocation(name), ui1);
+
+        protected void SetUniform(uint loc, float f1) => mat_sp.ShaderProg.SetUniform_1(loc, f1);
+        protected void SetUniform(uint loc, int i1) => mat_sp.ShaderProg.SetUniform_1(loc, i1);
+        protected void SetUniform(uint loc, uint ui1) => mat_sp.ShaderProg.SetUniform_1(loc, ui1);
 
         protected void SetUniform(string name, int i1, int i2) => mat_sp.ShaderProg.SetUniform_2(mat_sp.GetUniformLocation(name), i1,i2);
         protected void SetUniform(string name, uint ui1, uint ui2) => mat_sp.ShaderProg.SetUniform_2(mat_sp.GetUniformLocation(name), ui1, ui2);
         protected void SetUniform(string name, float f1, float f2) => mat_sp.ShaderProg.SetUniform_2(mat_sp.GetUniformLocation(name), f1, f2);
 
+        protected void SetUniform(uint loc, int i1, int i2) => mat_sp.ShaderProg.SetUniform_2(loc, i1, i2);
+        protected void SetUniform(uint loc, uint ui1, uint ui2) => mat_sp.ShaderProg.SetUniform_2(loc, ui1, ui2);
+        protected void SetUniform(uint loc, float f1, float f2) => mat_sp.ShaderProg.SetUniform_2(loc, f1, f2);
+
+
         protected void SetUniform(string name, int i1, int i2,int i3) => mat_sp.ShaderProg.SetUniform_3(mat_sp.GetUniformLocation(name), i1, i2,i3);
         protected void SetUniform(string name, uint ui1, uint ui2,uint ui3) => mat_sp.ShaderProg.SetUniform_3(mat_sp.GetUniformLocation(name), ui1, ui2,ui3);
         protected void SetUniform(string name, float f1, float f2,float f3) => mat_sp.ShaderProg.SetUniform_3(mat_sp.GetUniformLocation(name), f1, f2,f3);
+
+        protected void SetUniform(uint loc, int i1, int i2,int i3) => mat_sp.ShaderProg.SetUniform_3(loc, i1, i2,i3);
+        protected void SetUniform(uint loc, uint ui1, uint ui2,uint ui3) => mat_sp.ShaderProg.SetUniform_3(loc, ui1, ui2,ui3);
+        protected void SetUniform(uint loc, float f1, float f2,float f3) => mat_sp.ShaderProg.SetUniform_3(loc, f1, f2,f3);
 
         protected void SetUniform(string name, int i1, int i2,int i3, int i4) => mat_sp.ShaderProg.SetUniform_4(mat_sp.GetUniformLocation(name), i1, i2,i3,i4);
         protected void SetUniform(string name, uint ui1, uint ui2,uint ui3, uint ui4) => mat_sp.ShaderProg.SetUniform_4(mat_sp.GetUniformLocation(name), ui1, ui2,ui3,ui4);
         protected void SetUniform(string name, float f1, float f2,float f3, float f4) => mat_sp.ShaderProg.SetUniform_4(mat_sp.GetUniformLocation(name), f1, f2,f3,f4);
 
+        protected void SetUniform(uint loc, int i1, int i2, int i3, int i4) => mat_sp.ShaderProg.SetUniform_4(loc, i1, i2, i3, i4);
+        protected void SetUniform(uint loc, uint ui1, uint ui2, uint ui3, uint ui4) => mat_sp.ShaderProg.SetUniform_4(loc, ui1, ui2, ui3, ui4);
+        protected void SetUniform(uint loc, float f1, float f2, float f3, float f4) => mat_sp.ShaderProg.SetUniform_4(loc, f1, f2, f3, f4);
+
         protected void SetUniform(string name, Vector2 v) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), v);
         protected void SetUniform(string name, Vector3 v) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), v);
         protected void SetUniform(string name, Quaternion q) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), q);
+
+        protected void SetUniform(uint loc, Vector2 v) => mat_sp.ShaderProg.SetUniform(loc, v);
+        protected void SetUniform(uint loc, Vector3 v) => mat_sp.ShaderProg.SetUniform(loc, v);
+        protected void SetUniform(uint loc, Quaternion q) => mat_sp.ShaderProg.SetUniform(loc, q);
 
         protected void SetUniform(string name, Matrix4x4 m) => mat_sp.ShaderProg.SetUniform(mat_sp.GetUniformLocation(name), m);
         protected void SetUniform(string name, ITexture2D tex)
@@ -124,14 +152,28 @@ namespace S3DE.Graphics
                 SetUniform(name, tex.Bind());
         }
 
+        protected void SetUniform(uint loc, Matrix4x4 m) => mat_sp.ShaderProg.SetUniform(loc, m);
+        protected void SetUniform(uint loc, ITexture2D tex)
+        {
+            if (tex != null)
+                SetUniform(loc, tex.Bind());
+        }
+
+        protected uint GetUniformLocation(string name)
+        {
+            return mat_sp.GetUniformLocation(name);
+        }
 
         protected abstract void UpdateUniforms();
+        protected abstract void OnCompilationSuccess();
+
         Material_ShaderProgram Get_ShaderProgram()
         {
             Material_ShaderProgram m_sp = null;
             Console.WriteLine($"Getting Material ShaderProgram for {GetType()}");
             if (!shaderPrograms.TryGetValue(GetType(),out m_sp))
             {
+                Console.WriteLine("Shaderprogram not found, creating a new one");
                 ShaderProgram sp = new ShaderProgram();
                 MaterialSource[] sources = MaterialSources;
                 if (sources == null)

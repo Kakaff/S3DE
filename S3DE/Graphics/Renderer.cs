@@ -19,18 +19,75 @@ namespace S3DE.Graphics
 
     public static partial class Renderer
     {
-        static Vector2 renderRes;
-        public static Vector2 Resolution => renderRes;
+        static Vector2 currDisplayRes,currRenderRes,newDisplayRes,newRenderRes;
+        static bool displayResolutionChanged, renderResolutionChanged,renderResChanged,displayResChanged;
+        static bool vsync = false;
         static uint latestError = 0;
         public static bool NoError { get { latestError = Extern_CheckGLErrors(); return latestError == (uint)GL.NO_ERROR; } }
         public static uint LatestError => latestError;
 
-        public static Vector2 DisplayResolution => new Vector2(1280, 720);
-        public static Vector2 RenderResolution => new Vector2(320, 180);
+        public static Vector2 DisplayResolution => currDisplayRes;
+        public static Vector2 RenderResolution => currRenderRes;
 
-        internal static void Init(Vector2 renderRes)
+        public static bool RenderResolutionChanged => renderResChanged;
+        public static bool DisplayResolutionChanged => displayResChanged;
+        public static bool Vsync => vsync;
+
+        public delegate void ResolutionChanged(Vector2 oldRes, Vector2 newRes);
+        public static event ResolutionChanged OnDisplayResolutionChanged;
+        public static event ResolutionChanged OnRenderResolutionChanged;
+
+        public static void SetDisplayResolution(Vector2 res)
         {
-            Renderer.renderRes = renderRes;
+            if (DisplayResolution != res)
+            {
+                newDisplayRes = res;
+                displayResolutionChanged = true;
+            }
+        }
+
+        public static void SetRenderResolution(Vector2 res)
+        {
+            if (RenderResolution != res)
+            {
+                newRenderRes = res;
+                renderResolutionChanged = true;
+            }
+        }
+
+        public static void UpdateEvents()
+        {
+            renderResChanged = false;
+            displayResChanged = false;
+
+            if (renderResolutionChanged)
+            {
+                if (OnRenderResolutionChanged != null)
+                    OnRenderResolutionChanged(currRenderRes, newRenderRes);
+
+                currRenderRes = newRenderRes;
+                renderResolutionChanged = false;
+
+                renderResChanged = true;
+                
+            }
+
+            if (displayResolutionChanged)
+            {
+                if (OnDisplayResolutionChanged != null)
+                    OnDisplayResolutionChanged(currDisplayRes, newDisplayRes);
+
+                currDisplayRes = newDisplayRes;
+                displayResolutionChanged = false;
+
+                displayResChanged = true;
+            }
+        }
+
+        internal static void Init(Vector2 displayRes,Vector2 renderRes)
+        {
+            currRenderRes = renderRes;
+            currDisplayRes = displayRes;
             InitGlew();
         }
 
@@ -53,6 +110,14 @@ namespace S3DE.Graphics
                 Extern_Enable((uint)GlEnableCap.DepthTest);
             else
                 Extern_Disable((uint)GlEnableCap.DepthTest);
+        }
+
+        public static void Enable_Vsync(bool v)
+        {
+            if (v != vsync)
+            {
+                Extern_SetSwapInterval(v ? 1 : 0);
+            }
         }
 
         internal static void Clear(ClearBufferBit clearBuffer)

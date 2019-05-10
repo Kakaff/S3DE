@@ -11,13 +11,13 @@ namespace S3DE.Maths
      * https://github.com/dotnet/corefx/blob/master/src/System.Numerics.Vectors/src/System/Numerics/Matrix4x4.cs
      */
 
-    [StructLayout(LayoutKind.Sequential,Pack = 16)]
+    [StructLayout(LayoutKind.Sequential,Pack = 32)]
     public struct Matrix4x4
     {
         public float m00, m10, m20, m30,
-              m01, m11, m21, m31,
-              m02, m12, m22, m32,
-              m03, m13, m23, m33;
+                     m01, m11, m21, m31,
+                     m02, m12, m22, m32,
+                     m03, m13, m23, m33;
 
 
         public Matrix4x4 SetIdentity()
@@ -154,61 +154,83 @@ namespace S3DE.Maths
 
         public static Matrix4x4 CreateTransformMatrix(Vector3 pos, Quaternion rot, Vector3 scale)
         {
+            if (Vec128.IsEnabled)
+                return Vec128.CreateTransformMatrix(scale,rot,pos);
+
             return CreateScaleMatrix(scale) * CreateRotationMatrix(rot) * CreateTranslationMatrix(pos);
+        }
+
+        public static Matrix4x4 CreateTransformMatrix(Matrix4x4 scaleMatrix,Matrix4x4 rotMatrix,Matrix4x4 transMatrix)
+        {
+            if (Vec128.IsEnabled)
+                return Vec128.MatrixMul(scaleMatrix, rotMatrix, transMatrix);
+
+            return scaleMatrix * rotMatrix * transMatrix;
         }
 
         public Vector3 Transform(Vector3 v) => Transform(v, this);
 
         public static Vector3 Transform(Vector3 v, Matrix4x4 m)
         {
+            /*
+            if (Vec128.IsEnabled)
+                return Vec128.VectorTransform(v, m);
+                */
+
+            /* Transpose the matrix beforehand?
+             * m.m00  m.m01  m.m02
+             *   *      *      *    FMA
+             * v.x    v.x    v.x
+             *   +      +      +
+             * v.y    v.y    v.y
+             *   *      *      *    FMA
+             * m.m10  m.m11  m.m22
+             *   +      +      +
+             * v.z    v.z    v.z
+             *   *      *      *
+             * m.m20  m.m21  m.m22
+             */
             return new Vector3(
                 v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
                 v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
                 v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
         }
 
+        public static Matrix4x4 Multiply(Matrix4x4 m1, Matrix4x4 m2)
+        {
+            return m1 * m2;
+        }
 
         public static Matrix4x4 operator * (Matrix4x4 m1, Matrix4x4 m2)
         {
+            if (SIMD_Math.IsEnabled)
+                return SIMD_Math.MatrixMul(m1, m2);
+            
             Matrix4x4 m = new Matrix4x4();
 
-
-            /* 00 01 02 03
-             * 10 11 12 13
-             * 20 21 22 23
-             * 30 31 32 33
-             * 
-             *        m00     m10
-             *         =       =
-             *       m1_00   m1_10   _mm_load_ps(&m1_00)
-             *         *       *
-             *       m2_00   m2_00 --_mm_set_ps(m2_00)
-             *         +
-             *       m1_01
-             *         *
-             *       m2_10
-             */
-            // First row
             m.m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30;
+            m.m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30;
+            m.m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30;
+            m.m30 = m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30;
+
             m.m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31;
+            m.m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
+            m.m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
+            m.m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
+
+            // First row FMA, FMA, FMA, Mul
             m.m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32;
             m.m03 = m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33;
 
             // Second row
-            m.m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30;
-            m.m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
             m.m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32;
             m.m13 = m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33;
 
             // Third row
-            m.m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30;
-            m.m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
             m.m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32;
             m.m23 = m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33;
 
             // Fourth row
-            m.m30 = m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30;
-            m.m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
             m.m32 = m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32;
             m.m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33;
 
@@ -221,6 +243,14 @@ namespace S3DE.Maths
                                 m10,m11,m12,m13,
                                 m20,m21,m22,m23,
                                 m30,m31,m32,m33};
+        }
+
+        public override string ToString()
+        {
+            return $"{m00},{m10},{m20},{m30} {Environment.NewLine}" +
+                   $"{m01},{m11},{m21},{m31} {Environment.NewLine}" +
+                   $"{m02},{m12},{m22},{m32} {Environment.NewLine}" +
+                   $"{m03},{m12},{m23},{m33}";
         }
     }
 }

@@ -6,6 +6,8 @@ namespace S3DE.Scenes
     {
         static GameScene activeScene;
 
+        public static GameScene ActiveScene => activeScene;
+
         internal static void SetActiveScene(GameScene gs)
         {
             activeScene = gs;

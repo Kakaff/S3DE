@@ -13,11 +13,7 @@ namespace S3DE.Entities
         DualList<EntityComponent> componentsToStart;
         List<EntityComponent> inactiveComponents;
         List<EntityComponent> activeComponents;
-
-        EntityComponent[] frameStageComponents;
-        IUpdateLogic[] updateStageComponents;
-
-
+        
         GameScene scene;
         bool isActive;
 
@@ -26,65 +22,62 @@ namespace S3DE.Entities
         public Transform transform => trans;
         public GameScene ParentScene => scene;
         public bool IsActive => isActive;
-
-        //Init stage causing shit performance.
-        void InitStage() => frameStageComponents = components.Where(ec => ec.IsActive && ec.IsStarted).ToArray();
-        void InitUpdateStage() => updateStageComponents = components.Where(ec => ec.IsActive && ec.IsStarted && ec is IUpdateLogic).Cast<IUpdateLogic>().ToArray();
-
+        
         internal void InitComponents()
         {
-            componentsToStart.SwapAndClear();
-            foreach (EntityComponent ec in componentsToStart)
-                ec.Init_Internal();
+            if (!componentsToStart.IsEmpty)
+            {
+                componentsToStart.SwapAndClear();
+                foreach (EntityComponent ec in componentsToStart)
+                    ec.Init_Internal();
+            }
         }
 
         internal void StartComponents()
         {
-            foreach (EntityComponent ec in componentsToStart)
-            {
-                ec.Start_Internal();
-                activeComponents.Add(ec);
-            }
+            if (!componentsToStart.IsEmpty)
+                foreach (EntityComponent ec in componentsToStart)
+                {
+                    ec.Start_Internal();
+                    activeComponents.Add(ec);
+                }
         }
-
 
         internal void EarlyUpdate()
         {
-            foreach (EntityComponent ec in activeComponents)
-                if (ec is IUpdateLogic)
-                    ((IUpdateLogic)ec).EarlyUpdate();
+            for (int i = 0; i < activeComponents.Count; i++)
+                activeComponents[i].EarlyUpdate_Internal();
         }
 
         internal void Update()
         {
-            foreach (EntityComponent ec in activeComponents)
-                if (ec is IUpdateLogic)
-                    ((IUpdateLogic)ec).Update();
+            for (int i = 0; i < activeComponents.Count; i++)
+                activeComponents[i].Update_Internal();
         }
 
         internal void LateUpdate()
         {
-            foreach (EntityComponent ec in activeComponents)
-                if (ec is IUpdateLogic)
-                    ((IUpdateLogic)ec).LateUpdate();
+            for (int i = 0; i < activeComponents.Count; i++)
+                activeComponents[i].LateUpdate_Internal();
         }
 
         internal void PreDraw()
         {
-            foreach (EntityComponent ec in activeComponents)
-                ec.PreDraw_Internal();
+            for (int i = 0; i < activeComponents.Count; i++)
+                activeComponents[i].PreDraw_Internal();
         }
 
         internal void Draw()
         {
-            foreach (EntityComponent ec in activeComponents)
-                ec.Draw_Internal();
+            for (int i = 0; i < activeComponents.Count; i++)
+                activeComponents[i].Draw_Internal();
         }
 
         internal void PostDraw()
         {
-            foreach (EntityComponent ec in activeComponents)
-                ec.PostDraw_Internal();
+
+            for (int i = 0; i < activeComponents.Count; i++)
+                activeComponents[i].PostDraw_Internal();
         }
 
         private GameEntity() { components = new List<EntityComponent>(); componentsToStart = new DualList<EntityComponent>(); activeComponents = new List<EntityComponent>(); inactiveComponents = new List<EntityComponent>(); }

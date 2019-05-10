@@ -6,6 +6,7 @@ using namespace S3DECore;
 enum CursorMode:int {Normal = 0,Hidden = 1,LockedAndHidden = 2};
 
 GLFWwindow* window;
+bool Window::vsync = false;
 
 DLL_Export void S3DECore::Extern_SetWindowHint(int hint, int value)
 {
@@ -41,8 +42,22 @@ DLL_Export void Extern_SetCursor(CursorMode mode)
 	}
 }
 
+DLL_Export void Extern_SetSwapInterval(int v) 
+{
+	Window::SwapInterval(v);
+	Window::SetVsync(v == 0 ? false : true);
+}
+
 void Window::SetWindowHint(int hint, int value) {
 	glfwWindowHint(hint, value);
+}
+
+void Window::SetVsync(bool b) {
+	vsync = b;
+}
+
+bool Window::VsyncEnabled() {
+	return vsync;
 }
 
 bool Window::CreateWindow()
@@ -72,9 +87,9 @@ void Window::SwapBuffers()
 	glfwSwapBuffers(window);
 }
 
-void Window::SwapInterval(int value)
+void Window::SwapInterval(int v)
 {
-	glfwSwapInterval(value);
+	glfwSwapInterval(v);
 }
 
 bool Window::IsCloseRequested() {

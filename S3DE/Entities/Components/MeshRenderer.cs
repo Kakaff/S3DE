@@ -1,4 +1,5 @@
 ﻿using S3DE.Graphics;
+using S3DE.Graphics.Meshes;
 
 namespace S3DE.Components
 {

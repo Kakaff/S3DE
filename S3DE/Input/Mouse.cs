@@ -1,4 +1,5 @@
-﻿using S3DE.Maths;
+﻿using S3DE.Graphics;
+using S3DE.Maths;
 
 namespace S3DE.Input
 {
@@ -42,11 +43,11 @@ namespace S3DE.Input
         internal static void Update()
         {
             Extern_GetCursorPos(out double x, out double y);
-            x -= Window.Resolution.x * 0.5f;
-            y -= Window.Resolution.y * 0.5f;
+            x -= Renderer.DisplayResolution.x * 0.5f;
+            y -= Renderer.DisplayResolution.y * 0.5f;
 
-            x /= Window.Resolution.x * 0.5f;
-            y /= Window.Resolution.y * 0.5f;
+            x /= Renderer.DisplayResolution.x * 0.5f;
+            y /= Renderer.DisplayResolution.y * 0.5f;
             
             prevX = currX;
             prevY = currY;

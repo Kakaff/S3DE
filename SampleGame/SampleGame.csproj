@@ -44,9 +44,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Debug\Debug_ForceTransformUpdate.cs" />
     <Compile Include="Debug\Debug_FrameMonitor.cs" />
     <Compile Include="Debug\ObjectRotator.cs" />
-    <Compile Include="Debug\SimpleCameraController.cs" />
     <Compile Include="Debug\SimpleMat.cs" />
     <Compile Include="MyGame.cs" />
     <Compile Include="SampleScene.cs" />

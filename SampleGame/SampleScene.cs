@@ -1,6 +1,8 @@
 ﻿using S3DE.Components;
 using S3DE.Entities;
 using S3DE.Graphics;
+using S3DE.Graphics.Materials;
+using S3DE.Graphics.Meshes;
 using S3DE.Graphics.Textures;
 using S3DE.Maths;
 using S3DE.Scenes;
@@ -11,8 +13,18 @@ namespace SampleGame
 {
     class SampleScene : GameScene
     {
-        const int s = 70;
-        
+        enum TestCase
+        {
+            Square,
+            Square_NoRender,
+            Arms,
+            Arms_NoRender
+        }
+
+        const int s = 2000;
+        const int p = 3;
+        const TestCase test = TestCase.Arms;
+
         protected override void LoadScene()
         {
             
@@ -21,7 +33,6 @@ namespace SampleGame
         protected override void StartScene()
         {
             int w = 16, h = 16;
-
             Console.WriteLine("Creating texture 1");
             Texture2D tex = new Texture2D(w, h, ColorFormat.RGB,InternalFormat.RGBA);
             tex.FilterMode = FilterMode.TriLinear;
@@ -54,20 +65,24 @@ namespace SampleGame
             tex.Apply();
             tex2.Apply();
 
-            Mesh m = Mesh.CreateCube(new Vector3(1,1,1));
+            Mesh m = StandardMesh.CreateCube(new Vector3(1, 1, 1));
             
             SimpleMat mat = new SimpleMat();
-            SimpleMat mat2 = new SimpleMat();
+            SimpleTexturedMaterial mat2 = new SimpleTexturedMaterial();
+            Material mat3 = new SimpleMaterial();
 
             mat.Texture = tex;
             mat2.Texture = tex2;
 
-            //CreateSquareOfEntities_2Mat(s, mat,mat2,m);
-            CreateSpinningArm(s, 
-                GetPointsInCircle(2),
-                new Material[] {mat,mat2}, 
-                m);
-            
+            if (test == TestCase.Square || test == TestCase.Square_NoRender)
+                CreateSquareOfEntities_2Mat(s, mat,mat2,m, test == TestCase.Square);
+            else if (test == TestCase.Arms || test == TestCase.Arms_NoRender){
+                CreateSpinningArm(s,
+                    GetPointsInCircle(p),
+                    new Material[] { mat, mat2, mat3},
+                    m,test == TestCase.Arms_NoRender);
+            }
+
             Camera c = ActiveCamera;
 
             c.transform.Position = new Vector3(0, 15f, 0f);
@@ -93,7 +108,8 @@ namespace SampleGame
 
             return res;
         }
-        void CreateSpinningArm(int length, Vector3[] armDirections, Material[] mats, Mesh m)
+
+        void CreateSpinningArm(int length, Vector3[] armDirections, Material[] mats, Mesh m,bool noRender)
         {
             int matCntr = 0;
             GameEntity[] prevEnts = new GameEntity[armDirections.Length];
@@ -117,10 +133,14 @@ namespace SampleGame
                 for (int j = 0; j < armDirections.Length; j++)
                 {
                     GameEntity ge = CreateEntity();
+                    if (!noRender)
                     ge.AddComponent<ObjectRotator>()
                     .Entity.AddComponent<MeshRenderer>()
                     .SetMaterial(mats[matCntr])
                     .SetMesh(m);
+                    else
+                    ge.AddComponent<ObjectRotator>()
+                    .Entity.AddComponent<Debug_ForceTransformUpdate>();
 
                     ge.transform.Position = armDirections[j] * posMod;
                     ge.transform.SetParent(prevEnts[j].transform);
@@ -130,56 +150,8 @@ namespace SampleGame
             }
         }
 
-        void CreateSpinningArm2Side(int length, Material mat, Material mat2,Mesh m)
+        void CreateSquareOfEntities_2Mat(float size, Material mat, Material mat2, Mesh m,bool render)
         {
-            GameEntity prevEntPos, prevEntNeg;
-
-            prevEntPos = CreateEntity();
-            prevEntNeg = prevEntPos;
-
-            bool flag = false;
-
-            prevEntPos.AddComponent<ObjectRotator>()
-                .Entity.AddComponent<MeshRenderer>().
-                SetMaterial(flag ? mat : mat2)
-                .SetMesh(m);
-
-            float scaleMod = 1f / (length - 1);
-
-            for (int i = 1; i < length; i++)
-            {
-                float scale = (length - i) * scaleMod;
-                flag = !flag;
-                GameEntity posGe = CreateEntity();
-                posGe.transform.Position = new Vector3(2 * i * (1 + (0.05f * i)), 0, 0);
-                posGe.transform.SetParent(prevEntPos.transform);
-                posGe.transform.SetScale(new Vector3(scale), S3DE.Space.World);
-                posGe.AddComponent<ObjectRotator>()
-                        .Entity.AddComponent<MeshRenderer>()
-                        .SetMaterial(flag ? mat : mat2)
-                        .SetMesh(m);
-
-                prevEntPos = posGe;
-
-                GameEntity negGe = CreateEntity();
-                negGe.transform.Position = new Vector3(-(2 * i * (1 + (0.05f * i))), 0, 0);
-                negGe.transform.SetParent(prevEntNeg.transform);
-                negGe.transform.SetScale(new Vector3(scale), S3DE.Space.World);
-
-                negGe.AddComponent<ObjectRotator>()
-                        .Entity.AddComponent<MeshRenderer>()
-                        .SetMaterial(flag ? mat : mat2)
-                        .SetMesh(m);
-
-                prevEntNeg = negGe;
-
-            }
-
-        }
-
-        void CreateSquareOfEntities_2Mat(float size, Material mat, Material mat2, Mesh m)
-        {
-
             bool flag = false;
             for (int x = -s; x <= s; x++)
             {
@@ -187,25 +159,16 @@ namespace SampleGame
                 {
                     flag = !flag;
                     GameEntity ge = CreateEntity();
-                    ge.AddComponent<ObjectRotator>()
-                        .Entity.AddComponent<MeshRenderer>()
+                    ge.AddComponent<ObjectRotator>();
+
+                    if (render)
+                        ge.AddComponent<MeshRenderer>()
                         .SetMaterial(flag ? mat : mat2)
                         .SetMesh(m);
 
                     ge.transform.Position = new Vector3(x * 2, 0, z * 2);
                 }
             }
-        }
-
-        void CreateSquareOfEntities(float size,Material mat,Mesh m)
-        {
-            for (int x = -s; x <= s; x++)
-                for (int z = -s; z <= s; z++)
-                {
-                    GameEntity ge = CreateEntity();
-                    ge.AddComponent<ObjectRotator>().Entity.AddComponent<MeshRenderer>().SetMaterial(mat).SetMesh(m);
-                    ge.transform.Position = new Vector3(x * 2, 0, z * 2);
-                }
         }
     }
 }

@@ -1,5 +1,4 @@
-#include <xmmintrin.h>
-#include <immintrin.h>
+#include <intrin.h>
 #include <memory>
 #include "EngineMacros.h"
 #include "VecMath.h"
@@ -89,6 +88,31 @@ DLL_Export void Extern_Vecf128_FastAdd(float* f1, float* f2, float* r) {
 
 DLL_Export void Extern_Vecf128_FastSub(float* f1, float* f2, float* r) {
 	_mm_store_ps(r, _mm_sub_ps(_mm_load_ps(f1), _mm_load_ps(f2)));
+}
+
+
+
+DLL_Export void Extern_Vecf128_MatrixMul(float* m1, float* m2, float* res) {
+
+	__m128 x0 = _mm_load_ps(&m1[0]);
+	__m128 x1 = _mm_load_ps(&m1[4]);
+	__m128 x2 = _mm_load_ps(&m1[8]);
+	__m128 x3 = _mm_load_ps(&m1[12]);
+
+	for (int i = 0; i < 4; i++) {
+		int idx = i * 4;
+		_mm_store_ps(&res[idx], _mm_fmadd_ps(x0, _mm_load1_ps(&m2[idx]),
+			_mm_fmadd_ps(x1, _mm_load1_ps(&m2[idx + 1]),
+				_mm_fmadd_ps(x2, _mm_load1_ps(&m2[idx + 2]),
+					_mm_mul_ps(x3, _mm_set1_ps(m2[idx + 3])
+					)))));
+	}
+}
+
+DLL_Export void Extern_Vecf128_MatrixMul3(float* m1, float* m2,float* m3, float* res) {
+	_declspec(align(16)) float tmpMul[16];
+	Extern_Vecf128_MatrixMul(m1, m2, tmpMul);
+	Extern_Vecf128_MatrixMul(tmpMul, m3, res);
 }
 
 DLL_Export Vecf128* Extern_Vecf128_Multiply(Vecf128* v1, Vecf128* v2) {
@@ -182,4 +206,27 @@ DLL_Export void Extern_Vecf128_QuatToRotMatrix(float* quat, float* resMatr) {
 	NonSimd:
 	6 Add 6 Sub,18 Mul | 30 Total operations.
 	*/
+}
+
+DLL_Export void Extern_Vecf128_CreateTransformMatrix(float* scale, float* quat, float* transl, float* res) {
+	
+	float sclMatr[] = {scale[0],0,0,0,
+				       0,scale[1],0,0,
+					   0,0,scale[2],0,
+					   0,0,0,1};
+
+	float rotMatr[] = { 0,0,0,0,
+						0,0,0,0,
+						0,0,0,0,
+						0,0,0,0};
+
+	float trnsMatr[] = {1,0,0,transl[0],
+					    0,1,0,transl[1],
+						0,0,1,transl[2],
+						0,0,0,1};
+
+	Extern_Vecf128_QuatToRotMatrix(quat, rotMatr);
+
+	Extern_Vecf128_MatrixMul3(trnsMatr,rotMatr, sclMatr, res);
+
 }

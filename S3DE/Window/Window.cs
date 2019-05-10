@@ -16,10 +16,7 @@ namespace S3DE
             FLOATING = 0x00020007,
             MAXIMIZED = 0x00020008,
         }
-
-        static Vector2 currRes,newRes;
         static float aspect = 1;
-        static bool resChanged = true,chApplied = true;
         static bool isFocused,lostFocus,gainedFocus;
 
         internal static bool RegainedFocus => gainedFocus;
@@ -27,26 +24,9 @@ namespace S3DE
         internal static bool IsFocused => isFocused;
 
         public static float AspectRatio => aspect;
-
-        public static bool PendingChanges => !chApplied;
-
-        public static bool ChangesApplied
-        {
-            get => chApplied;
-            internal set => chApplied = value;
-        }
-
-        public static bool ResolutionChanged
-        {
-            get => resChanged;
-            internal set => resChanged = value;
-        }
-
-        public static Vector2 Resolution => currRes;
-
+        
         internal static void _CreateWindow(Vector2 displayRes,string title)
         {
-            Window.currRes = displayRes;
             aspect = displayRes.x / displayRes.y;
             InitGLFW();
             Extern_SetWindowHint((int)WindowHint.SAMPLES, 0);
@@ -56,11 +36,11 @@ namespace S3DE
             Extern_SetWindowHint((int)WindowAttribute.RESIZABLE, 0);
             CreateWindow();
         }
+        
 
-        internal static void SetResolution(int width, int height)
+        public static void OnDisplayResChanged(Vector2 oldRes, Vector2 newRes)
         {
-            newRes = new Vector2(width, height);
-            chApplied = false;
+            Extern_SetWindowSize((int)newRes.x, (int)newRes.y);
         }
 
         internal static void UpdateFocus()
@@ -84,17 +64,5 @@ namespace S3DE
                 }
             }
         }
-
-        internal static void ApplyChanges()
-        {
-            if (!chApplied)
-            {
-                chApplied = true;
-                resChanged = true;
-                Extern_SetWindowSize((int)newRes.x, (int)newRes.y);
-                currRes = newRes;
-            }
-        }
-
     }
 }

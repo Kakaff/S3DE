@@ -10,11 +10,10 @@ namespace S3DE
         public static bool IsFocused => Window.IsFocused;
         public static bool LostFocus => Window.LostFocus;
         public static bool RegainedFocus => Window.RegainedFocus;
-
-        public static bool ResolutionChanged => Window.ResolutionChanged;
-        public static Vector2 DisplayResolution => Window.Resolution;
-        public static Vector2 RenderResolution => Renderer.Resolution;
         
+        public static Vector2 DisplayResolution => Renderer.DisplayResolution;
+        public static Vector2 RenderResolution => Renderer.RenderResolution;
+
         public void Run() => EngineMain.RunGame(this);
         internal void InitGame() => Initialize();
         internal void StartGame() => Start();

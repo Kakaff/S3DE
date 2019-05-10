@@ -20,10 +20,12 @@ namespace S3DE
         {
             EngineMain.game = game;
 
+            Renderer.OnDisplayResolutionChanged += Window.OnDisplayResChanged;
+
             Console.WriteLine("Creating window");
             Window._CreateWindow(game.Internal_LoadDisplayResolution, game.GameName);
             Console.WriteLine("Initializing Renderer");
-            Renderer.Init(game.Internal_LoadRenderResolution);
+            Renderer.Init(game.Internal_LoadDisplayResolution,game.Internal_LoadRenderResolution);
             Console.WriteLine("Registering update callback");
             delegateInstance = UpdateFrame;
             RegisterUpdateFunc(delegateInstance);
@@ -32,7 +34,6 @@ namespace S3DE
             game.InitGame();
             game.StartGame();
             Console.WriteLine("Running engine core");
-            
             RunEngine();
         }
 
@@ -42,25 +43,13 @@ namespace S3DE
 
             Window.UpdateFocus();
             Input_Handler.PollInput();
-            if (Window.PendingChanges)
-                Window.ApplyChanges();
-
-            if (FrameBuffer.DefaultFrameBuffer == null)
-                FrameBuffer.DefaultFrameBuffer = FrameBuffer.Create_Standard_FrameBuffer(Renderer.RenderResolution);
-
-            if (FrameBuffer.ActiveFrameBuffer == null)
-            {
-                FrameBuffer.DefaultFrameBuffer.Bind();
-                FrameBuffer.ActiveFrameBuffer.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
-            }
             
             SceneHandler.UpdateActiveScene();
-            //Error while drawing scene!
-            FrameBuffer.ActiveFrameBuffer.PresentFrame();
+            SceneHandler.ActiveScene.PresentFrame();
             
+            Renderer.UpdateEvents();
+
             
-            if (Window.ResolutionChanged && Window.ChangesApplied)
-                Window.ResolutionChanged = false;
 
         }
     }

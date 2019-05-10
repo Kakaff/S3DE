@@ -10,7 +10,6 @@
 
 #include "Graphics.h"
 
-
 DLL_Export void InitGLFW() {
 	if (!glfwInit()) {
 		
@@ -21,6 +20,9 @@ DLL_Export void InitGLFW() {
 }
 
 DLL_Export void CreateWindow() {
+	S3DECore::Window::SetWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	S3DECore::Window::SetWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	S3DECore::Window::SetWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	if (!S3DECore::Window::CreateWindow()) {
 
 	}
@@ -84,13 +86,11 @@ DLL_Export void RunEngine() {
 	glViewport(0, 0, 1280, 720);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-
+	
 	while (!S3DECore::Window::IsCloseRequested()) {
 		glfwPollEvents();
 		func();
 		S3DECore::Window::SwapBuffers();
-		WaitForNextFrame();
+		WaitForNextFrame(S3DECore::Window::VsyncEnabled());
 	}
 }

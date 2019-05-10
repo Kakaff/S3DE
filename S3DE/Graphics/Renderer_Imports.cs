@@ -22,5 +22,8 @@ namespace S3DE.Graphics
 
         [DllImport("S3DECore.dll")]
         private static extern void Extern_SetViewPortSize(uint width, uint height);
+
+        [DllImport("S3DECore.dll")]
+        private static extern void Extern_SetSwapInterval(int v);
     }
 }

@@ -34,7 +34,7 @@ __declspec(dllexport) void Extern_SetFreqCheckInterval(long long int v) {
 	frqchkintv = v < 0 ? 0 : v;;
 }
 
-void WaitForNextFrame(void) {
+void WaitForNextFrame(bool vsync) {
 
 	if (tmr == NULL) {
 		tmr = CreateWaitableTimer(NULL, true, NULL);
@@ -57,6 +57,13 @@ void WaitForNextFrame(void) {
 
 	QueryPerformanceFrequency(&freq);
 	
+	if (vsync) {
+		QueryPerformanceCounter(&curr);
+		deltaTime = ((curr.QuadPart - prevFrameEnd.QuadPart) * 1000000) / freq.QuadPart;
+		prevFrameEnd = curr;
+		return;
+	}
+
 	while (1) {
 		QueryPerformanceCounter(&curr);
 

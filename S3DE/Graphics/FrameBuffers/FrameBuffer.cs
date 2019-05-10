@@ -30,22 +30,19 @@ namespace S3DE.Graphics.FrameBuffers
 
     public sealed partial class FrameBuffer
     {
-        static FrameBuffer activeFrameBuffer,defaultFrameBuffer;
-        static FrameBufferMaterial activeFrameBufferMaterial,defaultFrameBufferMaterial;
-
-        public static FrameBufferMaterial ActiveFrameBufferMaterial => activeFrameBufferMaterial;
+        static FrameBuffer activeFrameBuffer;
         public static FrameBuffer ActiveFrameBuffer => activeFrameBuffer;
-        public static FrameBuffer DefaultFrameBuffer { get => defaultFrameBuffer; set => defaultFrameBuffer = value; }
-        public static FrameBufferMaterial DefaultFrameBufferMaterial { get => defaultFrameBufferMaterial; set => DefaultFrameBufferMaterial = value; }
 
         bool isBound, isCleared;
 
         FrameBufferAttachment[] attachments;
         IntPtr handle;
         Vector2 res;
-
+        uint id;
+        static uint idcntr = 0;
         public bool IsBound => isBound;
         public bool IsCleared => isCleared;
+        public uint ID => id;
 
         private FrameBuffer() { }
 
@@ -56,6 +53,8 @@ namespace S3DE.Graphics.FrameBuffers
             isCleared = false;
             this.res = res;
             handle = Extern_FrameBuffer_Create();
+            id = idcntr;
+            idcntr++;
         }
         
         public void AddAttachment(FrameBufferAttachment fba,FrameBufferAttachmentLocation fbal)
@@ -93,6 +92,10 @@ namespace S3DE.Graphics.FrameBuffers
             return (attachments[GetBufferIndex(attachmentLocation)]);
         }
 
+        /// <summary>
+        /// Binds the FBO if it is not bound, and clears it. Will not unbind the FBO when done.
+        /// </summary>
+        /// <param name="clearbit"></param>
         public void Clear(ClearBufferBit clearbit)
         {
             if (!isBound)
@@ -100,9 +103,12 @@ namespace S3DE.Graphics.FrameBuffers
 
             Renderer.Clear(clearbit);
             if (!Renderer.NoError)
-                throw new Exception("Error clearing framebuffer!");
+                throw new Exception($"Error clearing framebuffer! Error: {Renderer.LatestError}");
         }
 
+        /// <summary>
+        /// Binds the FBO
+        /// </summary>
         public void Bind()
         {
             Extern_FrameBuffer_Bind(handle);
@@ -114,6 +120,10 @@ namespace S3DE.Graphics.FrameBuffers
             activeFrameBuffer = this;
         }
 
+        /// <summary>
+        /// Checks if the FBO is a complete FBO.
+        /// </summary>
+        /// <returns></returns>
         public bool CheckIsComplete()
         {
             if (!isBound)
@@ -125,6 +135,9 @@ namespace S3DE.Graphics.FrameBuffers
             return res;
         }
 
+        /// <summary>
+        /// Unbinds the FBO
+        /// </summary>
         public void Unbind()
         {
             if (isBound)
@@ -133,26 +146,17 @@ namespace S3DE.Graphics.FrameBuffers
                 Renderer.Set_ViewPortSize((uint)Renderer.DisplayResolution.x, (uint)Renderer.DisplayResolution.y);
                 isBound = false;
                 activeFrameBuffer = null;
+            } else
+            {
+                throw new Exception($"Framebuffer {id} isn't bound!");
             }
         }
 
-        public void PresentFrame()
-        {
-            if (activeFrameBufferMaterial == null) {
-                if (defaultFrameBufferMaterial == null)
-                    defaultFrameBufferMaterial = new Standard_FrameBuffer_Material();
-                
-                activeFrameBufferMaterial = defaultFrameBufferMaterial;
-
-            }
-
-            ActiveFrameBuffer.Unbind();
-            Renderer.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
-            Renderer.Enable_FaceCulling(false);
-            activeFrameBufferMaterial.PresentFrame(this);
-            Renderer.Enable_FaceCulling(true);
-        }
-
+        /// <summary>
+        /// Creates a FBO with a RGBA Color0 and Depth_Component Depth Attachment.
+        /// </summary>
+        /// <param name="res">The desired resolution of this FBO</param>
+        /// <returns></returns>
         public static FrameBuffer Create_Standard_FrameBuffer(Vector2 res)
         {
             Console.WriteLine("Creating standard framebuffer, resolution: " + res.ToString());

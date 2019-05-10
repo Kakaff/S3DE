@@ -117,6 +117,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;S3DECORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -135,6 +137,8 @@
       <PreprocessorDefinitions>NDEBUG;S3DECORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\Kakaf\source\repos\S3DE\S3DECore\Dependencies\glew-2.1.0\include;C:\Users\Kakaf\source\repos\S3DE\S3DECore\Dependencies\glfw-3.2.1.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -146,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CPUID.cpp" />
     <ClCompile Include="EngineClock.c" />
     <ClCompile Include="EngineMain.cpp" />
     <ClCompile Include="EngineWindow.cpp" />
@@ -156,11 +161,13 @@
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Vecf128.cpp" />
+    <ClCompile Include="Vecf256.cpp" />
     <ClCompile Include="VertexArrayObject.cpp" />
     <ClCompile Include="DataBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
+    <ClInclude Include="CPUID.h" />
     <ClInclude Include="EngineClock.h" />
     <ClInclude Include="EngineMacros.h" />
     <ClInclude Include="EngineWindow.h" />

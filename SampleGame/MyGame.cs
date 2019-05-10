@@ -32,6 +32,8 @@ namespace SampleGame
         {
             Enable_Powersaving(true);
             Mouse.SetCursor(CursorMode.LockedAndHidden);
+
+            S3DE.Graphics.Renderer.Enable_Vsync(false);
             LoadStartScene<SampleScene>();
         }
 

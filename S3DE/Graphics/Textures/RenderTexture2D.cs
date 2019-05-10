@@ -170,7 +170,6 @@ namespace S3DE.Graphics.Textures
 
         protected virtual void UploadPixelData()
         {
-            Console.WriteLine($"Setting rendertexture2d data  res: {width} {height}");
             Extern_SetTexImage2D_Data(handle, Texture2DTarget.TEXTURE_2D, 0,
                 InternalFormat, width, height, 0, PixelFormat, PixelType,IntPtr.Zero);
         }

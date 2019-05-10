@@ -144,11 +144,12 @@ namespace S3DE.Graphics.Shaders
 
         public void SetUniform(uint location, Quaternion q) => SetUniform_4(location, q.x, q.y, q.z, q.w);
 
-        public void SetUniform(uint location, Matrix4x4 m)
+        public unsafe void SetUniform(uint location, Matrix4x4 m)
         {
-            float[] arr = m.ToArray();
-            using (PinnedMemory pm = new PinnedMemory(arr))
-                Extern_SetUniformMatrixf4v(location, 1, false, arr);
+            unsafe
+            {
+                Extern_SetUniformMatrixf4v(location, 1, true, &m.m00);
+            }
         }
 
         public void SetUniform_1v(uint location, int[] values)
@@ -192,9 +193,10 @@ namespace S3DE.Graphics.Shaders
         public int GetUniformLocation(string uniformName)
         {
             int loc = 0;
+
             using (PinnedMemory pm = new PinnedMemory(uniformName))
                 loc = Extern_GetUniformLocation(handle, uniformName);
-
+                
             return loc;
         }
     }

@@ -2,6 +2,9 @@
 using S3DE.Components;
 using System;
 using System.Collections.Generic;
+using S3DE.Graphics.FrameBuffers;
+using S3DE.Graphics;
+using S3DE.Graphics.Screen;
 
 namespace S3DE.Scenes
 {
@@ -9,12 +12,10 @@ namespace S3DE.Scenes
     {
         List<GameEntity> activeEntities = new List<GameEntity>();
         List<GameEntity> inActiveEntities = new List<GameEntity>();
-
-
+        
         List<GameEntity> entitiesToAdd = new List<GameEntity>();
-
-        GameEntity[] frameStageEntities;
-
+        
+        FrameBuffer sceneFBO;
         Camera activeCamera;
 
         public Camera ActiveCamera
@@ -26,16 +27,7 @@ namespace S3DE.Scenes
         bool isStarted;
 
         internal bool IsStarted => isStarted;
-
-        internal GameEntity[] ActiveEntities
-        {
-            get
-            {
-                InitFrameStage();
-                return frameStageEntities;
-            }
-        }
-
+        
         internal void AddEntity(GameEntity ge)
         {
             entitiesToAdd.Add(ge);
@@ -50,9 +42,7 @@ namespace S3DE.Scenes
             else if (entitiesToAdd.Contains(ge))
                 entitiesToAdd.Remove(ge);
         }
-
-        internal void InitFrameStage() => frameStageEntities = activeEntities.ToArray();
-
+        
         internal void UpdateScene()
         {
             for (int i = 0; i < entitiesToAdd.Count; i++)
@@ -64,18 +54,28 @@ namespace S3DE.Scenes
                     inActiveEntities.Add(ge);
             }
             entitiesToAdd.Clear();
-
+            Init();
             Update();
             Render();
         }
 
-        void Update()
+        void Init()
         {
-            InitFrameStage();
-            foreach (GameEntity ge in frameStageEntities)
+            GameEntity ge;
+            for (int i = 0; i < activeEntities.Count; i++)
             {
+                ge = activeEntities[i];
                 ge.InitComponents();
                 ge.StartComponents();
+            }
+        }
+
+        void Update()
+        {
+            GameEntity ge;
+            for (int i = 0; i < activeEntities.Count; i++)
+            {
+                ge = activeEntities[i];
                 ge.EarlyUpdate();
                 ge.Update();
                 ge.LateUpdate();
@@ -84,18 +84,44 @@ namespace S3DE.Scenes
 
         void Render()
         {
-            InitFrameStage();
-            foreach (GameEntity ge in frameStageEntities)
+            sceneFBO.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
+
+            GameEntity ge;
+            for (int i = 0; i < activeEntities.Count; i++)
             {
+                ge = activeEntities[i];
                 ge.PreDraw();
                 ge.Draw();
                 ge.PostDraw();
             }
         }
 
+        /// <summary>
+        /// Draw the SceneFBO onto the window.
+        /// </summary>
+        internal void PresentFrame()
+        {
+            sceneFBO.Unbind();
+
+            Renderer.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
+            Renderer.Enable_DepthTest(false);
+
+            DefaultScreenQuadMaterial.Instance.Tex = 
+                sceneFBO.GetAttachment(FrameBufferAttachmentLocation.COLOR0).InternalTexture;
+
+            ScreenQuad.Draw(DefaultScreenQuadMaterial.Instance);
+
+            Renderer.Enable_DepthTest(true);
+        }
+
         internal void Start_Internal()
         {
             StartScene();
+            if (sceneFBO == null)
+            {
+                Console.WriteLine("Creating new Scene FBO");
+                sceneFBO = FrameBuffer.Create_Standard_FrameBuffer(Game.RenderResolution);
+            }
             isStarted = true;
         }
 

@@ -60,7 +60,7 @@ namespace S3DE.Graphics.Shaders
         private static extern void Extern_SetUniform4f(uint loc, float f1, float f2, float f3,float f4);
 
         [DllImport("S3DECore.dll")]
-        private static extern void Extern_SetUniformMatrixf4v(uint loc, uint count, bool transpose, float[] matr);
+        private static unsafe extern void Extern_SetUniformMatrixf4v(uint loc, uint count, bool transpose, float* matr);
 
         [DllImport("S3DECore.dll")]
         private static extern void Extern_SetUniformMatrixf3v(uint loc, uint count, bool transpose, float[] matr);

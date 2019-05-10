@@ -12,7 +12,11 @@ namespace S3DECore {
 		static void DestroyWindow();
 		static void SetResolution(int width, int height);
 		static void SwapBuffers();
-		static void SwapInterval(int value);
+		static void SwapInterval(int v);
 		static bool IsCloseRequested();
+		static bool VsyncEnabled();
+		static void SetVsync(bool vsync);
+	private:
+		static bool vsync;
 	};
 }
