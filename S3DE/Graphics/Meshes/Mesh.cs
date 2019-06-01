@@ -5,11 +5,9 @@ using System.Collections.Generic;
 
 namespace S3DE.Graphics.Meshes
 {
-    public abstract partial class Mesh
+    public abstract class Mesh
     {
-        static Mesh activeMesh;
-
-        IntPtr handle;
+        S3DECore.Graphics.Mesh internalMesh;
         
         public bool IsBound { private set; get; }
         public bool IsEmpty { private set; get; }
@@ -19,16 +17,19 @@ namespace S3DE.Graphics.Meshes
 
         public Mesh()
         {
-            handle = CreateMesh();
+            internalMesh = new S3DECore.Graphics.Mesh();
+            if (!Renderer.NoError)
+                throw new Exception("Error creating mesh!");
+
             attributes = new VertexAttribute[16];
         }
 
         protected void SetVertexAttribute(VertexAttribute va)
         {
-            if (!IsBound)
+            if (!internalMesh.IsBound())
                 Bind();
-           
-            SetVertexAttrib(handle, va.Index, va.Size, va.GLType, va.Normalized, va.Stride, va.Offset);
+            
+            internalMesh.SetVertexAttrib(va.Index, va.Size, (uint)va.GLType, (byte)(va.Normalized ? 1 : 0), va.Stride, va.Offset);
 
             if (!Renderer.NoError)
                 throw new Exception("Error setting vertex attribute!");
@@ -38,19 +39,17 @@ namespace S3DE.Graphics.Meshes
         
         protected void EnableVertexAttribute(uint index)
         {
-
             VertexAttribute va = attributes[index];
             if (va == null)
                 throw new NullReferenceException($"Mesh does not contain a VertexAttribute with index {index}");
-
 
             if (va.IsEnabled)
                 throw new ArgumentException($"VertexAttribute {index} is already enabled!");
 
             if (!IsBound)
                 Bind();
-            
-            EnableVertexAttrib(handle, index);
+
+            internalMesh.EnableVertexAttrib(index);
             if (!Renderer.NoError)
                 throw new Exception("Error enabling vertex attribute!");
 
@@ -59,23 +58,19 @@ namespace S3DE.Graphics.Meshes
 
         void Bind()
         {
-            if (!IsBound)
-            {
-                if (activeMesh != null)
-                    activeMesh.IsBound = false;
-
-                Extern_Mesh_Bind(handle);
-                activeMesh = this;
-                IsBound = true;
-            }
+            internalMesh.Bind();
+            if (!Renderer.NoError)
+                throw new Exception("Error binding mesh!");
         }
 
         public void Draw()
         {
             if (!IsBound)
-                 Bind();
+                Bind();
 
-            DrawMesh(handle);
+            internalMesh.Draw();
+            if (!Renderer.NoError)
+                throw new Exception("Error drawing Mesh!");
         }
 
         protected void UploadMeshData(byte[] vertexData,ushort[] indicies)
@@ -87,16 +82,19 @@ namespace S3DE.Graphics.Meshes
             {
                 I_BB.AddRange(2,indicies);
 
-                using (PinnedMemory vPM = new PinnedMemory(vertexData))
-                    using (PinnedMemory iPM = new PinnedMemory(I_BB.Data))
+                unsafe
                 {
-                    SetMeshData(handle, 
-                        vertexData, (uint)vertexData.Length,
-                        I_BB.Data, (uint)I_BB.Data.Length,
-                        BufferUsage.STATIC_DRAW);
-
-                    IsEmpty = vertexData.Length == 0 && I_BB.Data.Length == 0;
+                    fixed (byte* vb = &vertexData[0])
+                        internalMesh.SetVertexData(vb, (uint)vertexData.Length, (uint)BufferUsage.STATIC_DRAW);
+                    if (!Renderer.NoError)
+                        throw new Exception("Error setting VertexData!");
+                    fixed (byte* ib = &I_BB.Data[0])
+                        internalMesh.SetIndicies(ib, (uint)I_BB.Data.Length, (uint)BufferUsage.STATIC_DRAW);
+                    if (!Renderer.NoError)
+                        throw new Exception("Error setting Indicies!");
                 }
+                IsEmpty = vertexData.Length == 0 && I_BB.Data.Length == 0;
+
             }
         }
 

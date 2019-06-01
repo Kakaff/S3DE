@@ -84,45 +84,49 @@ namespace S3DE.Graphics
             }
         }
 
-        internal static void Init(Vector2 displayRes,Vector2 renderRes)
+        internal static bool Init(Vector2 displayRes,Vector2 renderRes)
         {
             currRenderRes = renderRes;
             currDisplayRes = displayRes;
-            InitGlew();
+            return S3DECore.Graphics.Renderer.Init();
         }
 
-        public static void Set_ViewPortSize(uint width, uint height)
+        public static void SetViewportSize(int x, int y, int width, int height)
         {
-            Extern_SetViewPortSize(width, height);
+            S3DECore.Graphics.Renderer.SetViewportSize(x, y, width, height);
+            if (!NoError)
+                throw new System.Exception("Error changing viewport size!");
         }
-
-        public static void Enable_FaceCulling(bool v)
+        
+        public static void Enable(GlEnableCap cap)
         {
-            if (v)
-                Extern_Enable((uint)GlEnableCap.CullFace);
-            else
-                Extern_Disable((uint)GlEnableCap.CullFace);
+            S3DECore.Graphics.Renderer.Enable((uint)cap);
+            if (!NoError)
+                throw new System.Exception($"Error Enabling {cap}");
         }
 
-        public static void Enable_DepthTest(bool v)
+        public static void Disable(GlEnableCap cap)
         {
-            if (v)
-                Extern_Enable((uint)GlEnableCap.DepthTest);
-            else
-                Extern_Disable((uint)GlEnableCap.DepthTest);
+            S3DECore.Graphics.Renderer.Disable((uint)cap);
+            if (!NoError)
+                throw new System.Exception($"Error disabling {cap}");
         }
 
-        public static void Enable_Vsync(bool v)
+        public static void SetVsync(bool value) => SetSwapInterval(value ? 1 : 0);
+
+        public static void SetSwapInterval(int v)
         {
-            if (v != vsync)
-            {
-                Extern_SetSwapInterval(v ? 1 : 0);
-            }
+            vsync = !(v == 0);
+            S3DECore.Window.SwapInterval(v);
         }
-
+        
         internal static void Clear(ClearBufferBit clearBuffer)
         {
-            Extern_Clear(clearBuffer);
+            S3DECore.Graphics.Renderer.Clear((uint)clearBuffer);
+            if (!NoError)
+                throw new System.Exception("Error clearing buffers!");
+
         }
+        
     }
 }

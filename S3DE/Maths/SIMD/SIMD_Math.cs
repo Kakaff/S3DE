@@ -23,25 +23,46 @@ namespace S3DE.Maths.SIMD
             unsafe
             {
                 if (Vec256.IsEnabled)
-                    Extern_Vecf256_MatrixMul(&m1.m00,&m2.m00,&res.m00);
-
-                if (Vec128.IsEnabled)
-                    return Vec128.MatrixMul(m1, m2);
+                    S3DECore.Math.Vecf256.MatrixMultiply(&m1.m00, &m2.m00, &res.m00);
             }
             
+            return res;
+        }
+
+        public static Matrix4x4 QuaternionToRotationMatrix(Quaternion quat)
+        {
+            Matrix4x4 res = new Matrix4x4();
+
+            unsafe
+            {
+                if (Vec128.IsEnabled)
+                    S3DECore.Math.Vecf128.CreateRotationMatrix(&quat.x, &res.m00);
+            }
+            return res;
+        }
+
+        public static Matrix4x4 CreateTransformMatrix(Vector3 pos, Quaternion rot, Vector3 scale)
+        {
+            Matrix4x4 res = new Matrix4x4();
+
+            unsafe
+            {
+                S3DECore.Math.Vecf128.CreateTransformMatrix(&scale.x, &rot.x, &pos.x, &res.m00);
+            }
 
             return res;
         }
 
-        public static Matrix4x4 SSE_MatrixMul(Matrix4x4 m1, Matrix4x4 m2)
+        public static Matrix4x4 CreateTransformMatrix(Matrix4x4 scale, Matrix4x4 rot, Matrix4x4 trnsl) 
         {
-            if (Vec128.IsEnabled)
-                return Vec128.MatrixMul(m1, m2);
+            Matrix4x4 res = new Matrix4x4();
 
-            return new Matrix4x4();
+            unsafe
+            {
+                S3DECore.Math.Vecf256.CreateTransformMatrix(&scale.m00, &rot.m00, &trnsl.m00, &res.m00);
+            }
+
+            return res;
         }
-
-        [DllImport("S3DECore.dll")]
-        private static extern unsafe void Extern_Vecf256_MatrixMul(float* m1, float* m2, float* res);
     }
 }

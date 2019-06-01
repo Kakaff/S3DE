@@ -20,3 +20,7 @@ void VertexArrayObject::SetAttrib(uint index,GLint size, GLenum type, GLboolean 
 	glVertexAttribPointer(index,size,type,normalized,stride,(void*)offset);
 
 }
+
+void VertexArrayObject::Destroy() {
+
+}

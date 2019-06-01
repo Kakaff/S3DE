@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using S3DE.Graphics.FrameBuffers;
 using S3DE.Graphics;
 using S3DE.Graphics.Screen;
+using S3DE.Graphics.Rendering;
+using S3DE.Graphics.Textures;
 
 namespace S3DE.Scenes
 {
@@ -14,8 +16,9 @@ namespace S3DE.Scenes
         List<GameEntity> inActiveEntities = new List<GameEntity>();
         
         List<GameEntity> entitiesToAdd = new List<GameEntity>();
+
+        List<RenderPass> renderpasses = new List<RenderPass>();
         
-        FrameBuffer sceneFBO;
         Camera activeCamera;
 
         public Camera ActiveCamera
@@ -84,44 +87,48 @@ namespace S3DE.Scenes
 
         void Render()
         {
-            sceneFBO.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
-
             GameEntity ge;
             for (int i = 0; i < activeEntities.Count; i++)
             {
                 ge = activeEntities[i];
                 ge.PreDraw();
                 ge.Draw();
-                ge.PostDraw();
             }
+
+            for (int i = 0; i < renderpasses.Count; i++)
+            {
+                RenderPass rp = renderpasses[i];
+                rp.BindFrameBuffer();
+                if (rp.ClearBeforeRendering)
+                    rp.ClearBuffers();
+
+                renderpasses[i].Render();
+            }
+
+            for (int i = 0; i < activeEntities.Count; i++)
+                activeEntities[i].PostDraw();
         }
 
-        /// <summary>
-        /// Draw the SceneFBO onto the window.
-        /// </summary>
+        
         internal void PresentFrame()
         {
-            sceneFBO.Unbind();
+            FrameBuffer fb = renderpasses[renderpasses.Count - 1].GetFrameBuffer();
+            fb.Unbind();
 
             Renderer.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
-            Renderer.Enable_DepthTest(false);
+            Renderer.Disable(GlEnableCap.DepthTest);
 
             DefaultScreenQuadMaterial.Instance.Tex = 
-                sceneFBO.GetAttachment(FrameBufferAttachmentLocation.COLOR0).InternalTexture;
+                fb.GetAttachment(FrameBufferAttachmentLocation.COLOR0).InternalTexture as RenderTexture2D;
 
             ScreenQuad.Draw(DefaultScreenQuadMaterial.Instance);
-
-            Renderer.Enable_DepthTest(true);
+            
+            Renderer.Enable(GlEnableCap.DepthTest);
         }
 
         internal void Start_Internal()
         {
             StartScene();
-            if (sceneFBO == null)
-            {
-                Console.WriteLine("Creating new Scene FBO");
-                sceneFBO = FrameBuffer.Create_Standard_FrameBuffer(Game.RenderResolution);
-            }
             isStarted = true;
         }
 
@@ -144,6 +151,32 @@ namespace S3DE.Scenes
             }
 
             return activeCamera;
+        }
+
+        protected void AddRenderPass(RenderPass rp, int targetIndex)
+        {
+            if (targetIndex > renderpasses.Count)
+                renderpasses.Add(rp);
+            else
+                renderpasses.Insert(targetIndex, rp);
+        }
+
+        public RenderPass GetRenderPass(int identifier)
+        {
+            return renderpasses.Find(x => x.Identifier == identifier);
+        }
+
+        /// <summary>
+        /// Creates a Deferred, A Forward and a Blend renderpass.
+        /// </summary>
+        protected void CreateStandardRenderPasses()
+        {
+            throw new NotImplementedException();
+            /*
+            renderpasses.Add(new DeferredRenderPass(RenderPassType.Deferred),
+                new ForwardRenderPass(RenderPassType.Forward),
+                new BlendRenderPass(RenderPassType.Blend));
+                */
         }
 
         protected GameEntity CreateEntity() => CreateGameEntity_Internal();

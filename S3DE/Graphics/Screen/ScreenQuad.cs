@@ -1,4 +1,5 @@
-﻿using S3DE.Graphics.Meshes;
+﻿using S3DE.Graphics.Materials;
+using S3DE.Graphics.Meshes;
 using S3DE.Maths;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,9 @@ namespace S3DE.Graphics.Screen
         /// Draws the ScreenQuad onto the currently active FBO
         /// </summary>
         /// <param name="mat"></param>
-        public static void Draw(Material mat)
+        public static void Draw(ScreenQuadMaterial mat)
         {
-            mat.UpdateUniforms_Internal();
+            mat.Update();
             
             Instance.mesh.Draw();
         }

@@ -20,6 +20,12 @@ namespace S3DE.Maths
         public Quaternion Conjugate() =>
             new Quaternion(-x, -y, -z, w);
 
+        public Quaternion Normalized()
+        {
+            double l = Math.Sqrt(x * 2 + y * 2 + z * 2 + w * 2);
+            return new Quaternion((float)(x / l), (float)(y / l), (float)(z / l), (float)(w / l));
+        }
+
         public static Quaternion Inverse(Quaternion q)
         {
             Quaternion r;
@@ -55,26 +61,9 @@ namespace S3DE.Maths
 
         public static Vector3 Transform(Vector3 v, Quaternion q)
         {
-            float x2 = q.x + q.x;
-            float y2 = q.y + q.y;
-            float z2 = q.z + q.z;
+            Quaternion res = (q * new Quaternion(v.x, v.y, v.z, 0)) * q.Conjugate();
 
-            float wx2 = q.w * x2;
-            float wy2 = q.w * y2;
-            float wz2 = q.w * z2;
-
-            float xx2 = q.x * x2;
-            float xy2 = q.x * y2;
-            float xz2 = q.x * z2;
-
-            float yy2 = q.y * y2;
-            float yz2 = q.y * z2;
-            float zz2 = q.z * z2; 
-         
-            return new Vector3(
-                v.x * (1.0f - yy2 - zz2) + v.y * (xy2 - wz2)        + v.z * (xz2 + wy2),
-                v.x * (xy2 + wz2)        + v.y * (1.0f - xx2 - zz2) + v.z * (yz2 - wx2),
-                v.x * (xz2 - wy2)        + v.y * (yz2 + wx2)        + v.z * (1.0f - xx2 - yy2));
+            return new Vector3(res.x, res.y,res.z);
                 
         }
 
@@ -102,7 +91,7 @@ namespace S3DE.Maths
             ans.x = q1x * q2w + q2x * q1w + cx;
             ans.y = q1y * q2w + q2y * q1w + cy;
             ans.z = q1z * q2w + q2z * q1w + cz;
-            ans.w = q1w * q2w - dot;
+            ans.w = q1w * q2w + 0   * 1   - dot;
             
             return ans;
             

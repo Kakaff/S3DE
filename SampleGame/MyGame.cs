@@ -5,6 +5,9 @@ using System;
 
 namespace SampleGame
 {
+    /// <summary>
+    /// A test game mainly used for debugging and developing new features.
+    /// </summary>
     public class MyGame : Game
     {
         public static void Main(String[] args)
@@ -33,7 +36,7 @@ namespace SampleGame
             Enable_Powersaving(true);
             Mouse.SetCursor(CursorMode.LockedAndHidden);
 
-            S3DE.Graphics.Renderer.Enable_Vsync(false);
+            S3DE.Graphics.Renderer.SetVsync(true);
             LoadStartScene<SampleScene>();
         }
 

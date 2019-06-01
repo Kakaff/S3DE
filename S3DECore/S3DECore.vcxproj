@@ -31,6 +31,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -38,12 +39,14 @@
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -51,6 +54,7 @@
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -151,12 +155,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CPUID.cpp" />
-    <ClCompile Include="EngineClock.c" />
+    <ClCompile Include="Cursor.cpp" />
+    <ClCompile Include="EngineClock.cpp" />
     <ClCompile Include="EngineMain.cpp" />
     <ClCompile Include="EngineWindow.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="GameEntity.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -169,12 +176,14 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="CPUID.h" />
     <ClInclude Include="EngineClock.h" />
+    <ClInclude Include="EngineInput.h" />
     <ClInclude Include="EngineMacros.h" />
     <ClInclude Include="EngineWindow.h" />
     <ClInclude Include="Entities.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="EngineTypes.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Textures.h" />
   </ItemGroup>
   <ItemGroup>

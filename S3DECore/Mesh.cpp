@@ -3,84 +3,83 @@
 #include "EngineMacros.h"
 
 
-Mesh::Mesh(void) {
-	vao = new VertexArrayObject();
-	vb = new DataBuffer(GL_ARRAY_BUFFER);
-	eb = new DataBuffer(GL_ELEMENT_ARRAY_BUFFER);
-}
+namespace S3DECore {
+	namespace Graphics {
+		Mesh::Mesh() {
+			vao = new VertexArrayObject();
+			vb = new DataBuffer(GL_ARRAY_BUFFER);
+			eb = new DataBuffer(GL_ELEMENT_ARRAY_BUFFER);
+		}
 
-void Mesh::Bind(void) {
-	vao->Bind();
-	vb->Bind();
-	eb->Bind();
-}
+		Mesh::~Mesh() {
+			Destroy();
+		}
 
-void Mesh::Draw(void) {
-	glDrawElements(GL_TRIANGLES, indCount, GL_UNSIGNED_SHORT, (void*)0);
-}
+		Mesh::!Mesh() {
 
-void Mesh::SetVertexAttrib(uint index, GLint size, GLenum type, GLboolean normalized, uint stride, uint offset) {
-	vao->SetAttrib(index, size, type, normalized, stride, offset);
-}
+		}
 
-void Mesh::EnableVertexAttrib(uint index) {
-	vao->EnableAttrib(index);
-}
+		void Mesh::Bind() {
 
-void Mesh::DisableVertexAttrib(uint index) {
-	vao->DisableAttrib(index);
-}
+			if (!isBound) {
+				vao->Bind();
+				vb->Bind();
+				eb->Bind();
 
-void Mesh::SetVertexData(const uint8_t data[],uint length, GLenum usage) {
-	vertCount = length / 4;
-	vb->SetData(data,length, usage);
-}
+				if (activeMesh != nullptr)
+					activeMesh->isBound = false;
 
-void Mesh::SetVertexData(std::vector<uint8_t> data, GLenum usage) {
-	vertCount = data.size() / 4;
-	printf("Mesh has %i vertices \n", vertCount);
-	vb->SetData(data, usage);
-}
+				activeMesh = this;
+				isBound = true;
+			}
+		}
 
-void Mesh::SetIndicies(const uint8_t data[], uint length, GLenum usage) {
-	eb->SetData(data, length, usage);
-	indCount = length / 2;
-	printf("Mesh has %i indicies \n", indCount);
-}
+		void Mesh::Draw() {
+			glDrawElements(GL_TRIANGLES, indCount, GL_UNSIGNED_SHORT, (void*)0);
+		}
 
-uint Mesh::NumVertices(void) {
-	return vertCount;
-}
+		void Mesh::SetVertexAttrib(uint index, GLint size, GLenum type, GLboolean normalized, uint stride, uint offset) {
+			vao->SetAttrib(index, size, type, normalized, stride, offset);
+		}
 
-uint Mesh::NumIndicies(void) {
-	return indCount;
-}
+		void Mesh::EnableVertexAttrib(uint index) {
+			vao->EnableAttrib(index);
+		}
 
-DLL_Export void DrawMesh(Mesh* m) {
-	m->Draw();
-}
+		void Mesh::DisableVertexAttrib(uint index) {
+			vao->DisableAttrib(index);
+		}
 
-DLL_Export Mesh* CreateMesh() {
-	return new Mesh();
-}
+		void Mesh::SetVertexData(const uint8_t data[], uint length, GLenum usage) {
+			vertCount = length / 4;
+			vb->SetData(data, length, usage);
+		}
 
-DLL_Export void SetMeshData(Mesh* mesh, uint8_t vertices[],uint vertcount, uint8_t indicies[],uint indCount, int usage) {
-	mesh->SetVertexData(vertices,vertcount, usage);
-	mesh->SetIndicies(indicies, indCount, usage);
-}
+		void Mesh::SetIndicies(const uint8_t data[], uint length, GLenum usage) {
+			eb->SetData(data, length, usage);
+			indCount = length / 2;
+			printf("Mesh has %i indicies \n", indCount);
+		}
 
-DLL_Export void EnableVertexAttrib(Mesh* mesh, uint index) {
-	mesh->EnableVertexAttrib(index);
-}
+		uint Mesh::NumVertices(void) {
+			return vertCount;
+		}
 
-DLL_Export void DisableVertexAttrib(Mesh* mesh, uint index) {
-	mesh->DisableVertexAttrib(index);
-}
+		uint Mesh::NumIndicies(void) {
+			return indCount;
+		}
 
-DLL_Export void SetVertexAttrib(Mesh* mesh,uint index, GLint size, GLenum type, GLboolean normalized, uint stride, uint offset) {
-	mesh->SetVertexAttrib(index, size, type, normalized, stride, offset);
-}
+		void Mesh::Destroy() {
+			vb->Destroy();
+			eb->Destroy();
+			vao->Destroy();
+			delete vb;
+			delete eb;
+			delete vao;
+		}
 
-DLL_Export void Extern_Mesh_Bind(Mesh* m) {
-	m->Bind();
+		bool Mesh::IsBound() {
+			return isBound;
+		}
+	}
 }

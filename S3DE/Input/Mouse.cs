@@ -37,12 +37,17 @@ namespace S3DE.Input
             else
                 isLocked = false;
 
-            Extern_SetCursor(cm);
+            S3DECore.Input.Cursor.SetCursor((uint)cm);
         }
 
         internal static void Update()
         {
-            Extern_GetCursorPos(out double x, out double y);
+            double x = 0, y = 0;
+            unsafe
+            {
+                S3DECore.Input.Cursor.GetCursorPos(&x, &y);
+            }
+
             x -= Renderer.DisplayResolution.x * 0.5f;
             y -= Renderer.DisplayResolution.y * 0.5f;
 

@@ -16,6 +16,7 @@ namespace S3DE
             FLOATING = 0x00020007,
             MAXIMIZED = 0x00020008,
         }
+
         static float aspect = 1;
         static bool isFocused,lostFocus,gainedFocus;
 
@@ -25,22 +26,27 @@ namespace S3DE
 
         public static float AspectRatio => aspect;
         
-        internal static void _CreateWindow(Vector2 displayRes,string title)
+        internal static bool CreateWindow(Vector2 displayRes,string title)
         {
             aspect = displayRes.x / displayRes.y;
-            InitGLFW();
-            Extern_SetWindowHint((int)WindowHint.SAMPLES, 0);
-            Extern_SetWindowHint((int)WindowHint.CONTEXT_VERSION_MAJOR, 3);
-            Extern_SetWindowHint((int)WindowHint.CONTEXT_VERSION_MINOR, 3);
-            Extern_SetWindowHint((int)WindowHint.OPENGL_PROFILE, (int)GLFW.OPENGL_CORE_PROFILE);
-            Extern_SetWindowHint((int)WindowAttribute.RESIZABLE, 0);
-            CreateWindow();
+            S3DECore.Window.SetWindowHint((int)WindowHint.SAMPLES, 0);
+            S3DECore.Window.SetWindowHint((int)WindowHint.CONTEXT_VERSION_MAJOR, 3);
+            S3DECore.Window.SetWindowHint((int)WindowHint.CONTEXT_VERSION_MINOR, 3);
+            S3DECore.Window.SetWindowHint((int)WindowHint.OPENGL_PROFILE, (int)GLFW.OPENGL_CORE_PROFILE);
+            S3DECore.Window.SetWindowHint((int)WindowAttribute.RESIZABLE, 0);
+            return S3DECore.Window.CreateWindow((int)displayRes.x, (int)displayRes.y);
         }
         
 
         public static void OnDisplayResChanged(Vector2 oldRes, Vector2 newRes)
         {
             Extern_SetWindowSize((int)newRes.x, (int)newRes.y);
+            S3DECore.Window.SetResolution((int)newRes.x, (int)newRes.y);
+        }
+
+        internal static void SwapBuffers()
+        {
+            S3DECore.Window.SwapBuffers();
         }
 
         internal static void UpdateFocus()
@@ -48,7 +54,7 @@ namespace S3DE
             lostFocus = false;
             gainedFocus = false;
 
-            bool foc = Extern_GetAttribute((int)WindowAttribute.FOCUSED) == 1;
+            bool foc = S3DECore.Window.GetAttribute((int)WindowAttribute.FOCUSED) == 1;
             if (foc != isFocused)
             {
                 isFocused = foc;

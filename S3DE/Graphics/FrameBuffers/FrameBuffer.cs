@@ -112,7 +112,9 @@ namespace S3DE.Graphics.FrameBuffers
         public void Bind()
         {
             Extern_FrameBuffer_Bind(handle);
-            Renderer.Set_ViewPortSize((uint)res.x, (uint)res.y);
+            if (!Renderer.NoError)
+                throw new Exception("Error binding Framebuffer!");
+            Renderer.SetViewportSize(0,0,(int)res.x, (int)res.y);
             isBound = true;
             if (activeFrameBuffer != null)
                 activeFrameBuffer.isBound = false;
@@ -143,7 +145,9 @@ namespace S3DE.Graphics.FrameBuffers
             if (isBound)
             {
                 Extern_FrameBuffer_Unbind();
-                Renderer.Set_ViewPortSize((uint)Renderer.DisplayResolution.x, (uint)Renderer.DisplayResolution.y);
+                if (!Renderer.NoError)
+                    throw new Exception("Error unbinding Framebuffer!");
+                Renderer.SetViewportSize(0,0,(int)Renderer.DisplayResolution.x, (int)Renderer.DisplayResolution.y);
                 isBound = false;
                 activeFrameBuffer = null;
             } else

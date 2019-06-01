@@ -1,5 +1,6 @@
 ﻿using S3DE.Maths;
 using System.Collections.Generic;
+using S3DE.Collections;
 
 namespace S3DE.Components
 {
@@ -8,11 +9,13 @@ namespace S3DE.Components
         Transform parent;
         List<Transform> children;
         
+        
         public bool HasChanged => hasChanged;
+        public bool NeedsUpdate { get; private set; }
+        bool recalcScale, recalcRot, recalcPos;
         bool hasChanged;
-        bool rotUpdated, scaleUpdated, posUpdated;
 
-        public Transform Parent => parent;
+        //public Transform Parent => parent;
 
         public Vector3 Position
         {
@@ -62,50 +65,94 @@ namespace S3DE.Components
         Vector3 worldScale, localScale;
 
         Vector3 forward, up, right;
+        Matrix4x4 worldTransformMatrix,localTransformMatrix;
 
-        Matrix4x4 worldTranslationMatrix, worldRotMatrix, worldScaleMatrix, worldTransformMatrix;
-        Matrix4x4 localTranslationMatrix, localRotMatrix, localScaleMatrix, localTransformMatrix;
-
-        public Matrix4x4 WorldTranslationMatrix { get { CheckUpdate(); return worldTranslationMatrix; } }
-        public Matrix4x4 WorldRotationMatrix { get { CheckUpdate(); return worldRotMatrix; } }
-        public Matrix4x4 WorldScaleMatrix { get { CheckUpdate(); return worldScaleMatrix; } }
         public Matrix4x4 WorldTransformMatrix { get { CheckUpdate(); return worldTransformMatrix; } }
+        public Matrix4x4 LocalTransformMatrix { get { CheckUpdate(); return localTransformMatrix; } }
 
         protected override void PostRender() => hasChanged = false;
-
-        bool ShouldUpdate()
-        {
-            return !(rotUpdated & posUpdated & scaleUpdated);
-        }
-
-        public void ForceUpdate()
-        {
-            CheckUpdate();
-        }
-
         void CheckUpdate()
         {
-            if (ShouldUpdate())
+            if (this.NeedsUpdate)
             {
-                if (!rotUpdated)
-                    UpdateWorldRotation();
+                //Find the root of the update.
+                Transform t = this;
+                while (t.parent != null && t.parent.NeedsUpdate)
+                    t = t.parent;
 
-                if (!scaleUpdated)
-                    UpdateWorldScale();
+                t.PerformUpdate();
+            }
+        }
 
-                if (!posUpdated)
-                    UpdateWorldPosition();
+        void PerformUpdate()
+        {
+            FastQueue<(byte,Transform)> transforms = new FastQueue<(byte,Transform)>();
+            transforms.Enqueue((0,this));
+            (byte UpdateMask,Transform Transform) curr;
+            while (transforms.Count > 0)
+            {
+                curr = transforms.Dequeue();
+                byte upByte = curr.Transform.Recalculate(curr.UpdateMask);
+                for (int i = 0; i < curr.Transform.children.Count; i++)
+                    transforms.Enqueue((upByte,curr.Transform.children[i]));
+            }
+        }
 
-                if ((!scaleUpdated || !rotUpdated) && posUpdated)
-                    UpdateWorldTransform();
+        byte Recalculate(byte UpdateMask)
+        {
+            UpdateMask |= (byte)(recalcScale ? 0x3 : 0x0);
+            UpdateMask |= (byte)(recalcRot ? 0x5 : 0x0);
+            UpdateMask |= (byte)(recalcPos ? 0x1 : 0x0);
 
-                bool rotChanged = !rotUpdated;
-                bool scaleChanged = !scaleUpdated;
-                bool posChanged = !posUpdated;
-                rotUpdated = true;
-                scaleUpdated = true;
-                posUpdated = true;
-                UpdateChildren(posChanged,rotChanged,scaleChanged);
+            switch (UpdateMask)
+            {
+                case 0x1: UpdateWorldPosition(); break;
+                case 0x3:
+                    {
+                        UpdateWorldScale();
+                        UpdateWorldPosition();
+                        break;
+                    }
+                case 0x5:
+                    {
+                        UpdateWorldRotation();
+                        UpdateWorldPosition();
+                        break;
+                    }
+                case 0x7:
+                    {
+                        UpdateWorldScale();
+                        UpdateWorldRotation();
+                        UpdateWorldPosition();
+                        break;
+                    }
+            }
+
+            UpdateWorldTransform();
+            NeedsUpdate = false;
+            recalcScale = false;
+            recalcPos = false;
+            recalcRot = false;
+
+            return UpdateMask;
+        }
+
+        void FlagUpdateRequired()
+        {
+            FastQueue<Transform> transforms = new FastQueue<Transform>();
+            transforms.Enqueue(this);
+            Transform t;
+            while (transforms.Count > 0)
+            {
+                t = transforms.Dequeue();
+                if (t.NeedsUpdate)
+                    continue;
+                else
+                {
+                    t.NeedsUpdate = true;
+                    for (int i = 0; i < t.children.Count; i++)
+                        transforms.Enqueue(t.children[i]);
+                }
             }
         }
 
@@ -139,8 +186,8 @@ namespace S3DE.Components
                         break;
                     }
             }
-
-            posUpdated = false;
+            recalcPos = true;
+            FlagUpdateRequired();
         }
 
         public void SetRotation(Quaternion quat, Space space)
@@ -159,7 +206,8 @@ namespace S3DE.Components
                         break;
                     }
             }
-            rotUpdated = false;
+            recalcRot = true;
+            FlagUpdateRequired();
         }
 
         public void Rotate(Quaternion q) => Rotate(q, Space.World);
@@ -171,14 +219,15 @@ namespace S3DE.Components
 
         public void SetScale(Vector3 scale, Space space)
         {
+            hasChanged = true;
             switch (space)
             {
-                case Space.World: { localScale = parent == null ? scale : scale / parent.worldScale; break; }
+                
+                case Space.World: { localScale = parent == null ? scale : scale / parent.Scale; break; }
                 case Space.Local: { localScale = scale; break; }
             }
-
-            hasChanged = true;
-            scaleUpdated = false;
+            recalcScale = true;
+            NeedsUpdate = true;
         }
 
         public void SetParent(Transform nParent)
@@ -199,7 +248,6 @@ namespace S3DE.Components
 
         private void AddChild(Transform c)
         {
-            
             Transform p = this;
 
             while (p != null)
@@ -222,7 +270,7 @@ namespace S3DE.Components
             c.SetPosition(pos, Space.World);
             c.SetRotation(rot, Space.World);
             c.SetScale(scale, Space.World);
-            c.RecalculateMatrices(true,true,true);
+            c.FlagUpdateRequired();
         }
 
         private void RemoveChild(Transform c)
@@ -238,75 +286,56 @@ namespace S3DE.Components
             c.localPosition = pos;
             c.localQuatRotation = rot;
             c.localScale = scale;
-            c.RecalculateMatrices(true,true,true);
+            c.FlagUpdateRequired();
         }
 
 
         private void UpdateWorldPosition()
         {
-            localTranslationMatrix = Matrix4x4.CreateTranslationMatrix(localPosition);
-            worldTranslationMatrix = (parent == null) ? localTranslationMatrix : localTranslationMatrix * parent.WorldTranslationMatrix;
-            UpdateWorldTransform();
-            worldPosition = Vector3.Zero.Transform(worldTransformMatrix);
+            //localTranslationMatrix = Matrix4x4.CreateTranslationMatrix(localPosition);
+            //worldTranslationMatrix = (parent == null) ? localTranslationMatrix : localTranslationMatrix * parent.WorldTranslationMatrix;
+            worldPosition = (parent == null) ? localPosition : parent.worldPosition +
+                (localPosition.Transform(parent.worldQuatRotation) * parent.worldScale);
         }
 
         private void UpdateWorldTransform()
         {
-            Matrix4x4 transformMatrix = Matrix4x4.CreateTransformMatrix(localScaleMatrix, localRotMatrix, localTranslationMatrix);
-            worldTransformMatrix = (parent == null) ? transformMatrix : transformMatrix * parent.WorldTransformMatrix;  
+            localTransformMatrix = Matrix4x4.CreateTransformMatrix(
+                Matrix4x4.CreateScaleMatrix(localScale), 
+                Matrix4x4.CreateRotationMatrix(localQuatRotation), 
+                Matrix4x4.CreateTranslationMatrix(localPosition));
+
+            worldTransformMatrix = (parent == null) ? localTransformMatrix : localTransformMatrix * parent.worldTransformMatrix;
+
         }
 
         private void UpdateWorldRotation()
         {
-            worldQuatRotation = (parent == null) ? localQuatRotation : parent.Rotation * localQuatRotation;
+            worldQuatRotation = (parent == null) ? localQuatRotation : parent.worldQuatRotation * localQuatRotation;
 
-            localRotMatrix = Matrix4x4.CreateRotationMatrix(localQuatRotation);
+            //localRotMatrix = Matrix4x4.CreateRotationMatrix(localQuatRotation);
             
-            worldRotMatrix = (parent == null) ? localRotMatrix : Matrix4x4.CreateRotationMatrix(worldQuatRotation);
+            //worldRotMatrix = (parent == null) ? localRotMatrix : Matrix4x4.CreateRotationMatrix(worldQuatRotation);
 
-            right = Vector3.Right.Transform(worldRotMatrix);
-            up = Vector3.Up.Transform(worldRotMatrix);
-            forward = Vector3.Forward.Transform(worldRotMatrix);
+            right = Vector3.Right.Transform(worldQuatRotation);
+            up = Vector3.Up.Transform(worldQuatRotation);
+            forward = Vector3.Forward.Transform(worldQuatRotation);
         }
 
         private void UpdateWorldScale()
         {
-            localScaleMatrix = Matrix4x4.CreateScaleMatrix(localScale);
-            worldScaleMatrix = (parent == null) ? localScaleMatrix : parent.WorldScaleMatrix * localScaleMatrix;
-            worldScale = Vector3.One.Transform(worldScaleMatrix);
-        }
-
-        private void UpdateChildren(bool pos, bool rot, bool scale)
-        {
-            for (int i = 0; i < children.Count; i++)
-                children[i].RecalculateMatrices(pos | rot | scale,rot,scale);
-        }
-
-        private void RecalculateMatrices(bool pos,bool rot,bool scale)
-        {
-            hasChanged = true;
-            
-            if (scale)
-                UpdateWorldScale();
-            if (rot)
-                UpdateWorldRotation();
-            if (pos)
-                UpdateWorldPosition();
-
-            rotUpdated = true;
-            posUpdated = true;
-            scaleUpdated = true;
-            UpdateChildren(pos,rot,scale);
+            worldScale = (parent == null) ? localScale : localScale * parent.worldScale;
         }
 
         protected override void OnCreation()
         {
             children = new List<Transform>();
 
-            worldTranslationMatrix = new Matrix4x4().SetIdentity();
-            worldRotMatrix = Quaternion.Identity.ToRotationMatrix();
-            worldScaleMatrix = Matrix4x4.CreateScaleMatrix(Vector3.One);
+            //worldTranslationMatrix = new Matrix4x4().SetIdentity();
+            //worldRotMatrix = Quaternion.Identity.ToRotationMatrix();
+            //worldScaleMatrix = Matrix4x4.CreateScaleMatrix(Vector3.One);
 
+            worldTransformMatrix = new Matrix4x4().SetIdentity();
             Scale = Vector3.One;
             Position = Vector3.Zero;
             Rotation = Quaternion.Identity;
@@ -315,8 +344,7 @@ namespace S3DE.Components
             up = Vector3.Up;
             right = Vector3.Right;
             hasChanged = true;
-
-            RecalculateMatrices(true,true,true);
+            NeedsUpdate = true;
         }
     }
 }

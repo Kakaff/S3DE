@@ -10,51 +10,7 @@
 
 #include "Graphics.h"
 
-DLL_Export void InitGLFW() {
-	if (!glfwInit()) {
-		
-	}
-	else {
 
-	}
-}
-
-DLL_Export void CreateWindow() {
-	S3DECore::Window::SetWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	S3DECore::Window::SetWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	S3DECore::Window::SetWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	if (!S3DECore::Window::CreateWindow()) {
-
-	}
-	else {
-		
-	}
-}
-
-static void(*func)();
-static void(*errFunc)();
-
-DLL_Export void Extern_SetViewPortSize(uint width, uint height) {
-	glViewport(0, 0, width, height);
-}
-
-DLL_Export void RegisterErrorFunc(void(*fun)()) {
-	errFunc = fun;
-}
-
-DLL_Export void RegisterUpdateFunc(void(*fun)()) {
-	func = fun;
-}
-
-DLL_Export void InitGlew() {
-	glewExperimental = true;
-	if (glewInit() != GLEW_OK) {
-		
-	}
-	else {
-
-	}
-}
 
 DLL_Export void Extern_GLGeti(GLint param, int& i) {
 	glGetIntegerv(param, &i);
@@ -80,17 +36,4 @@ void GLAPIENTRY MessageCallBack(GLenum src, GLenum type, GLuint id, GLenum sever
 	printf("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
 		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
 		type, severity, message);
-}
-
-DLL_Export void RunEngine() {
-	glViewport(0, 0, 1280, 720);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	
-	while (!S3DECore::Window::IsCloseRequested()) {
-		glfwPollEvents();
-		func();
-		S3DECore::Window::SwapBuffers();
-		WaitForNextFrame(S3DECore::Window::VsyncEnabled());
-	}
 }

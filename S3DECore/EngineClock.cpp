@@ -1,7 +1,36 @@
 
 #include <Windows.h>
 #include <stdbool.h>
+#include "EngineClock.h"
 
+#pragma managed(push,off)
+namespace S3DECore {
+	namespace Time {
+		namespace Unmanaged {
+			static LARGE_INTEGER curr, freq, prevFrameEnd;
+			static long long int sleepErrorHigh = 0, sleepErrorLow = 0;
+			static int sleepErrLowerCounter, sleepErrResetCounter, SLEEP_DECREASE_ERR_COUNTER_MAX = 10, SLEEP_ERR_RESET_COUNTER_MAX = 5;
+
+			static long long int deltaTime = 0;
+
+			bool pwrsav = true;
+
+			HANDLE tmr = NULL;
+
+			long long int yieldTime = 1500, frqchkintv = 500;
+			long long int SLEEP_ERR_THRESHOLD = 500;
+
+			long long int eslaped, remainder, overlseep;
+
+			int trgFps = 60;
+
+			void WaitForNextFrame(bool b) {
+
+			}
+		}
+	}
+}
+#pragma managed(pop)
 static LARGE_INTEGER curr, freq,prevFrameEnd;
 static long long int sleepErrorHigh = 0, sleepErrorLow = 0;
 static int sleepErrLowerCounter,sleepErrResetCounter, SLEEP_DECREASE_ERR_COUNTER_MAX = 10,SLEEP_ERR_RESET_COUNTER_MAX = 5;
@@ -14,41 +43,40 @@ HANDLE tmr = NULL;
 long long int yieldTime = 1500,frqchkintv = 500;
 long long int SLEEP_ERR_THRESHOLD = 500;
 
-long long int eslaped, remainder,overlseep;
+long long int eslaped, remainder,oversleep;
 
 int trgFps = 60;
 
-__declspec(dllexport) long long int Extern_GetDeltaTime() {
+long int S3DECore::Time::EngineClock::GetDeltaTime() {
 	return deltaTime;
 }
 
-__declspec(dllexport) void Extern_EnablePowerSaving(bool val) {
-	pwrsav = val;
+void S3DECore::Time::EngineClock::SetPowerSaving(bool powersav) {
+	Unmanaged::pwrsav = powersav;
+	pwrsav = powersav;
 }
 
-__declspec(dllexport) void Extern_SetYieldTime(long long int v) {
-	yieldTime = v < 0 ? 0 : v;
+void S3DECore::Time::EngineClock::SetTargetFramerate(uint t) {
+	Unmanaged::trgFps = t;
+	trgFps = t;
 }
 
-__declspec(dllexport) void Extern_SetFreqCheckInterval(long long int v) {
-	frqchkintv = v < 0 ? 0 : v;;
-}
+void S3DECore::Time::EngineClock::WaitForNextFrame(bool vsync) {
 
-void WaitForNextFrame(bool vsync) {
 
 	if (tmr == NULL) {
 		tmr = CreateWaitableTimer(NULL, true, NULL);
 		if (NULL == tmr)
-			printf("Failed creating timer");
+			throw gcnew System::Exception("Error creating waitable timer");
 	}
 
 	long long int frqchk = 0;
 
-	long long int trgDur = (1000000LL / trgFps) - overlseep;
+	long long int trgDur = (1000000LL / trgFps) - oversleep;
 
 	bool resetCounterFlag = false;
 
-	overlseep = 0;
+	oversleep = 0;
 	if (trgDur < 0)
 		trgDur = 0;
 
@@ -78,7 +106,7 @@ void WaitForNextFrame(bool vsync) {
 		if (remainder <= 0) {
 			deltaTime = eslaped;
 			prevFrameEnd = curr;
-			overlseep = -remainder;
+			oversleep = -remainder; //If we overslept, remainder is negative.
 			break;
 		}
 		else if (pwrsav) {
@@ -129,21 +157,4 @@ void WaitForNextFrame(bool vsync) {
 			}
 		}
 	}
-}
-
-
-__declspec(dllexport) void Extern_SetOverSleepErrorThreshold(int val) {
-	SLEEP_ERR_THRESHOLD = val;
-}
-
-__declspec(dllexport) void Extern_SetSleepResetCounterMax(int val) {
-	SLEEP_ERR_RESET_COUNTER_MAX = val;
-}
-
-__declspec(dllexport) void Extern_SetSleepErrDecreaseCounterMax(int val) {
-	SLEEP_DECREASE_ERR_COUNTER_MAX = val;
-}
-
-__declspec(dllexport) void Extern_SetTargetFramerate(int value) {
-	trgFps = value;
 }

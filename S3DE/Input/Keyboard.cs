@@ -231,7 +231,7 @@ namespace S3DE.Input
         {
             foreach (KeyCode key in (KeyCode[])Enum.GetValues(typeof(KeyCode)))
             {
-                KeyState ks = Extern_GetKey(key);
+                KeyState ks = (KeyState)S3DECore.Input.Keyboard.GetKey((int)key);
                 KeyState cks = GetKeyState(key);
 
                 if (ks == KeyState.Pressed)

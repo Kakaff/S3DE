@@ -68,6 +68,8 @@ namespace S3DE.Graphics.Textures
             if (!textureUnitsInitialized)
             {
                 Extern_GLGeti(GL.MAX_COMBINED_TEXTURE_IMAGE_UNITS,out Max_TextureUnits);
+                if (!Renderer.NoError)
+                    throw new Exception("Error getting TextureUnits!");
                 boundTextures = new Texture[Max_TextureUnits];
                 unboundTextureUnits = new LinkedQueueList<int>();
                 boundTextureUnits = new LinkedQueueList<int>();

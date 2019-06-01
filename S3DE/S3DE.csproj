@@ -44,7 +44,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <Optimize>false</Optimize>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -65,33 +65,42 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\BinaryTree.cs" />
     <Compile Include="Collections\DualList.cs" />
     <Compile Include="Collections\LinkedQueueList.cs" />
-    <Compile Include="EngineMain_Imports.cs" />
-    <Compile Include="Entities\Components\IEnableLogic.cs" />
-    <Compile Include="Entities\Components\IRenderLogic.cs" />
-    <Compile Include="Entities\Components\SimpleCameraController.cs" />
+    <Compile Include="Collections\SimpleQueue.cs" />
+    <Compile Include="Debug\NDimensionalHierarchy\source.cs" />
+    <Compile Include="Components\Meshrenderer.cs" />
+    <Compile Include="Components\SimpleCameraController.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Graphics\Color.cs" />
     <Compile Include="Graphics\FrameBuffers\FrameBuffer.cs" />
     <Compile Include="Graphics\FrameBuffers\FramebufferAttachment.cs" />
     <Compile Include="Graphics\FrameBuffers\FrameBuffer_Imports.cs" />
     <Compile Include="Graphics\GLEnums.cs" />
-    <Compile Include="Graphics\Material.cs" />
-    <Compile Include="Graphics\Materials\SimpleMaterial.cs" />
-    <Compile Include="Graphics\Materials\SimpleTexturedMaterial.cs" />
+    <Compile Include="Graphics\Materials\Material.cs" />
     <Compile Include="Graphics\Meshes\Mesh.cs" />
-    <Compile Include="Graphics\Meshes\Mesh_Imports.cs" />
     <Compile Include="Graphics\Meshes\StandardMesh.cs" />
     <Compile Include="Graphics\Meshes\VertexAttribute.cs" />
     <Compile Include="Graphics\Renderer.cs" />
     <Compile Include="Graphics\Renderer_Imports.cs" />
+    <Compile Include="Graphics\Rendering\Drawcall.cs" />
+    <Compile Include="Graphics\Rendering\RenderPass.cs" />
+    <Compile Include="Graphics\Rendering\RenderPasses\DiffuseRenderPass.cs" />
     <Compile Include="Graphics\Screen\DefaultScreenQuadMaterial.cs" />
     <Compile Include="Graphics\Screen\ScreenQuad.cs" />
-    <Compile Include="Graphics\Shaders\Shader.cs" />
-    <Compile Include="Graphics\Shaders\ShaderProgram.cs" />
-    <Compile Include="Graphics\Shaders\ShaderProgram_Imports.cs" />
+    <Compile Include="Graphics\Screen\ScreenQuadMaterial.cs" />
     <Compile Include="Graphics\FrameBuffers\FrameBufferAttachment2D.cs" />
+    <Compile Include="Graphics\Shaders\ShaderSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\ScreenQuadFragmentSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\ScreenQuadVertexSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\SimpleFragmentShaderSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\SimpleVertexShaderSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\TexturedFragmentShaderSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\TexturedVertexShaderSource.cs" />
+    <Compile Include="Graphics\Shaders\UniformUpdate.cs" />
+    <Compile Include="Graphics\Shaders\UniformUpdateMatrix4x4.cs" />
+    <Compile Include="Graphics\Shaders\UniformUpdateTex2D.cs" />
     <Compile Include="Graphics\Textures\IRenderTexture.cs" />
     <Compile Include="Graphics\Textures\Texture.cs" />
     <Compile Include="Graphics\Textures\ITexture2D.cs" />
@@ -113,10 +122,9 @@
     <Compile Include="Maths\Vector4.cs" />
     <Compile Include="Scenes\SceneHandler.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Entities\Components\Camera.cs" />
-    <Compile Include="Entities\Components\EntityComponent.cs" />
-    <Compile Include="Entities\Components\MeshRenderer.cs" />
-    <Compile Include="Entities\Components\Transform.cs" />
+    <Compile Include="Components\Camera.cs" />
+    <Compile Include="Components\EntityComponent.cs" />
+    <Compile Include="Components\Transform.cs" />
     <Compile Include="Entities\GameEntity.cs" />
     <Compile Include="EngineMain.cs" />
     <Compile Include="Scenes\GameScene.cs" />
@@ -137,7 +145,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -148,9 +155,12 @@
     <Content Include="glfw3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="S3DECore.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\S3DECore\S3DECore.vcxproj">
+      <Project>{db03b5ad-e54c-4942-9f52-966d1a3d84a0}</Project>
+      <Name>S3DECore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

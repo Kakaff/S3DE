@@ -1,99 +1,60 @@
 #include "EngineWindow.h"
 #include <GLFW\glfw3.h>
 
-using namespace S3DECore;
-
-enum CursorMode:int {Normal = 0,Hidden = 1,LockedAndHidden = 2};
-
-GLFWwindow* window;
-bool Window::vsync = false;
-
-DLL_Export void S3DECore::Extern_SetWindowHint(int hint, int value)
-{
-	Window::SetWindowHint(hint, value);
+bool S3DECore::GLFW::Init() {
+	return glfwInit();
 }
 
-DLL_Export void Extern_SetWindowSize(int width, int height) {
-	Window::SetResolution(width, height);
-}
+bool S3DECore::Window::CreateWindow(int width, int height) {
 
-DLL_Export int Extern_GetAttribute(int attr) {
-	return glfwGetWindowAttrib(window,attr);
-}
+	SetWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	SetWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	SetWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-DLL_Export int Extern_GetKey(int key) {
-	return glfwGetKey(window, key);
-}
-
-DLL_Export void Extern_GetCursorPos(double &x, double &y) {
-	glfwGetCursorPos(window, &x, &y);
-}
-
-DLL_Export void Extern_SetCursorPos(double x, double y) {
-	glfwSetCursorPos(window, x, y);
-}
-
-DLL_Export void Extern_SetCursor(CursorMode mode) 
-{
-	switch (mode) {
-	case Normal: glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); break;
-	case Hidden: glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN); break;
-	case LockedAndHidden: glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); break;
-	}
-}
-
-DLL_Export void Extern_SetSwapInterval(int v) 
-{
-	Window::SwapInterval(v);
-	Window::SetVsync(v == 0 ? false : true);
-}
-
-void Window::SetWindowHint(int hint, int value) {
-	glfwWindowHint(hint, value);
-}
-
-void Window::SetVsync(bool b) {
-	vsync = b;
-}
-
-bool Window::VsyncEnabled() {
-	return vsync;
-}
-
-bool Window::CreateWindow()
-{
-	window = glfwCreateWindow(1280, 720, "", NULL, NULL);
-	if (window == NULL)
+	S3DECore::Window::window_ptr = glfwCreateWindow(width, height, "", NULL, NULL);
+	if (S3DECore::Window::window_ptr == NULL)
 		return false;
+
+	glfwMakeContextCurrent(S3DECore::Window::window_ptr);
 	
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(0);
 	return true;
 }
 
-void Window::DestroyWindow()
-{
-	glfwDestroyWindow(window);
-}
 
-void Window::SetResolution(int width, int height)
-{
-	glfwSetWindowSize(window, width, height);
+int S3DECore::Window::GetAttribute(int attr) {
+	return glfwGetWindowAttrib(S3DECore::Window::window_ptr,attr);
 }
 
 
-void Window::SwapBuffers()
-{
-	glfwSwapBuffers(window);
+
+void S3DECore::Window::SetWindowHint(int hint, int value) {
+	glfwWindowHint(hint, value);
 }
 
-void Window::SwapInterval(int v)
+
+void S3DECore::Window::DestroyWindow()
+{
+	glfwDestroyWindow(S3DECore::Window::window_ptr);
+}
+
+void S3DECore::Window::SetResolution(int width, int height)
+{
+	glfwSetWindowSize(S3DECore::Window::window_ptr, width, height);
+}
+
+
+void S3DECore::Window::SwapBuffers()
+{
+	glfwSwapBuffers(S3DECore::Window::window_ptr);
+}
+
+void S3DECore::Window::SwapInterval(int v)
 {
 	glfwSwapInterval(v);
 }
 
-bool Window::IsCloseRequested() {
-	return glfwWindowShouldClose(window);
+bool S3DECore::Window::IsCloseRequested() {
+	return glfwWindowShouldClose(S3DECore::Window::window_ptr);
 }
 
 

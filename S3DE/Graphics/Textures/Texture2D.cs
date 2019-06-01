@@ -90,6 +90,9 @@ namespace S3DE.Graphics.Textures
                     InternalFormat, Width, Height, 0,
                     PixelFormat, PixelType, pm.Adress);
             }
+
+            if (!Renderer.NoError)
+                throw new Exception("Error uploading texture data!");
         }
 
         static InternalFormat GetInternalFormat(ColorFormat colfrmt)

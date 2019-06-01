@@ -199,6 +199,17 @@ namespace S3DE.Graphics.Textures
 
     public abstract partial class Texture
     {
+        static int instanceCount = 0;
+        int instanceID;
+
+        public int GetInstanceID() => instanceID;
+        
+        public Texture()
+        {
+            instanceID = instanceCount;
+            instanceCount++;
+        }
+
         public abstract int Width { get; }
         public abstract int Height { get; }
         public abstract InternalFormat InternalFormat { get; }

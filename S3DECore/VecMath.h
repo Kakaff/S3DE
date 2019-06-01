@@ -1,19 +1,29 @@
 #pragma once
 
-__declspec(align(16)) struct Vecf128 {
-public:
-	Vecf128(void);
-	Vecf128(float*);
-	Vecf128(float f1, float f2, float f3, float f4);
-	Vecf128* Multiply(Vecf128* vec);
-	static Vecf128* Multiply(Vecf128* v1, Vecf128* v2);
-	static Vecf128* Multiply(float* fs1, float* fs2);
-	static Vecf128* Add(Vecf128* v1, Vecf128* v2);
-	float* GetDataBuffer(void);
-private:
-	float* data;
-};
+namespace S3DECore {
+	namespace Math {
+		
+		public ref class Vecf128 {
+		public:
+			static void MatrixMultiply(const float* m1, const float* m2, float* res);
+			static void CreateTransformMatrix(const float* m1, const float* m2, const float* m3, float* res);
+			static void CreateTransformMatrixFromMatricies(const float* m1, const float* m2, const float* m3, float* res);
+			static void CreateRotationMatrix(const float* quat, float* res);
+			static void QuaternionMultiply(const float* q1, const float* q2, float* rQ);
+			/*
+			static void VectorMul(const float* v1, const float* v2, float* res);
+			static void VectorAdd(const float* v1, const float* v2, float* res);
+			static void VectorSub(const float* v1, const float* v2, float* res);
+			static void VectorDiv(const float* v1, const float* v2, float* res);
+			static void VectorMulAdd(const float* v1, const float* v2, const float* v3, float* res);
+			static void VectorMulSub(const float* v1, const float* v2, const float* v3, float* res);
+			*/
+		};
 
-__declspec(align(32)) struct Vecf256 {
-
-};
+		public ref class Vecf256 {
+		public:
+			static void MatrixMultiply(const float* m1, const float* m2, float* res);
+			static void CreateTransformMatrix(const float* scale, const float* rot, const float* transl, float* res);
+		};
+	}
+}

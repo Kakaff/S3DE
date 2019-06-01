@@ -8,6 +8,7 @@ namespace S3DE.Graphics.Textures
 {
     public interface IRenderTexture
     {
+        
         int Width { get; }
         int Height { get; }
         int MipmapCount { get; }
@@ -18,7 +19,7 @@ namespace S3DE.Graphics.Textures
         int BoundTexUnit { get; }
         bool IsBound { get; }
         int Bind();
-
+        int GetInstanceID();
         IntPtr Handle { get; }
     }
 }

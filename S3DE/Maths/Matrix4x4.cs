@@ -60,8 +60,8 @@ namespace S3DE.Maths
 
         public static Matrix4x4 CreateRotationMatrix(Quaternion quaternion)
         {
-            if (Vec128.IsEnabled)
-                return Vec128.CreateRotationMatrix(quaternion);
+            if (SIMD_Math.IsEnabled)
+                return SIMD_Math.QuaternionToRotationMatrix(quaternion);
             else
             {
                 Matrix4x4 result = new Matrix4x4();
@@ -152,18 +152,18 @@ namespace S3DE.Maths
         }
 
 
-        public static Matrix4x4 CreateTransformMatrix(Vector3 pos, Quaternion rot, Vector3 scale)
+        public static Matrix4x4 CreateTransformMatrix(Vector3 scale, Quaternion rot, Vector3 pos)
         {
-            if (Vec128.IsEnabled)
-                return Vec128.CreateTransformMatrix(scale,rot,pos);
+            if (SIMD_Math.IsEnabled)
+                return SIMD_Math.CreateTransformMatrix(scale,rot,pos);
 
             return CreateScaleMatrix(scale) * CreateRotationMatrix(rot) * CreateTranslationMatrix(pos);
         }
 
         public static Matrix4x4 CreateTransformMatrix(Matrix4x4 scaleMatrix,Matrix4x4 rotMatrix,Matrix4x4 transMatrix)
         {
-            if (Vec128.IsEnabled)
-                return Vec128.MatrixMul(scaleMatrix, rotMatrix, transMatrix);
+            if (SIMD_Math.IsEnabled)
+                return SIMD_Math.CreateTransformMatrix(scaleMatrix, rotMatrix, transMatrix);
 
             return scaleMatrix * rotMatrix * transMatrix;
         }

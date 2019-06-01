@@ -13,13 +13,7 @@ namespace S3DE.Components
             get => isActive & entity.IsActive;
             set
             {
-                IEnableLogic l = (IEnableLogic)this;
-                if (isActive != value && l != null) {
-                    if (value)
-                        l.OnEnable();
-                    else
-                        l.OnDisable();
-
+                if (isActive != value) {
                     isActive = value;
                     entity.ChangeComponentActivity(this, value);
                 }

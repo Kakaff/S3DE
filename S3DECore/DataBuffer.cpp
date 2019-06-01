@@ -18,3 +18,7 @@ void DataBuffer::SetData(const uint8_t data[],uint length,GLenum usage) {
 void DataBuffer::Bind(void) {
 	glBindBuffer(target, id);
 }
+
+void DataBuffer::Destroy() {
+
+}
