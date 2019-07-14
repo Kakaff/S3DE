@@ -1,6 +1,7 @@
 ﻿using S3DE;
-using S3DE.Input;
-using S3DE.Maths;
+using S3DECore.Input;
+using S3DECore.Math;
+using S3DECore.Graphics;
 using System;
 
 namespace SampleGame
@@ -34,9 +35,9 @@ namespace SampleGame
         protected override void Start()
         {
             Enable_Powersaving(true);
-            Mouse.SetCursor(CursorMode.LockedAndHidden);
+            Mouse.Cursor.SetCursorMode(CursorMode.Hidden);
 
-            S3DE.Graphics.Renderer.SetVsync(true);
+            Renderer.VSyncEnabled = true;
             LoadStartScene<SampleScene>();
         }
 

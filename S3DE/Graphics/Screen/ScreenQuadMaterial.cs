@@ -1,11 +1,9 @@
 ﻿using S3DE.Graphics.Shaders;
-using S3DE.Graphics.Textures;
-using S3DECore.Graphics;
+using S3DECore.Graphics.Shaders;
+using S3DECore.Graphics.Textures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace S3DE.Graphics.Screen
 {
@@ -13,8 +11,7 @@ namespace S3DE.Graphics.Screen
     public abstract class ScreenQuadMaterial
     {
         static Dictionary<Type, ShaderProgram> shaderPrograms = new Dictionary<Type, ShaderProgram>();
-
-        UniformUpdate[] uniformUpdates;
+        
         ShaderProgram shadProg;
 
         protected abstract ShaderSource[] ShaderSources { get; }
@@ -29,8 +26,6 @@ namespace S3DE.Graphics.Screen
 
             shadProg.Use();
             UpdateUniforms();
-            for (int i = 0; i < uniformUpdates.Length; i++)
-                uniformUpdates[i].Perform();
         }
 
         void GetShaderProgram()
@@ -38,13 +33,13 @@ namespace S3DE.Graphics.Screen
             if (!shaderPrograms.TryGetValue(GetType(), out shadProg))
             {
                 ShaderSource[] sources = ShaderSources;
-                S3DECore.Graphics.Shader[] shaders = new S3DECore.Graphics.Shader[sources.Length];
+                Shader[] shaders = new Shader[sources.Length];
 
-                shadProg = new S3DECore.Graphics.ShaderProgram();
+                shadProg = new ShaderProgram();
 
                 for (int i = 0; i < sources.Length; i++)
                 {
-                    shaders[i] = new S3DECore.Graphics.Shader((int)sources[i].Stage);
+                    shaders[i] = new Shader((int)sources[i].Stage);
                     unsafe
                     {
                         fixed (byte* s = &Encoding.ASCII.GetBytes(sources[i].Source)[0])
@@ -62,38 +57,10 @@ namespace S3DE.Graphics.Screen
                 if (!shadProg.Link())
                     throw new Exception("Error linking shaderprogram!");
             }
-
-            GetUniforms();
             OnCompilationSuccess();
         }
 
-        internal void GetUniforms()
-        {
-            int uniformCount = shadProg.GetActiveUniformCount();
-            List<UniformUpdate> uniforms = new List<UniformUpdate>();
-            for (int i = 0; i < uniformCount; i++)
-            {
-                UniformType t = shadProg.GetActiveUniformType(i);
-                AddUniformToList(t);
-            }
-
-            void AddUniformToList(UniformType t)
-            {
-                switch (t)
-                {
-                    case UniformType.Matrixf4x4: uniforms.Add(new UniformUpdateMatrix4x4(uniforms.Count)); break;
-                    case UniformType.TextureSampler2D:
-                        {
-                            uniforms.Add(new UniformUpdateTex2D(uniforms.Count, 0));
-                            break;
-                        }
-                    default: throw new ArgumentException($"Unknown UniformType ({t})");
-                }
-            }
-
-            uniformUpdates = uniforms.ToArray();
-        }
-
+        
         protected int GetUniformLocation(string uniformName)
         {
             int loc = -1;
@@ -107,28 +74,7 @@ namespace S3DE.Graphics.Screen
 
         public void SetUniform(int location, RenderTexture2D tex)
         {
-            UniformUpdate uu = uniformUpdates[location];
-            if (uu != null && uu.UniformType == UniformType.TextureSampler2D)
-            {
-                UniformUpdateTex2D uut2d = uu as UniformUpdateTex2D;
-                uut2d.Texture = tex;
-            }
-            else if (uu == null)
-                ThrowNullUniformException(location);
-            else if (uu.UniformType != UniformType.TextureSampler2D)
-                ThrowInvalidValueException(uu, location, UniformType.TextureSampler2D);
-        }
-
-
-
-        static void ThrowNullUniformException(int location)
-        {
-            throw new NullReferenceException($"Uniform {location} does not exist!");
-        }
-
-        static void ThrowInvalidValueException(UniformUpdate uu, int location, UniformType ut)
-        {
-            throw new InvalidOperationException($"Uniform {location} expects a {Enum.GetName(typeof(UniformType), uu.UniformType)} but received a {Enum.GetName(typeof(UniformType), ut)}");
+            ShaderProgram.SetUniform1i((uint)location, (int)tex.Bind());
         }
 
     }

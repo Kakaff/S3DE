@@ -25,6 +25,7 @@ namespace S3DE.Components
         public GameScene Scene => entity.ParentScene;
         public Transform transform => entity.transform;
 
+        protected static double DeltaTime => S3DECore.Time.EngineClock.DeltaTime;
         protected virtual void OnCreation() { }
         protected virtual void OnDestruction() { }
 

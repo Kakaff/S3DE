@@ -1,12 +1,5 @@
-﻿using S3DE;
-using S3DE.Components;
-using S3DE.Input;
-using S3DE.Maths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using S3DECore.Input;
+using S3DECore.Math;
 
 namespace S3DE.Components
 {
@@ -21,33 +14,32 @@ namespace S3DE.Components
             mVec.y = 0;
             mVec.z = 0;
 
-            if (Keyboard.GetKeyState(KeyCode.W) == KeyState.Pressed)
+            if (Keyboard.GetKey(KeyCode.W).CheckState(KeyState.Down))
                 mVec.z += 1f;
-            if (Keyboard.GetKeyState(KeyCode.S) == KeyState.Pressed)
+            if (Keyboard.GetKey(KeyCode.S).CheckState(KeyState.Down))
                 mVec.z -= 1f;
-            if (Keyboard.GetKeyState(KeyCode.D) == KeyState.Pressed)
+            if (Keyboard.GetKey(KeyCode.D).CheckState(KeyState.Down))
                 mVec.x += 1;
-            if (Keyboard.GetKeyState(KeyCode.A) == KeyState.Pressed)
+            if (Keyboard.GetKey(KeyCode.A).CheckState(KeyState.Down))
                 mVec.x -= 1;
-            if (Keyboard.GetKeyState(KeyCode.SPACE) == KeyState.Pressed)
+            if (Keyboard.GetKey(KeyCode.SPACE).CheckState(KeyState.Down))
                 mVec.y += 1;
-            if (Keyboard.GetKeyState(KeyCode.LEFT_SHIFT) == KeyState.Pressed)
+            if (Keyboard.GetKey(KeyCode.LEFT_SHIFT).CheckState(KeyState.Down))
                 mVec.y -= 1;
 
             fVec = (transform.Forward * mVec.z) + (transform.Right * mVec.x);
             fVec.y += mVec.y;
             
             if (fVec != Vector3.Zero)
-                transform.Translate(fVec, 5f * Time.DeltaTime, Space.Local);
+                transform.Translate(fVec, 5f * (float)DeltaTime, Space.Local);
             
-            if (Mouse.HasMoved)
+            if (Mouse.CheckState(MouseState.Moving))
             {
-                xRot += (float)(Mouse.RawDeltaX * -45f);
-                yRot += (float)(Mouse.RawDeltaY * -45f);
-
-
-                xRot = EngineMath.Normalize(-180, 180, xRot);
-                yRot = EngineMath.Clamp(-90, 90, yRot);
+                xRot += (float)(Mouse.GetMouseDeltaX() * -45f);
+                yRot += (float)(Mouse.GetMouseDeltaY() * -45f);
+                
+                xRot = MathFun.Normalize(-180, 180, xRot);
+                yRot = MathFun.Clamp(-90, 90, yRot);
 
 
                 Quaternion q1 = Quaternion.CreateFromAxisAngle(Vector3.Up, xRot);

@@ -28,11 +28,6 @@
             return Extern_Time_GetTick();
         }
 
-        internal static void UpdateDeltaTime()
-        {
-            deltaTime = (float)((double)(S3DECore.Time.EngineClock.GetDeltaTime()) / (double)1000000) * Timescale;
-        }
-
         public static void SetClock(ClockSetting setting, long value)
         {
             switch (setting)

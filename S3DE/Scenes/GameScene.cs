@@ -2,11 +2,10 @@
 using S3DE.Components;
 using System;
 using System.Collections.Generic;
-using S3DE.Graphics.FrameBuffers;
-using S3DE.Graphics;
+using S3DECore.Graphics.Framebuffers;
 using S3DE.Graphics.Screen;
-using S3DE.Graphics.Rendering;
-using S3DE.Graphics.Textures;
+using S3DECore.Graphics;
+using S3DECore.Graphics.Textures;
 
 namespace S3DE.Scenes
 {
@@ -16,8 +15,7 @@ namespace S3DE.Scenes
         List<GameEntity> inActiveEntities = new List<GameEntity>();
         
         List<GameEntity> entitiesToAdd = new List<GameEntity>();
-
-        List<RenderPass> renderpasses = new List<RenderPass>();
+        
         
         Camera activeCamera;
 
@@ -87,6 +85,8 @@ namespace S3DE.Scenes
 
         void Render()
         {
+            Renderer.Clear(ClearBufferBit.Color | ClearBufferBit.Depth);
+
             GameEntity ge;
             for (int i = 0; i < activeEntities.Count; i++)
             {
@@ -95,35 +95,17 @@ namespace S3DE.Scenes
                 ge.Draw();
             }
 
-            for (int i = 0; i < renderpasses.Count; i++)
-            {
-                RenderPass rp = renderpasses[i];
-                rp.BindFrameBuffer();
-                if (rp.ClearBeforeRendering)
-                    rp.ClearBuffers();
-
-                renderpasses[i].Render();
-            }
-
             for (int i = 0; i < activeEntities.Count; i++)
                 activeEntities[i].PostDraw();
+            
         }
 
         
         internal void PresentFrame()
         {
-            FrameBuffer fb = renderpasses[renderpasses.Count - 1].GetFrameBuffer();
-            fb.Unbind();
-
-            Renderer.Clear(ClearBufferBit.COLOR | ClearBufferBit.DEPTH);
-            Renderer.Disable(GlEnableCap.DepthTest);
-
-            DefaultScreenQuadMaterial.Instance.Tex = 
-                fb.GetAttachment(FrameBufferAttachmentLocation.COLOR0).InternalTexture as RenderTexture2D;
-
-            ScreenQuad.Draw(DefaultScreenQuadMaterial.Instance);
             
-            Renderer.Enable(GlEnableCap.DepthTest);
+            /*Placeholder for when we re-add framebuffers and renderpasses. */
+            
         }
 
         internal void Start_Internal()
@@ -143,42 +125,16 @@ namespace S3DE.Scenes
         {
             if (activeCamera == null)
             {
+                Console.WriteLine("No camera set for this scene, creating a new one");
                 GameEntity ge = GameEntity.Create(this);
                 Camera c = ge.AddComponent<Camera>();
                 activeCamera = c;
                 activeEntities.Add(ge);
-                Console.WriteLine("No camera set for this scene, creating a new one");
             }
 
             return activeCamera;
         }
-
-        protected void AddRenderPass(RenderPass rp, int targetIndex)
-        {
-            if (targetIndex > renderpasses.Count)
-                renderpasses.Add(rp);
-            else
-                renderpasses.Insert(targetIndex, rp);
-        }
-
-        public RenderPass GetRenderPass(int identifier)
-        {
-            return renderpasses.Find(x => x.Identifier == identifier);
-        }
-
-        /// <summary>
-        /// Creates a Deferred, A Forward and a Blend renderpass.
-        /// </summary>
-        protected void CreateStandardRenderPasses()
-        {
-            throw new NotImplementedException();
-            /*
-            renderpasses.Add(new DeferredRenderPass(RenderPassType.Deferred),
-                new ForwardRenderPass(RenderPassType.Forward),
-                new BlendRenderPass(RenderPassType.Blend));
-                */
-        }
-
+        
         protected GameEntity CreateEntity() => CreateGameEntity_Internal();
         protected abstract void LoadScene();
         protected abstract void UnloadScene();

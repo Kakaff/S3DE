@@ -8,7 +8,7 @@ namespace S3DE.Graphics.Shaders.Sources
 {
     public sealed class ScreenQuadFragmentSource : ShaderSource
     {
-        public override ShaderStage Stage => ShaderStage.FRAGMENT;
+        public override ShaderStage Stage => ShaderStage.Fragment;
 
         public override string Source => string.Join(Environment.NewLine, 
                                       "#version 330 core",

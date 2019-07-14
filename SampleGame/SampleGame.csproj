@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SampleGame</RootNamespace>
     <AssemblyName>SampleGame</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -52,6 +52,10 @@
     <Compile Include="SampleScene.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\S3DECore\S3DECore.vcxproj">
+      <Project>{db03b5ad-e54c-4942-9f52-966d1a3d84a0}</Project>
+      <Name>S3DECore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\S3DE\S3DE.csproj">
       <Project>{75ee72b4-78d4-4278-a438-b95f1e0dd3b6}</Project>
       <Name>S3DE</Name>

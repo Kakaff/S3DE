@@ -1,11 +1,17 @@
-﻿using S3DE.Graphics;
-using S3DE.Maths;
+﻿using S3DECore.Graphics;
+using S3DECore.Math;
 
 namespace S3DE.Components
 {
     public sealed class Camera : EntityComponent
     {
-        public Matrix4x4 ViewMatrix => viewMatrix;
+        public Matrix4x4 ViewMatrix { get {
+                if (transform.HasChanged)
+                    RecalculateViewMatrix();
+
+                return viewMatrix;
+            }
+        }
 
         public Matrix4x4 ProjectionMatrix => projMatrix;
 
@@ -47,15 +53,14 @@ namespace S3DE.Components
             zFar = 2000f;
 
             RecalculateMatrices();
+
+            Renderer.OnRenderResolutionChanged += RecalculateProjectionMatrix;
         }
 
         protected override void PreRender()
         {
             if (Entity.transform.HasChanged)
                 RecalculateViewMatrix();
-
-            if (Renderer.RenderResolutionChanged)
-                RecalculateProjectionMatrix();
         }
         
         public void RecalculateMatrices()
@@ -71,13 +76,21 @@ namespace S3DE.Components
 
         void RecalculateViewMatrix()
         {
-            Matrix4x4 tm = Matrix4x4.CreateTranslationMatrix(-transform.Position);
-            Matrix4x4 rM = transform.Rotation.Conjugate().ToRotationMatrix();
-            viewMatrix =  tm * rM;
+            viewMatrix = Matrix4x4.CreateTranslationMatrix(transform.Position.Inverse()) *
+                Matrix4x4.CreateRotationMatrix(transform.Rotation.Conjugate());
+                
+                
         }
 
-        void RecalculateProjectionMatrix() =>
-            projMatrix = Matrix4x4.CreatePerspectiveFieldOfView(fov, zNear, zFar, S3DE.Window.AspectRatio);
+        void RecalculateProjectionMatrix(Vector2 oldRes, Vector2 newRes) => RecalculateProjectionMatrix();
+
+        void RecalculateProjectionMatrix()
+        {
+            System.Console.WriteLine("Recalculating projection matrix");
+            Vector2 v = Renderer.RenderResolution;
+            float aspect = v.x / v.y;
+            projMatrix = Matrix4x4.CreateFoVPerspectiveMatrix(fov, zNear, zFar, aspect);
+        }
 
 
     }

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace S3DE.Collections
 {
+    //Lacks a remove method and a ToArray method.
+    //Being able to iterate over it would also be nice.
     public sealed class BinaryTree<TKey,TValue>
     {
 
@@ -64,7 +66,7 @@ namespace S3DE.Collections
                     n = n.Left;
             }
 
-            value = (n == null) ? default(TValue) : n.Value;
+            value = (n == null) ? default : n.Value;
             return n == null;
         }
 
@@ -74,6 +76,7 @@ namespace S3DE.Collections
             public TValue Value => val;
             public Node Right { get; set; }
             public Node Left { get; set; }
+
             int hash;
             TValue val;
 

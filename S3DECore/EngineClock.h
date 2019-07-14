@@ -3,12 +3,16 @@
 
 namespace S3DECore {
 	namespace Time {
-		public ref class EngineClock {
+		public ref class EngineClock abstract sealed {
 		public:
-			static void WaitForNextFrame(bool vsync);
+			static void WaitForNextFrame();
 			static void SetTargetFramerate(uint value);
 			static void SetPowerSaving(bool powersav);
-			static long int GetDeltaTime();
+			static property double DeltaTime {
+				double get() { return deltaTime; }
+			}
+		private:
+			static double deltaTime;
 		};
 	}
 }

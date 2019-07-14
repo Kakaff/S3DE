@@ -1,12 +1,8 @@
-﻿using S3DE.Graphics.Materials;
+﻿using S3DECore.Math;
+using S3DECore.Graphics.Shaders;
 using S3DE.Graphics.Shaders;
 using S3DE.Graphics.Shaders.Sources;
-using S3DE.Graphics.Textures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using S3DECore.Graphics.Textures;
 
 namespace S3DE.Graphics.Screen
 {

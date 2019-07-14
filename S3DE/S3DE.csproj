@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>S3DE</RootNamespace>
     <AssemblyName>S3DE</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -57,69 +57,33 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Collections\BinaryTree.cs" />
     <Compile Include="Collections\DualList.cs" />
-    <Compile Include="Collections\LinkedQueueList.cs" />
     <Compile Include="Collections\SimpleQueue.cs" />
-    <Compile Include="Debug\NDimensionalHierarchy\source.cs" />
     <Compile Include="Components\Meshrenderer.cs" />
     <Compile Include="Components\SimpleCameraController.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="Graphics\Color.cs" />
-    <Compile Include="Graphics\FrameBuffers\FrameBuffer.cs" />
-    <Compile Include="Graphics\FrameBuffers\FramebufferAttachment.cs" />
-    <Compile Include="Graphics\FrameBuffers\FrameBuffer_Imports.cs" />
-    <Compile Include="Graphics\GLEnums.cs" />
     <Compile Include="Graphics\Materials\Material.cs" />
-    <Compile Include="Graphics\Meshes\Mesh.cs" />
-    <Compile Include="Graphics\Meshes\StandardMesh.cs" />
-    <Compile Include="Graphics\Meshes\VertexAttribute.cs" />
-    <Compile Include="Graphics\Renderer.cs" />
-    <Compile Include="Graphics\Renderer_Imports.cs" />
-    <Compile Include="Graphics\Rendering\Drawcall.cs" />
-    <Compile Include="Graphics\Rendering\RenderPass.cs" />
-    <Compile Include="Graphics\Rendering\RenderPasses\DiffuseRenderPass.cs" />
     <Compile Include="Graphics\Screen\DefaultScreenQuadMaterial.cs" />
     <Compile Include="Graphics\Screen\ScreenQuad.cs" />
     <Compile Include="Graphics\Screen\ScreenQuadMaterial.cs" />
-    <Compile Include="Graphics\FrameBuffers\FrameBufferAttachment2D.cs" />
+    <Compile Include="Graphics\Screen\SolidColorScreenQuadMaterial.cs" />
     <Compile Include="Graphics\Shaders\ShaderSource.cs" />
     <Compile Include="Graphics\Shaders\Sources\ScreenQuadFragmentSource.cs" />
     <Compile Include="Graphics\Shaders\Sources\ScreenQuadVertexSource.cs" />
     <Compile Include="Graphics\Shaders\Sources\SimpleFragmentShaderSource.cs" />
     <Compile Include="Graphics\Shaders\Sources\SimpleVertexShaderSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\SolidColorScreenQuadMaterialFragmentSource.cs" />
+    <Compile Include="Graphics\Shaders\Sources\SolidColorScreenQuadMaterialVertexSource.cs" />
     <Compile Include="Graphics\Shaders\Sources\TexturedFragmentShaderSource.cs" />
     <Compile Include="Graphics\Shaders\Sources\TexturedVertexShaderSource.cs" />
-    <Compile Include="Graphics\Shaders\UniformUpdate.cs" />
-    <Compile Include="Graphics\Shaders\UniformUpdateMatrix4x4.cs" />
-    <Compile Include="Graphics\Shaders\UniformUpdateTex2D.cs" />
-    <Compile Include="Graphics\Textures\IRenderTexture.cs" />
-    <Compile Include="Graphics\Textures\Texture.cs" />
-    <Compile Include="Graphics\Textures\ITexture2D.cs" />
-    <Compile Include="Graphics\Textures\Texture_Statics.cs" />
-    <Compile Include="Graphics\Textures\RenderTexture2D.cs" />
-    <Compile Include="Graphics\Textures\Texture2D.cs" />
-    <Compile Include="Graphics\Textures\TextureImports.cs" />
-    <Compile Include="Input\Input_Handler.cs" />
-    <Compile Include="Input\Input_Imports.cs" />
-    <Compile Include="Input\Keyboard.cs" />
-    <Compile Include="Input\Mouse.cs" />
-    <Compile Include="Maths\Matrix4x4.cs" />
-    <Compile Include="Maths\Quaternion.cs" />
-    <Compile Include="Maths\SIMD\SIMD_Math.cs" />
-    <Compile Include="Maths\SIMD\Vec128.cs" />
-    <Compile Include="Maths\SIMD\Vec256.cs" />
-    <Compile Include="Maths\Vector2.cs" />
-    <Compile Include="Maths\Vector3.cs" />
-    <Compile Include="Maths\Vector4.cs" />
     <Compile Include="Scenes\SceneHandler.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Components\Camera.cs" />
@@ -129,18 +93,8 @@
     <Compile Include="EngineMain.cs" />
     <Compile Include="Scenes\GameScene.cs" />
     <Compile Include="Time.cs" />
-    <Compile Include="Maths\Constants.cs" />
-    <Compile Include="Maths\EngineMath.cs" />
-    <Compile Include="Maths\Deprecated\Matrix3x3.cs" />
-    <Compile Include="Maths\Deprecated\Matrix4x4.cs" />
     <Compile Include="Time_Imports.cs" />
-    <Compile Include="Utility\ByteBuffer.cs" />
-    <Compile Include="Utility\FloatBuffer.cs" />
     <Compile Include="Utility\InstanceCreator.cs" />
-    <Compile Include="Utility\PinnedMemory.cs" />
-    <Compile Include="Window\Window.cs" />
-    <Compile Include="Window\GlfwEnums.cs" />
-    <Compile Include="Window\Window_Imports.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

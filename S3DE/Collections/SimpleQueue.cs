@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace S3DE.Collections
 {
-    public class FastQueue<T>
+    //This was faster than the System.Collections.Queue, could still use some tweaking though.
+    public class SimpleQueue<T>
     {
         T[] values;
         int dequeueIndex, emptyIndex;
@@ -14,7 +15,7 @@ namespace S3DE.Collections
 
         public int Count { get; private set; }
 
-        public FastQueue()
+        public SimpleQueue()
         {
             values = new T[32];
             gen = 0;

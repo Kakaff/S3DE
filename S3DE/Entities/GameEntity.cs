@@ -80,7 +80,12 @@ namespace S3DE.Entities
                 activeComponents[i].PostDraw_Internal();
         }
 
-        private GameEntity() { components = new List<EntityComponent>(); componentsToStart = new DualList<EntityComponent>(); activeComponents = new List<EntityComponent>(); inactiveComponents = new List<EntityComponent>(); }
+        private GameEntity() {
+            components = new List<EntityComponent>();
+            componentsToStart = new DualList<EntityComponent>();
+            activeComponents = new List<EntityComponent>();
+            inactiveComponents = new List<EntityComponent>();
+        }
 
         public T AddComponent<T>() where T : EntityComponent
         {

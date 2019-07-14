@@ -1,9 +1,8 @@
 ﻿using S3DE.Components;
-using S3DE.Graphics.Rendering;
 using S3DE.Graphics.Shaders;
-using S3DE.Graphics.Textures;
-using S3DE.Maths;
-using S3DECore.Graphics;
+using S3DECore.Graphics.Shaders;
+using S3DECore.Graphics.Textures;
+using S3DECore.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +13,16 @@ namespace S3DE.Graphics.Materials
 {
     public abstract class Material
     {
-        static Dictionary<Type, S3DECore.Graphics.ShaderProgram> ShaderPrograms = new Dictionary<Type, S3DECore.Graphics.ShaderProgram>();
-        S3DECore.Graphics.ShaderProgram shadProg;
+        static Dictionary<Type, ShaderProgram> ShaderPrograms = new Dictionary<Type, ShaderProgram>();
+        ShaderProgram shadProg;
 
         public int TargetRenderPass { get; set; }
 
         public int ShaderProgramID => shadProg.GetInstanceID();
-        Drawcall trgDC;
         Transform trgTrans;
 
         protected Transform transform => trgTrans;
 
-        internal void SetTargetDrawcall(Drawcall dc) => trgDC = dc;
         internal void SetTargetTransform(Transform trans) => trgTrans = trans;
 
         private Material()
@@ -51,21 +48,21 @@ namespace S3DE.Graphics.Materials
                 GetShaderProgram();
 
             shadProg.Use();
-            
+
         }
 
         void GetShaderProgram()
         {
-            if (!ShaderPrograms.TryGetValue(GetType(),out shadProg))
+            if (!ShaderPrograms.TryGetValue(GetType(), out shadProg))
             {
                 ShaderSource[] sources = ShaderSources;
-                S3DECore.Graphics.Shader[] shaders = new S3DECore.Graphics.Shader[sources.Length];
+                Shader[] shaders = new Shader[sources.Length];
 
-                shadProg = new S3DECore.Graphics.ShaderProgram();
+                shadProg = new ShaderProgram();
 
                 for (int i = 0; i < sources.Length; i++)
                 {
-                    shaders[i] = new S3DECore.Graphics.Shader((int)sources[i].Stage);
+                    shaders[i] = new Shader((int)sources[i].Stage);
                     unsafe
                     {
                         fixed (byte* s = &Encoding.ASCII.GetBytes(sources[i].Source)[0])
@@ -87,35 +84,6 @@ namespace S3DE.Graphics.Materials
             OnCompilationSuccess();
         }
 
-        internal (UniformUpdate[],int[]) GetUniforms()
-        {
-            int uniformCount = shadProg.GetActiveUniformCount();
-            List<UniformUpdate> uniforms = new List<UniformUpdate>();
-            List<int> textures = new List<int>();
-            for (int i = 0; i < uniformCount; i++)
-            {
-                UniformType t = shadProg.GetActiveUniformType(i);
-                AddUniformToList(t);
-            }
-
-            void AddUniformToList(UniformType t)
-            {
-                switch (t)
-                {
-                    case UniformType.Matrixf4x4: uniforms.Add(new UniformUpdateMatrix4x4(uniforms.Count)); break;
-                    case UniformType.TextureSampler2D:
-                        {
-                            uniforms.Add(new UniformUpdateTex2D(uniforms.Count, textures.Count));
-                            textures.Add(0);
-                            break;
-                        }
-                    default: throw new ArgumentException($"Unknown UniformType ({t})");
-                }
-            }
-
-            return (uniforms.ToArray(),textures.ToArray());
-        }
-
         protected abstract void OnCompilationSuccess();
         protected abstract void UpdateUniforms();
 
@@ -128,12 +96,13 @@ namespace S3DE.Graphics.Materials
                 fixed (byte* n = Encoding.ASCII.GetBytes(uniformName))
                     loc = shadProg.GetUniformLocation((sbyte*)n);
             }
+            if (loc == -1)
+                throw new Exception("Unable to find uniform");
             return loc;
         }
-        
-        protected void SetUniform(int location, Matrix4x4 matr) => trgDC.SetUniformUpdateMatrixf4(location, ref matr);
-        protected void SetUniform(int location, RenderTexture2D tex) => trgDC.SetUniformUpdateTex2D(location, tex);
-        
 
+        protected void SetUniform(int location, Matrix4x4 matr) => ShaderProgram.SetUniformMatrixf4v((uint)location, 1, true, matr);
+        protected void SetUniform(int location, Vector3 v) => ShaderProgram.SetUniform3f((uint)location, v);
+        protected void SetUniform(int location, RenderTexture2D tex) => ShaderProgram.SetUniform1i((uint)location, (int)tex.Bind());
     }
 }

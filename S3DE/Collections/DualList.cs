@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace S3DE.Collections
 {
+
     public sealed class DualList<T> : IEnumerable
     {
         List<T> ReadList,WriteList;

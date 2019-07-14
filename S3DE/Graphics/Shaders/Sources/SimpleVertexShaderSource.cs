@@ -8,7 +8,7 @@ namespace S3DE.Graphics.Shaders.Sources
 {
     public sealed class SimpleVertexShaderSource : ShaderSource
     {
-        public override ShaderStage Stage => ShaderStage.VERTEX;
+        public override ShaderStage Stage => ShaderStage.Vertex;
 
         public override string Source => string.Join(Environment.NewLine,
                                   "#version 330 core",

@@ -1,16 +1,19 @@
-﻿using S3DE.Graphics;
-using S3DE.Maths;
+﻿using S3DECore.Graphics;
+using S3DECore.Math;
 using S3DE.Scenes;
+using S3DECore;
 using System;
 
 namespace S3DE
 {
     public abstract class Game
     {
+        /*
         public static bool IsFocused => Window.IsFocused;
         public static bool LostFocus => Window.LostFocus;
         public static bool RegainedFocus => Window.RegainedFocus;
-        
+        */
+
         public static Vector2 DisplayResolution => Renderer.DisplayResolution;
         public static Vector2 RenderResolution => Renderer.RenderResolution;
 

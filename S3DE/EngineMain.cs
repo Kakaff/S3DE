@@ -1,8 +1,9 @@
-﻿using S3DE.Graphics;
-using S3DE.Graphics.FrameBuffers;
-using S3DE.Graphics.Textures;
-using S3DE.Input;
-using S3DE.Maths;
+﻿using S3DECore.Graphics;
+using S3DECore.Graphics.Framebuffers;
+using S3DECore.Graphics.Textures;
+using S3DECore.Input;
+using S3DECore.Math;
+using S3DECore;
 using S3DE.Scenes;
 using System;
 
@@ -16,22 +17,27 @@ namespace S3DE
         {
             EngineMain.game = game;
 
-            Renderer.OnDisplayResolutionChanged += Window.OnDisplayResChanged;
+            //Renderer.OnDisplayResolutionChanged += Window.OnDisplayResChanged;
             
             Console.WriteLine("Initializing GLFW");
-            if (!S3DECore.GLFW.Init())
+            if (!GLFW.Init())
                 throw new Exception("Error initializing GLFW");
 
-            Console.WriteLine("Creating window");
-            if (!Window.CreateWindow(game.Internal_LoadDisplayResolution, game.GameName))
-                throw new Exception("Error creating window!");
-            
-            Console.WriteLine("Initializing Renderer");
-            if (!Renderer.Init(game.Internal_LoadDisplayResolution,game.Internal_LoadRenderResolution))
-                throw new Exception("Error initializing renderer");
+            Console.WriteLine("GLFW successfully initialized");
 
-            Console.WriteLine("Initializing Textures");
-            Texture.InitTextures();
+            Console.WriteLine("Creating window");
+            if (!Window.CreateWindow(game.Internal_LoadDisplayResolution))
+                throw new Exception("Error creating window!");
+
+            Console.WriteLine("Window successfully created");
+
+            Console.WriteLine("Initializing Renderer");
+            Renderer.Init(game.Internal_LoadDisplayResolution, game.Internal_LoadRenderResolution);
+            Console.WriteLine("Renderer successfully initialized");
+
+            Console.WriteLine("Initializing Input");
+            Input.Init();
+            
             Console.WriteLine("Initializing Game");
             game.InitGame();
 
@@ -42,23 +48,22 @@ namespace S3DE
 
         static void RunEngine()
         {
-            S3DECore.Graphics.Renderer.SetViewportSize(0, 0,(int)Renderer.DisplayResolution.x, (int)Renderer.DisplayResolution.y);
             S3DECore.Time.EngineClock.SetTargetFramerate(60);
-            Renderer.Enable(GlEnableCap.DepthTest);
-            Renderer.Enable(GlEnableCap.CullFace);
+            S3DECore.Graphics.Renderer.Enable(S3DECore.Graphics.RendererCapability.DepthTest);
+            S3DECore.Graphics.Renderer.Enable(S3DECore.Graphics.RendererCapability.CullFace);
 
             while (!S3DECore.Window.IsCloseRequested())
             {
-                Time.UpdateDeltaTime();
-                S3DECore.Input.Keyboard.PollEvents();
-                Window.UpdateFocus();
-                Input_Handler.PollInput();
+                //Time.UpdateDeltaTime();
+                S3DECore.Input.Input.PollEvents();
+                S3DECore.Window.UpdateFocus();
 
                 SceneHandler.UpdateActiveScene();
                 SceneHandler.ActiveScene.PresentFrame();
+
                 Window.SwapBuffers();
                 Renderer.UpdateEvents();
-                S3DECore.Time.EngineClock.WaitForNextFrame(Renderer.Vsync);
+                S3DECore.Time.EngineClock.WaitForNextFrame();
                 
             }
         }

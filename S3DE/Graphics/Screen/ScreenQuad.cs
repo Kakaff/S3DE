@@ -1,11 +1,5 @@
-﻿using S3DE.Graphics.Materials;
-using S3DE.Graphics.Meshes;
-using S3DE.Maths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using S3DECore.Graphics.Meshes;
+using S3DECore.Math;
 
 namespace S3DE.Graphics.Screen
 {
@@ -21,10 +15,12 @@ namespace S3DE.Graphics.Screen
 
         private ScreenQuad()
         {
-            mesh = new StandardMesh();
-            mesh.Vertices = new Vector3[] { new Vector3(-1, -1), new Vector3(-1, 1), new Vector3(1, 1), new Vector3(1, -1) };
-            mesh.Uvs = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0) };
-            mesh.Indicies = new ushort[] { 3, 2, 1, 1, 0, 3 };
+            mesh = new StandardMesh
+            {
+                Vertices = new Vector3[] { new Vector3(-1, -1), new Vector3(-1, 1), new Vector3(1, 1), new Vector3(1, -1) },
+                Uvs = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0) },
+                Indicies = new ushort[] { 3, 2, 1, 1, 0, 3 }
+            };
             mesh.Apply();
         }
 
