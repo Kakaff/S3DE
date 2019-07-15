@@ -66,10 +66,10 @@ namespace S3DE.Components
         Vector3 worldScale, localScale;
 
         Vector3 forward, up, right;
-        Matrix4x4 worldTransformMatrix,localTransformMatrix;
+        Matrix4x4 worldMatrix,localWorldMatrix;
 
-        public Matrix4x4 WorldTransformMatrix { get { CheckUpdate(); return worldTransformMatrix; } }
-        public Matrix4x4 LocalTransformMatrix { get { CheckUpdate(); return localTransformMatrix; } }
+        public Matrix4x4 WorldMatrix { get { CheckUpdate(); return worldMatrix; } }
+        public Matrix4x4 LocalWorldMatrix { get { CheckUpdate(); return localWorldMatrix; } }
 
         protected override void PostRender() => hasChanged = false;
         void CheckUpdate()
@@ -109,21 +109,21 @@ namespace S3DE.Components
             {
                 case 0x1:
                     {
-                        UpdateWorldTransform();
+                        UpdateWorldMatrix();
                         UpdateWorldPosition();
                         break;
                     }
                 case 0x3:
                     {
                         UpdateWorldScale();
-                        UpdateWorldTransform();
+                        UpdateWorldMatrix();
                         UpdateWorldPosition();
                         break;
                     }
                 case 0x5:
                     {
                         UpdateWorldRotation();
-                        UpdateWorldTransform();
+                        UpdateWorldMatrix();
                         UpdateWorldPosition();
                         break;
                     }
@@ -131,7 +131,7 @@ namespace S3DE.Components
                     {
                         UpdateWorldScale();
                         UpdateWorldRotation();
-                        UpdateWorldTransform();
+                        UpdateWorldMatrix();
                         UpdateWorldPosition();
                         break;
                     }
@@ -306,15 +306,15 @@ namespace S3DE.Components
         {
             worldPosition = localPosition;
             if (parent != null)
-                worldPosition = worldPosition.Transform(parent.WorldTransformMatrix);
+                worldPosition = worldPosition.Transform(parent.WorldMatrix);
         }
 
-        private void UpdateWorldTransform()
+        private void UpdateWorldMatrix()
         {
-            localTransformMatrix = Matrix4x4.CreateWorldMatrix(
+            localWorldMatrix = Matrix4x4.CreateWorldMatrix(
                 localPosition, localScale, localQuatRotation);
 
-            worldTransformMatrix = (parent == null) ? localTransformMatrix : localTransformMatrix * parent.worldTransformMatrix;
+            worldMatrix = (parent == null) ? localWorldMatrix : localWorldMatrix * parent.worldMatrix;
 
         }
 
@@ -336,7 +336,7 @@ namespace S3DE.Components
         {
             children = new List<Transform>();
             
-            worldTransformMatrix = Matrix4x4.Identity;
+            worldMatrix = Matrix4x4.Identity;
             Scale = Vector3.One;
             Position = Vector3.Zero;
             Rotation = Quaternion.Identity;

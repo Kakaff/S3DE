@@ -92,8 +92,6 @@
     <Compile Include="Entities\GameEntity.cs" />
     <Compile Include="EngineMain.cs" />
     <Compile Include="Scenes\GameScene.cs" />
-    <Compile Include="Time.cs" />
-    <Compile Include="Time_Imports.cs" />
     <Compile Include="Utility\InstanceCreator.cs" />
   </ItemGroup>
   <ItemGroup>

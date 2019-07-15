@@ -23,6 +23,18 @@ namespace S3DECore {
 
 				return (offset - (float)(System::Math::Floor(offset / width) * width)) + start;
 			}
+
+			static double Square(double d) {
+				return d * d;
+			}
+
+			static float Square(float v) {
+				return v * v;
+			}
+
+			static float Square(int i) {
+				return i * i;
+			}
 		};
 	}
 

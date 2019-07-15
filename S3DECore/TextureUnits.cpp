@@ -70,6 +70,7 @@ namespace S3DECore {
 				}
 
 				SetActiveTextureUnit(texUnit);
+				Console::WriteLine(String::Format("Binding texture to TextureUnit {0}", texUnit));
 				glBindTexture((int)tex->GetTextureType(), tex->GetIdentifier());
 				textureUnits[texUnit] = tex;
 				boundTexUnits->Enqueue(texUnit);

@@ -4,37 +4,13 @@ namespace S3DECore {
 	namespace Graphics {
 		namespace Textures {
 
-			Texture2D::Texture2D(PixelType pt, PixelFormat pf, InternalTextureFormat itf, uint width, uint height) :
-				RenderTexture2D(pt, pf, itf, width, height){
-
+			Texture2D::Texture2D(uint width, uint height) :
+				RenderTexture2D(PixelType::UNSIGNED_BYTE, PixelFormat::RGBA, InternalTextureFormat::RGBA, width, height) {
+				bytes = gcnew cli::array<uint8_t>((width * height) * 4);
 			}
 
-			/*
-			void Texture2D::SetTextureData(cli::array<uint8_t>^ textureData) {
-				bytes->clear();
-				bytes->resize(textureData->Length);
-				System::Runtime::InteropServices::Marshal::Copy(
-					textureData, 
-					0, 
-					(System::IntPtr)&bytes[0], 
-					textureData->Length
-				);
-			}
-			*/
-
-			void Texture2D::SetPixel(int x, int y,Color c) {
-
-			}
-
-			void Texture2D::OnApply() {
-
-			}
 			void Texture2D::UploadPixelData() {
-				if (!IsBound())
-					Bind();
-				else if (TextureUnits::GetActiveTextureUnit() != GetBoundTexUnit())
-					TextureUnits::SetActiveTextureUnit(GetBoundTexUnit());
-
+				pin_ptr<uint8_t> pxData = &bytes[0];
 				glTexImage2D(
 					(int)GetTextureType(),
 					0,
@@ -44,8 +20,10 @@ namespace S3DECore {
 					0,
 					(int)pixFrmt,
 					(int)pixType,
-					&bytes[0]
+					pxData
 				);
+
+				hasMipMaps = false;
 			}
 		}
 	}

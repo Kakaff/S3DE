@@ -20,8 +20,8 @@ namespace SampleGame
             Arms,
         }
 
-        const int s = 120;
-        const int p = 8;
+        const int s = 75;
+        const int p = 4;
         const TestCase test = TestCase.Arms;
 
         protected override void LoadScene()
@@ -34,12 +34,34 @@ namespace SampleGame
             
             Mesh m = StandardMesh.CreateCube(new Vector3(1, 1, 1));
             NewSimpleMaterial mat = new NewSimpleMaterial();
+            NewTexturedMaterial mat1 = new NewTexturedMaterial();
+
+            Texture2D tex = new Texture2D(32, 32);
+            tex.AutoGenerateMipMaps = true;
+            tex.Anisotropic = AnisotropicSamples.x16;
+            tex.Filter = FilterMode.TriLinear;
+
+            float xMod = 1 / (float)tex.GetWidth();
+            float yMod = 1 / (float)tex.GetHeight();
+            float cMod = 1 / (new Vector2(tex.GetWidth(),tex.GetHeight()).LengthSquared());
+
+            for (int x = 0; x < tex.GetWidth(); x++)
+                for (int y = 0; y < tex.GetHeight(); y++)
+                {
+                    tex[x, y] = new Color(
+                        (byte)(255 * (xMod * x)), 
+                        (byte)(255 * (cMod * new Vector2(x,y).LengthSquared())), 
+                        (byte)(255 * (yMod * y)), 255);
+                }
             
+
+            tex.Apply();
+            mat1.Texture = tex;
             ActiveCamera.FoV = 80;
             ActiveCamera.Entity.AddComponent<SimpleCameraController>();
             ActiveCamera.transform.Position = new Vector3(0, 0, 5);
 
-            CreateSpinningArmNewMR(120, GetPointsInCircle(8), new Material[] { mat }, m);
+            CreateSpinningArmNewMR(s, GetPointsInCircle(p), new Material[] { mat,mat1 }, m);
         }
 
         protected override void UnloadScene()

@@ -249,6 +249,9 @@ namespace S3DECore {
 			static bool operator!=(Vector2 % v1, Vector2 % v2) { return !(v1 == v2); }
 
 			float LengthSquared();
+			float Length() {
+				return sqrt(x * x + y * y);
+			}
 			Vector2(float x, float y) { this->x = x; this->y = y; }
 			float x, y;
 

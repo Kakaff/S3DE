@@ -11,19 +11,41 @@ using namespace S3DECore::Collections;
 namespace S3DECore {
 	namespace Graphics {
 
-		public ref struct Color {
+		public value class Color {
 		public:
-			Color() {}
 			Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
 				r = red;
 				g = green;
 				b = blue;
 				a = alpha;
 			}
-			Color(const Color % c) { r = c.r; g = c.g; b = c.b; a = c.a; };
 			property uint8_t Red {
 				uint8_t get() { return r; }
 				void set(uint8_t v) { r = v; }
+			}
+			property uint8_t Green {
+				uint8_t get() { return g; }
+				void set(uint8_t v) { g = v; }
+			}
+			property uint8_t Blue {
+				uint8_t get() { return b; }
+				void set(uint8_t v) { b = v; }
+			}
+			property uint8_t Alpha {
+				uint8_t get() { return a; }
+				void set(uint8_t v) { a = v; }
+			}
+			property uint32_t AsUInt32 {
+				uint32_t get() { return (r << 24) + (g << 16) + (b << 8) + a; }
+				void set(uint32_t v) { 
+					r = v >> 24;
+					g = (v >> 16) & 0xFF;
+					b = (v >> 8) & 0xFF;
+					a = v & 0xFF;
+				}
+			}
+			virtual String^ ToString() override {
+				return String::Format("({0},{1},{2},{3})", r, g, b,a);
 			}
 		private:
 			uint8_t r, g, b, a;
@@ -247,13 +269,13 @@ namespace S3DECore {
 				FilterMode filterMode;
 				WrapMode wrapMode;
 				AnisotropicSamples anisoSamples;
+				bool filterModeChanged,wrapModeChanged,anisoChanged;
 			private:
 				uint gl_TexIdentifier;
 				uint boundTexUnit;
 				uint instanceID;
 				TextureType target;
 				bool isBound;
-				bool wrapChanged, filterChanged,anisoChanged;
 				static uint instanceCntr;
 			};
 
@@ -264,28 +286,97 @@ namespace S3DECore {
 				!RenderTexture2D();
 				uint GetWidth();
 				uint GetHeight();
+				property WrapMode Wrap {
+					WrapMode get() {
+						return wrapMode;
+					}
+					void set(WrapMode wm) {
+						if (wm != wrapMode) {
+							wrapMode = wm;
+							wrapModeChanged = true;
+						}
+					}
+				}
+
+				property FilterMode Filter {
+					FilterMode get() {
+						return filterMode;
+					}
+					void set(FilterMode fm) {
+						if (fm != filterMode) {
+							filterMode = fm;
+							filterModeChanged = true;
+						}
+					}
+				}
+
+				property AnisotropicSamples Anisotropic {
+					AnisotropicSamples get() {
+						return anisoSamples;
+					}
+					void set(AnisotropicSamples as) {
+						if (as != anisoSamples) {
+							anisoSamples = as;
+							anisoChanged = true;
+						}
+					}
+				}
+
+				property bool AutoGenerateMipMaps {
+					void set(bool b) {
+						genMipMaps = b;
+					}
+				}
+
+				void GenerateMipMaps();
 			protected:
 				uint width;
 				uint height;
 				PixelType pixType;
 				PixelFormat pixFrmt;
 				InternalTextureFormat intTexFrmt;
-			protected:
 				virtual void UploadPixelData() override;
 				virtual void OnApply() override;
+				bool genMipMaps;
+				bool hasMipMaps;
 			private:
 				void InitTexture();
 			};
 
 			public ref class Texture2D sealed : public RenderTexture2D {
 			public:
-				Texture2D(PixelType pt, PixelFormat pf, InternalTextureFormat itf, uint width, uint height);
-				void SetPixel(int x, int y, Color c);
+				Texture2D(uint width, uint height);
+
+				property Color default[int, int]{ //Shows as error, but there's no error, still compiles and runs fine.
+					Color get(int x, int y) {
+						int pos = ((y * width) + x);
+						switch (pixFrmt) {
+						case PixelFormat::RGBA: {
+								pos *= 4;
+								return Color(bytes[pos], bytes[pos + 1], bytes[pos + 2], bytes[pos + 3]);
+							}
+						default: throw gcnew System::ArgumentOutOfRangeException("PixelFormat not supported");
+						}
+					}
+					void set(int x, int y, Color c) {
+						int pos = ((y * width) + x);
+						switch (pixFrmt) {
+						case PixelFormat::RGBA: {
+							pos *= 4;
+							bytes[pos] = c.Red;
+							bytes[pos + 1] = c.Green;
+							bytes[pos + 2] = c.Blue;
+							bytes[pos + 3] = c.Alpha;
+							break;
+						}
+						default: throw gcnew System::ArgumentOutOfRangeException("PixelFormat not supported");
+						}
+					}
+				}
 			protected:
 				virtual void UploadPixelData() override;
-				virtual void OnApply() override;
 			private:
-				vector<uint8_t>* bytes; //Should probably change this to cli::array<uint8_t>^
+				cli::array<uint8_t>^ bytes;
 			};
 		}
 	}

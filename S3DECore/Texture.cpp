@@ -67,6 +67,10 @@ namespace S3DECore {
 				id = nullptr;
 				instanceID = instanceCntr;
 				instanceCntr++;
+
+				wrapModeChanged = true;
+				anisoChanged = true;
+				filterModeChanged = true;
 			}
 
 			uint Texture::Bind() {
