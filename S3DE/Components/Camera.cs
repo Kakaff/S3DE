@@ -6,8 +6,11 @@ namespace S3DE.Components
     public sealed class Camera : EntityComponent
     {
         public Matrix4x4 ViewMatrix { get {
-                if (transform.HasChanged)
+                if (transform.HasChanged && !isUpdated)
+                {
                     RecalculateViewMatrix();
+                    isUpdated = true;
+                }
 
                 return viewMatrix;
             }
@@ -17,7 +20,8 @@ namespace S3DE.Components
 
         Matrix4x4 viewMatrix, projMatrix;
         float zNear, zFar, fov;
-        
+        bool isUpdated = false; //Change this to be set to false whenever the parent transform changes. (via delegate)
+
         public float ZNear
         {
             get => zNear;
@@ -62,7 +66,12 @@ namespace S3DE.Components
             if (Entity.transform.HasChanged)
                 RecalculateViewMatrix();
         }
-        
+
+        protected override void PostRender()
+        {
+            isUpdated = false;
+        }
+
         public void RecalculateMatrices()
         {
             RecalculateViewMatrix();
@@ -78,8 +87,6 @@ namespace S3DE.Components
         {
             viewMatrix = Matrix4x4.CreateTranslationMatrix(transform.Position.Inverse()) *
                 Matrix4x4.CreateRotationMatrix(transform.Rotation.Conjugate());
-                
-                
         }
 
         void RecalculateProjectionMatrix(Vector2 oldRes, Vector2 newRes) => RecalculateProjectionMatrix();

@@ -36,17 +36,17 @@ namespace S3DECore {
 
 			double tmp1 = quat.x*quat.y;
 			double tmp2 = quat.z*quat.w;
-			res.m10 = 2.0 * (tmp1 + tmp2)*invs;
-			res.m01 = 2.0 * (tmp1 - tmp2)*invs;
+			res.m01 = 2.0 * (tmp1 + tmp2)*invs;
+			res.m10 = 2.0 * (tmp1 - tmp2)*invs;
 
 			tmp1 = quat.x*quat.z;
 			tmp2 = quat.y*quat.w;
-			res.m20 = 2.0 * (tmp1 - tmp2)*invs;
-			res.m02 = 2.0 * (tmp1 + tmp2)*invs;
+			res.m02 = 2.0 * (tmp1 - tmp2)*invs;
+			res.m20 = 2.0 * (tmp1 + tmp2)*invs;
 			tmp1 = quat.y*quat.z;
 			tmp2 = quat.x*quat.w;
-			res.m21 = 2.0 * (tmp1 + tmp2)*invs;
-			res.m12 = 2.0 * (tmp1 - tmp2)*invs;
+			res.m12 = 2.0 * (tmp1 + tmp2)*invs;
+			res.m21 = 2.0 * (tmp1 - tmp2)*invs;
 
 			return res;
 		}

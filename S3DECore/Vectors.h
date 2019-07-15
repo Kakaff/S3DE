@@ -248,8 +248,13 @@ namespace S3DECore {
 			static bool operator== (Vector2 % v1, Vector2 % v2) { return v1.x == v2.x && v1.y == v2.y; }
 			static bool operator!=(Vector2 % v1, Vector2 % v2) { return !(v1 == v2); }
 
+			float LengthSquared();
 			Vector2(float x, float y) { this->x = x; this->y = y; }
 			float x, y;
+
+			virtual String^ ToString() override {
+				return String::Format("({0},{1})", x, y);
+			}
 		};
 	}
 }

@@ -35,7 +35,7 @@ namespace SampleGame
         protected override void Start()
         {
             Enable_Powersaving(true);
-            Mouse.Cursor.SetCursorMode(CursorMode.Hidden);
+            Mouse.Cursor.SetCursorMode(CursorMode.Disabled);
 
             Renderer.VSyncEnabled = true;
             LoadStartScene<SampleScene>();

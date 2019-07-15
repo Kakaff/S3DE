@@ -43,6 +43,7 @@ namespace S3DECore {
 	void Window::SetResolution(int width, int height)
 	{
 		glfwSetWindowSize(S3DECore::Window::window_ptr, width, height);
+		dispRes = Vector2((float)width, (float)height);
 	}
 
 

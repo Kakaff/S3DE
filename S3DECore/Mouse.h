@@ -15,8 +15,8 @@ namespace S3DECore {
 		};
 
 		public enum class MouseState : int {
-			Moved =   0b0000001,
-			Moving =  0b0000010,
+			StartedMoving =   0b0000001,
+			IsMoving =  0b0000010,
 			Stopped = 0b0000100,
 			Still =   0b0001000,
 			ButtonPressed =  0b0010000,
@@ -38,8 +38,18 @@ namespace S3DECore {
 			static MouseState GetState();
 			static bool CheckState(MouseState ms);
 			static MouseButton GetMouseButton(int button);
-			static double GetMouseDeltaX();
-			static double GetMouseDeltaY();
+
+			static property Vector2 Delta {
+				Vector2 get() {
+					return delta;
+				}
+			}
+
+			static property Vector2 Position {
+				Vector2 get() {
+					return pos;
+				}
+			}
 
 			ref class Cursor abstract sealed {
 			public:
@@ -56,9 +66,10 @@ namespace S3DECore {
 		internal:
 			static void Init();
 			static void SetState(MouseState ms) { state = ms; }
+			static void Update();
 		private:
 			static MouseState state;
-			static double deltaX, deltaY;
+			static Vector2 delta, pos;
 			static System::Collections::Generic::Dictionary<int, MouseButton>^ buttons;
 		};
 

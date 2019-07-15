@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Textures.h"
+#include "EngineWindow.h"
 
 namespace S3DECore {
 	namespace Graphics {
@@ -12,6 +13,8 @@ namespace S3DECore {
 			currDispRes = displayRes;
 			SetViewportSize(0, 0, displayRes.x, displayRes.y);
 			Textures::TextureUnits::InitTextureUnits();
+
+			S3DECore::Window::DisplayResolution = displayRes;
 
 		}
 
@@ -30,6 +33,8 @@ namespace S3DECore {
 				if (OnDisplayResolutionChanged != nullptr)
 					OnDisplayResolutionChanged(oldRes, currDispRes);
 				displayReyChanged = false;
+
+				S3DECore::Window::DisplayResolution = newDispRes;
 			}
 		}
 

@@ -34,6 +34,8 @@ namespace S3DECore {
 				
 			}
 
+			Mouse::Update();
+
 		}
 
 		void Input::Init() {

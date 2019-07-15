@@ -29,6 +29,13 @@ namespace S3DECore {
 	internal:
 		static GLFWwindow* window_ptr;
 		static bool isFocused;
+		static property Vector2 DisplayResolution {
+			Vector2 get() { return dispRes; }
+			internal:
+				void set(Vector2 v) { dispRes = v; }
+		}
+	private:
+		static Vector2 dispRes;
 	};
 
 	public ref class GLFW {
