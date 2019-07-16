@@ -8,6 +8,7 @@ using S3DECore.Math;
 using S3DE.Scenes;
 using SampleGame.Debug;
 using System;
+using S3DE.Graphics;
 
 namespace SampleGame
 {
@@ -20,9 +21,10 @@ namespace SampleGame
             Arms,
         }
 
-        const int s = 75;
-        const int p = 4;
+        const int s = 125;
+        const int p = 8;
         const TestCase test = TestCase.Arms;
+        DeferredRenderpass drp;
 
         protected override void LoadScene()
         {
@@ -31,20 +33,21 @@ namespace SampleGame
 
         protected override void StartScene()
         {
-            
+            drp = AddRenderpass<DeferredRenderpass>(0);
+
             Mesh m = StandardMesh.CreateCube(new Vector3(1, 1, 1));
             NewSimpleMaterial mat = new NewSimpleMaterial();
             NewTexturedMaterial mat1 = new NewTexturedMaterial();
 
-            Texture2D tex = new Texture2D(32, 32);
+            Texture2D tex = new Texture2D(16, 16);
             tex.AutoGenerateMipMaps = true;
             tex.Anisotropic = AnisotropicSamples.x16;
-            tex.Filter = FilterMode.TriLinear;
+            tex.Filter = FilterMode.Nearest;
 
             float xMod = 1 / (float)tex.GetWidth();
             float yMod = 1 / (float)tex.GetHeight();
             float cMod = 1 / (new Vector2(tex.GetWidth(),tex.GetHeight()).LengthSquared());
-
+            
             for (int x = 0; x < tex.GetWidth(); x++)
                 for (int y = 0; y < tex.GetHeight(); y++)
                 {
@@ -59,9 +62,9 @@ namespace SampleGame
             mat1.Texture = tex;
             ActiveCamera.FoV = 80;
             ActiveCamera.Entity.AddComponent<SimpleCameraController>();
-            ActiveCamera.transform.Position = new Vector3(0, 0, 5);
+            ActiveCamera.transform.Position = new Vector3(0, 5, 0);
 
-            CreateSpinningArmNewMR(s, GetPointsInCircle(p), new Material[] { mat,mat1 }, m);
+            CreateSpinningArmNewMR(s, GetPointsInCircle(p), new Material[] { mat }, m);
         }
 
         protected override void UnloadScene()
@@ -91,6 +94,7 @@ namespace SampleGame
 
             nmr.Material = mats[0];
             nmr.Mesh = m;
+            nmr.TargetRenderpass = drp;
 
             double scaleMod = 1f / (length - 1);
             for (int i = 1; i < armDirections.Length; i++)
@@ -110,6 +114,7 @@ namespace SampleGame
                     Meshrenderer cnmr = ge.AddComponent<Meshrenderer>();
                     cnmr.Mesh = m;
                     cnmr.Material = mats[matCntr];
+                    cnmr.TargetRenderpass = drp;
                     ge.AddComponent<ObjectRotator>();
 
                     Vector3 pos = armDirections[j] * posMod;

@@ -15,9 +15,7 @@ namespace S3DE.Graphics.Materials
     {
         static Dictionary<Type, ShaderProgram> ShaderPrograms = new Dictionary<Type, ShaderProgram>();
         ShaderProgram shadProg;
-
-        public int TargetRenderPass { get; set; }
-
+        
         public int ShaderProgramID => shadProg.GetInstanceID();
         Transform trgTrans;
 
@@ -25,15 +23,11 @@ namespace S3DE.Graphics.Materials
 
         internal void SetTargetTransform(Transform trans) => trgTrans = trans;
 
-        private Material()
+        protected Material()
         {
             GetShaderProgram();
         }
-
-        protected Material(int targetRenderPass) : this()
-        {
-            TargetRenderPass = targetRenderPass;
-        }
+        
 
         protected abstract ShaderSource[] ShaderSources { get; }
 

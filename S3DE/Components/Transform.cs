@@ -187,7 +187,7 @@ namespace S3DE.Components
                         else
                         {
                             //If we have a parent, calculate the distance between the parents position and our target pos.
-                            localPosition = (position - parent.Position).Transform(parent.Rotation.Conjugate()) / parent.Scale;
+                            localPosition = ((position - parent.Position) / parent.Scale).Transform(parent.Rotation.Conjugate());
                         }
                         
                         break;

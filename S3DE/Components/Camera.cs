@@ -93,7 +93,6 @@ namespace S3DE.Components
 
         void RecalculateProjectionMatrix()
         {
-            System.Console.WriteLine("Recalculating projection matrix");
             Vector2 v = Renderer.RenderResolution;
             float aspect = v.x / v.y;
             projMatrix = Matrix4x4.CreateFoVPerspectiveMatrix(fov, zNear, zFar, aspect);

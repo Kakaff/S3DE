@@ -6,6 +6,7 @@ using S3DECore.Graphics.Framebuffers;
 using S3DE.Graphics.Screen;
 using S3DECore.Graphics;
 using S3DECore.Graphics.Textures;
+using S3DE.Graphics;
 
 namespace S3DE.Scenes
 {
@@ -15,8 +16,8 @@ namespace S3DE.Scenes
         List<GameEntity> inActiveEntities = new List<GameEntity>();
         
         List<GameEntity> entitiesToAdd = new List<GameEntity>();
-        
-        
+
+        List<Renderpass> renderPasses = new List<Renderpass>();
         Camera activeCamera;
 
         public Camera ActiveCamera
@@ -95,6 +96,9 @@ namespace S3DE.Scenes
                 ge.Draw();
             }
 
+            for (int i = 0; i < renderPasses.Count; i++)
+                renderPasses[i].Draw();
+
             for (int i = 0; i < activeEntities.Count; i++)
                 activeEntities[i].PostDraw();
             
@@ -135,6 +139,48 @@ namespace S3DE.Scenes
             return activeCamera;
         }
         
+        protected T AddRenderpass<T>() where T : Renderpass
+        {
+            T rp = Activator.CreateInstance<T>();
+            rp.Index = renderPasses.Count;
+            renderPasses.Add(rp);
+            rp.Scene = this;
+            return rp;
+        }
+
+        protected T AddRenderpass<T>(int targetIndex) where T : Renderpass
+        {
+            T rp = Activator.CreateInstance<T>();
+            rp.Index = renderPasses.Count;
+            renderPasses.Add(rp);
+            rp.Scene = this;
+            ChangeRenderpassIndex(rp, targetIndex);
+            return rp;
+        }
+
+        public Renderpass GetRenderpass(int index)
+        {
+            return renderPasses[index];
+        }
+
+        public void ChangeRenderpassIndex(Renderpass rp, int newIndex)
+        {
+            for (int i = rp.Index + 1; i < newIndex; i++)
+                renderPasses[i].Index--;
+
+            renderPasses.Insert(newIndex, rp);
+            renderPasses.RemoveAt(rp.Index);
+            rp.Index = newIndex;
+        }
+
+        public void RemoveRenderpass(Renderpass rp)
+        {
+            for (int i = rp.Index + 1; i < renderPasses.Count; i++)
+                renderPasses[i].Index--;
+
+            renderPasses.RemoveAt(rp.Index);
+        }
+
         protected GameEntity CreateEntity() => CreateGameEntity_Internal();
         protected abstract void LoadScene();
         protected abstract void UnloadScene();
@@ -142,5 +188,6 @@ namespace S3DE.Scenes
 
         internal void Load_Internal() => LoadScene();
         internal void Unload_Internal() => UnloadScene();
+        
     }
 }

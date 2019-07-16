@@ -70,7 +70,9 @@
     <Compile Include="Components\Meshrenderer.cs" />
     <Compile Include="Components\SimpleCameraController.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Graphics\DeferredRenderpass.cs" />
     <Compile Include="Graphics\Materials\Material.cs" />
+    <Compile Include="Graphics\Renderpass.cs" />
     <Compile Include="Graphics\Screen\DefaultScreenQuadMaterial.cs" />
     <Compile Include="Graphics\Screen\ScreenQuad.cs" />
     <Compile Include="Graphics\Screen\ScreenQuadMaterial.cs" />
