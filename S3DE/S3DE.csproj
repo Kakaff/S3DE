@@ -72,6 +72,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Graphics\DeferredRenderpass.cs" />
     <Compile Include="Graphics\Materials\Material.cs" />
+    <Compile Include="Graphics\Materials\SimpleMaterial.cs" />
     <Compile Include="Graphics\Renderpass.cs" />
     <Compile Include="Graphics\Screen\DefaultScreenQuadMaterial.cs" />
     <Compile Include="Graphics\Screen\ScreenQuad.cs" />

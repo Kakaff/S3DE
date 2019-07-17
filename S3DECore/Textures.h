@@ -156,12 +156,14 @@ namespace S3DECore {
 				UNSIGNED_INT_8_8_8_8_REV = 0x8367
 			};
 
-			public enum class InternalTextureFormat : int {
+			public enum class InternalFormat : int {
 				RED = 0x1903,
 				RG = 0x8227,
 				RGB = 0x1907,
 				RGBA = 0x1908,
-				DEPTH_COMPONENT = 0x1902,
+				DEPTH_COMPONENT = GL_DEPTH_COMPONENT,
+				DEPTH_COMPONENT_24 = GL_DEPTH_COMPONENT24,
+				DEPTH_COMPONENT_32 = GL_DEPTH_COMPONENT32,
 				DEPTH_STENCIL = 0x84F9,
 				STENCIL_INDEX = 0x1901,
 				STENCIL_INDEX1 = 0x8D46,
@@ -258,10 +260,26 @@ namespace S3DECore {
 				void Unbind();
 				void Apply();
 				TextureType GetTextureType();
+
+				property Vector2 Resolution{
+					Vector2 get() { return res; }
+				}
+
+				property PixelType Pixeltype {
+					PixelType get() { return pt; }
+				}
+
+				property PixelFormat Pixelformat {
+					PixelFormat get() { return pf; }
+				}
+
+				property InternalFormat Internalformat {
+					InternalFormat get() { return itf; }
+				}
 			internal:
 				void SetBoundTexUnit(uint tu);
 			protected:
-				Texture(TextureType texType);
+				Texture(TextureType texType,Vector2 res,PixelType pt, PixelFormat pf, InternalFormat itf);
 				virtual void OnApply() abstract;
 				virtual void UploadPixelData() abstract;
 				void SetTexParameteri(int param, int val);
@@ -275,13 +293,17 @@ namespace S3DECore {
 				uint boundTexUnit;
 				uint instanceID;
 				TextureType target;
+				Vector2 res;
+				PixelType pt;
+				PixelFormat pf;
+				InternalFormat itf;
 				bool isBound;
 				static uint instanceCntr;
 			};
 
 			public ref class RenderTexture2D : public Texture {
 			public:
-				RenderTexture2D(PixelType pt, PixelFormat pf, InternalTextureFormat itf, uint width, uint height);
+				RenderTexture2D(PixelType pt, PixelFormat pf, InternalFormat itf, uint width, uint height);
 				~RenderTexture2D();
 				!RenderTexture2D();
 				uint GetWidth();
@@ -334,7 +356,7 @@ namespace S3DECore {
 				uint height;
 				PixelType pixType;
 				PixelFormat pixFrmt;
-				InternalTextureFormat intTexFrmt;
+				InternalFormat intTexFrmt;
 				virtual void UploadPixelData() override;
 				virtual void OnApply() override;
 				bool genMipMaps;

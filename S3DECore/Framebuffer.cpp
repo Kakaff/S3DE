@@ -24,7 +24,7 @@ namespace S3DECore {
 				case AttachmentLocation::Color14: return 14;
 				case AttachmentLocation::Color15: return 15;
 				case AttachmentLocation::Depth: return 16;
-				case AttachmentLocation::Depth_Stencil: 16;
+				case AttachmentLocation::Depth_Stencil: return 16;
 				default: return -1;
 				}
 			}
@@ -32,7 +32,7 @@ namespace S3DECore {
 			Framebuffer::Framebuffer() {
 				pin_ptr<uint> ID(&identifier);
 				glGenFramebuffers(1, ID);
-				attachments = gcnew cli::array<TextureAttachment^>(17);
+				attachments = gcnew cli::array<FramebufferAttachment^>(17);
 				instanceID = instanceCntr;
 				instanceCntr++;
 				isBound = false;
@@ -50,7 +50,7 @@ namespace S3DECore {
 
 			int Framebuffer::GetID() { return instanceID; }
 
-			TextureAttachment^ Framebuffer::GetTextureAttachment(AttachmentLocation loc) {
+			FramebufferAttachment^ Framebuffer::GetAttachment(AttachmentLocation loc) {
 				return attachments[AttachmentLocToIndex(loc)];
 			}
 
@@ -85,6 +85,8 @@ namespace S3DECore {
 			}
 
 			bool Framebuffer::IsComplete() {
+				if (!isBound)
+					Bind();
 				return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 			}
 
@@ -92,26 +94,33 @@ namespace S3DECore {
 				return boundFramebuffer;
 			}
 
-			void Framebuffer::AddTextureAttachment2D(TextureAttachment2D^ attachment, AttachmentLocation loc, int level) {
+			void Framebuffer::AddTextureAttachment2D(TextureAttachment2D^ attachment, AttachmentLocation loc) {
 				if (!isBound)
 					Bind();
 
-				TextureAttachment^ tex = attachments[AttachmentLocToIndex(loc)];
+				FramebufferAttachment^ tex = attachments[AttachmentLocToIndex(loc)];
 
 				if (tex != nullptr)
-					throw gcnew System::ArgumentException("Attachment already exists!");
-				Console::WriteLine(String::Format("Attaching Texture2D to {0}:{1}", loc,(int)loc));
+					throw gcnew System::ArgumentException(String::Format("Framebuffer {0} already has a {1} attachment!",instanceID,loc));
+
+				Console::WriteLine(String::Format("Attaching Texture2D {0} to Framebuffer {1} as {2} : {3}",attachment->GetTexture()->GetInstanceID(),instanceID, loc,(int)loc));
+				attachment->GetTexture()->Unbind();
+
 				glFramebufferTexture2D(
 					GL_FRAMEBUFFER, 
-					(int)loc, 
+					(GLenum)loc, 
 					GL_TEXTURE_2D, 
 					attachment->GetTexture()->GetIdentifier(), 
-					level
+					0
 				);
 
 				Renderer::CheckErrors(String::Format("Tried attaching texture to location {0}",loc));
 
 				attachments[AttachmentLocToIndex(loc)] = attachment;
+			}
+
+			void Framebuffer::AddBufferAttachment(BufferAttachment^ ba, AttachmentLocation loc) {
+
 			}
 		}
 	}

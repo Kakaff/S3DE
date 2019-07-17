@@ -129,6 +129,9 @@
     <ClCompile Include="MathFun.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="BufferAttachment.cpp">
+      <Filter>Source Files\Graphics\Framebuffers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineTypes.h">

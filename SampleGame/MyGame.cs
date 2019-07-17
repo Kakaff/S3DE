@@ -36,7 +36,7 @@ namespace SampleGame
         {
             Enable_Powersaving(true);
             Mouse.Cursor.SetCursorMode(CursorMode.Disabled);
-
+            
             Renderer.VSyncEnabled = true;
             LoadStartScene<SampleScene>();
         }

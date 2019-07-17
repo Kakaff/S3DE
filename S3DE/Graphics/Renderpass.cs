@@ -1,5 +1,6 @@
 ﻿using S3DE.Components;
 using S3DE.Scenes;
+using S3DECore.Graphics.Framebuffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,14 +74,17 @@ namespace S3DE.Graphics
 
     public abstract class Renderpass
     {
-        Dictionary<int,DrawcallContainer> drawcallContainers = new Dictionary<int, DrawcallContainer>();
         static int cntr = 0;
+        Dictionary<int,DrawcallContainer> drawcallContainers = new Dictionary<int, DrawcallContainer>();
+        bool isInitiated;
+        int id;
 
+        public abstract Framebuffer FinalFramebuffer { get; }
+        public Framebuffer[] Framebuffers { get; protected set; }
         public GameScene Scene { get; internal set; }
         public int Index { get; internal set; }
         public int ID { get => id; }
-        bool isInitiated;
-        int id;
+        
 
         protected Renderpass() { id = cntr; cntr++; }
 

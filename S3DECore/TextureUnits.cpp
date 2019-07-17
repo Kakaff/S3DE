@@ -10,9 +10,6 @@ namespace S3DECore {
 				if (!isInitialized) {
 
 					availableTextureUnits = S3DECore::Graphics::Renderer::GetParami(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-					//textureUnits = new vector<Texture^>(availableTextureUnits);
-					//textureUnits = gcnew System::Collections::Generic::List<Texture^>(availableTextureUnits);
-
 					textureUnits = gcnew cli::array<Texture^>(availableTextureUnits);
 					unboundTexUnits = gcnew LinkedQueueList<int>();
 
@@ -45,7 +42,7 @@ namespace S3DECore {
 				Texture^ bt = GetTexture(texUnit);
 				
 				if (bt != nullptr) {
-					Console::WriteLine(String::Format("Unbinding TextureUnit {0}",texUnit));
+					Console::WriteLine(String::Format("Unbinding Texture {0} from TextureUnit {1}",bt->GetInstanceID(),texUnit));
 					bt->SetIsBound(false);
 					boundTexUnits->TryRemove(texUnit);
 					unboundTexUnits->Enqueue(texUnit);
@@ -70,7 +67,7 @@ namespace S3DECore {
 				}
 
 				SetActiveTextureUnit(texUnit);
-				Console::WriteLine(String::Format("Binding texture to TextureUnit {0}", texUnit));
+				Console::WriteLine(String::Format("Binding texture {0} to TextureUnit {1}",tex->GetInstanceID(), texUnit));
 				glBindTexture((int)tex->GetTextureType(), tex->GetIdentifier());
 				textureUnits[texUnit] = tex;
 				boundTexUnits->Enqueue(texUnit);
@@ -94,6 +91,7 @@ namespace S3DECore {
 			void TextureUnits::SetActiveTextureUnit(uint texUnit) {
 				if (activeTextureUnit != texUnit) {
 					activeTextureUnit = texUnit;
+					Console::WriteLine(String::Format("Setting TextureUnit {0} as the active TextureUnit",texUnit));
 					glActiveTexture(GL_TEXTURE0 + texUnit);
 				}
 			}

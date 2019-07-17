@@ -6,33 +6,6 @@
 
 namespace S3DECore {
 	namespace Time {
-		/*
-
-#pragma managed(push,off)
-		namespace Unmanaged {
-			static LARGE_INTEGER curr, freq, prevFrameEnd;
-			static long long int sleepErrorHigh = 0, sleepErrorLow = 0;
-			static int sleepErrLowerCounter, sleepErrResetCounter, SLEEP_DECREASE_ERR_COUNTER_MAX = 10, SLEEP_ERR_RESET_COUNTER_MAX = 5;
-
-			static long long int deltaTime = 0;
-
-			bool pwrsav = true;
-
-			HANDLE tmr = NULL;
-
-			long long int yieldTime = 1500, frqchkintv = 500;
-			long long int SLEEP_ERR_THRESHOLD = 500;
-
-			long long int eslaped, remainder, overlseep;
-
-			int trgFps = 60;
-
-			void WaitForNextFrame(bool b) {
-
-			}
-		}
-		#pragma managed(pop)
-		*/
 
 		static LARGE_INTEGER curr, freq, prevFrameEnd;
 		static long long int sleepErrorHigh = 0, sleepErrorLow = 0;
@@ -101,7 +74,7 @@ namespace S3DECore {
 				}
 
 				if (remainder <= 0) {
-					deltaTime = eslaped;
+					deltaTime = (((curr.QuadPart - prevFrameEnd.QuadPart) * 1000000) / freq.QuadPart) / 1000000.0;
 					prevFrameEnd = curr;
 					oversleep = -remainder; //If we overslept, remainder is negative.
 					break;

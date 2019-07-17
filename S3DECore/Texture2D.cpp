@@ -5,7 +5,7 @@ namespace S3DECore {
 		namespace Textures {
 
 			Texture2D::Texture2D(uint width, uint height) :
-				RenderTexture2D(PixelType::UNSIGNED_BYTE, PixelFormat::RGBA, InternalTextureFormat::RGBA, width, height) {
+				RenderTexture2D(PixelType::UNSIGNED_BYTE, PixelFormat::RGBA, InternalFormat::RGBA, width, height) {
 				bytes = gcnew cli::array<uint8_t>((width * height) * 4);
 			}
 

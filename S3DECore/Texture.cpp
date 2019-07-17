@@ -60,10 +60,11 @@ namespace S3DECore {
 				OnApply();
 			}
 
-			Texture::Texture(TextureType texType) {
+			Texture::Texture(TextureType texType,Vector2 res, PixelType pt, PixelFormat pf, InternalFormat itf) {
 				target = texType;
 				pin_ptr<uint> id(&gl_TexIdentifier);
 				glGenTextures(1, id);
+				Console::WriteLine(String::Format("Created Texture {0}",gl_TexIdentifier));
 				id = nullptr;
 				instanceID = instanceCntr;
 				instanceCntr++;
@@ -71,6 +72,10 @@ namespace S3DECore {
 				wrapModeChanged = true;
 				anisoChanged = true;
 				filterModeChanged = true;
+				this->res = res;
+				this->pt = pt;
+				this->pf = pf;
+				this->itf = itf;
 			}
 
 			uint Texture::Bind() {

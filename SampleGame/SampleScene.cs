@@ -64,7 +64,7 @@ namespace SampleGame
             ActiveCamera.Entity.AddComponent<SimpleCameraController>();
             ActiveCamera.transform.Position = new Vector3(0, 5, 0);
 
-            CreateSpinningArmNewMR(s, GetPointsInCircle(p), new Material[] { mat }, m);
+            CreateSpinningArmNewMR(s, GetPointsInCircle(p), new Material[] { mat,mat1 }, m);
         }
 
         protected override void UnloadScene()

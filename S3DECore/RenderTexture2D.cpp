@@ -4,8 +4,8 @@ namespace S3DECore {
 	namespace Graphics {
 		namespace Textures {
 
-			RenderTexture2D::RenderTexture2D(PixelType pt, PixelFormat pf, InternalTextureFormat itf, uint width, uint height) :
-				Texture(TextureType::Texture2D) {
+			RenderTexture2D::RenderTexture2D(PixelType pt, PixelFormat pf, InternalFormat itf, uint width, uint height) :
+				Texture(TextureType::Texture2D, Vector2(width,height),pt,pf,itf) {
 				this->width = width;
 				this->height = height;
 				pixType = pt;
@@ -123,6 +123,8 @@ namespace S3DECore {
 					(int)pixType,
 					NULL //Texture Data
 				);
+				OnApply();
+				Unbind();
 			}
 		}
 	}

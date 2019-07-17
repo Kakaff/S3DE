@@ -32,6 +32,7 @@ namespace S3DECore {
 			static void Clear(ClearBufferBit cbb);
 			static void UpdateEvents();
 			static ResolutionChangedCallback ^OnRenderResolutionChanged,^OnDisplayResolutionChanged;
+
 			static property Vector2 DisplayResolution {
 				Vector2 get() { return currDispRes; }
 				void set(Vector2 v) { displayReyChanged = true; newDispRes = v; }

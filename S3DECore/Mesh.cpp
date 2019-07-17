@@ -38,6 +38,7 @@ namespace S3DECore {
 
 		void Mesh::Draw() {
 			Bind();
+			Renderer::CheckErrors(gcnew String("Error after binding mesh!"));
 			glDrawElements(GL_TRIANGLES, indCount, GL_UNSIGNED_SHORT, (void*)0);
 		}
 

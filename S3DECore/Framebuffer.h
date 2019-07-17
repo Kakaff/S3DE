@@ -7,19 +7,6 @@ using namespace S3DECore::Graphics::Textures;
 namespace S3DECore {
 	namespace Graphics {
 		namespace Framebuffers {
-			public ref class TextureAttachment abstract {
-			public:
-				Texture^ GetTexture();
-			protected:
-				TextureAttachment(Texture^ tex);
-				Texture^ tex;
-			};
-
-			public ref class TextureAttachment2D : TextureAttachment {
-			public:
-				TextureAttachment2D(RenderTexture2D^ rt);
-			private:
-			};
 
 			public enum class AttachmentLocation {
 				Color0 = GL_COLOR_ATTACHMENT0,
@@ -43,6 +30,43 @@ namespace S3DECore {
 				Depth_Stencil = GL_DEPTH_STENCIL_ATTACHMENT
 			};
 
+			public ref class FramebufferAttachment abstract {
+			public:
+				FramebufferAttachment(Vector2 res, PixelType pt, PixelFormat pf, InternalFormat itf) {
+					this->res = res;
+				}
+				property Vector2 Resolution {
+					Vector2 get() { return res; }
+				}
+			protected:
+				Vector2 res;
+
+			};
+
+			public ref class BufferAttachment : public FramebufferAttachment {
+			public:
+				BufferAttachment(Vector2 res, PixelType pt, PixelFormat pf, InternalFormat itf);
+			private:
+				uint rb;
+			};
+
+			public ref class TextureAttachment abstract : public FramebufferAttachment {
+			public:
+				Texture^ GetTexture();
+			protected:
+				TextureAttachment(Texture^ tex);
+				Texture^ tex;
+			};
+
+			public ref class TextureAttachment2D : public TextureAttachment {
+			public:
+				TextureAttachment2D(Vector2 res, PixelType pt, PixelFormat pf, InternalFormat itf);
+				property RenderTexture2D^ InternalTexture {
+					RenderTexture2D^ get() { return (RenderTexture2D^)tex; }
+				}
+			private:
+			};
+
 			public ref class Framebuffer {
 			public:
 				Framebuffer();
@@ -55,13 +79,14 @@ namespace S3DECore {
 				bool IsBound();
 				int GetID();
 				static Framebuffer^ GetBoundFramebuffer();
-				TextureAttachment^ GetTextureAttachment(AttachmentLocation loc);
-				void AddTextureAttachment2D(TextureAttachment2D^ attachment,AttachmentLocation loc, int level);
+				FramebufferAttachment^ GetAttachment(AttachmentLocation loc);
+				void AddTextureAttachment2D(TextureAttachment2D^ attachment,AttachmentLocation loc);
+				void AddBufferAttachment(BufferAttachment^ ba, AttachmentLocation loc);
 			private:
 				int instanceID;
 				bool isBound;
 				uint identifier;
-				cli::array<TextureAttachment^>^ attachments;
+				cli::array<FramebufferAttachment^>^ attachments;
 				static Framebuffer^ boundFramebuffer;
 				static int instanceCntr;
 			};

@@ -99,6 +99,7 @@ namespace S3DE.Scenes
             for (int i = 0; i < renderPasses.Count; i++)
                 renderPasses[i].Draw();
 
+            PresentFrame();
             for (int i = 0; i < activeEntities.Count; i++)
                 activeEntities[i].PostDraw();
             
@@ -107,8 +108,17 @@ namespace S3DE.Scenes
         
         internal void PresentFrame()
         {
-            
-            /*Placeholder for when we re-add framebuffers and renderpasses. */
+            if (renderPasses.Count == 0)
+                throw new Exception("Scene does not contain any Renderpasses!");
+
+            Framebuffer fb = renderPasses[renderPasses.Count - 1].FinalFramebuffer;
+
+            if (fb == null)
+                throw new Exception("The final Framebuffer for the final Renderpass is null!");
+
+            /* Unbind fb.
+             * Draw Color0 to the screen.
+             */
             
         }
 
