@@ -24,7 +24,6 @@ namespace SampleGame
         const int s = 125;
         const int p = 8;
         const TestCase test = TestCase.Arms;
-        DeferredRenderpass drp;
 
         protected override void LoadScene()
         {
@@ -33,10 +32,8 @@ namespace SampleGame
 
         protected override void StartScene()
         {
-            drp = AddRenderpass<DeferredRenderpass>(0);
-
             Mesh m = StandardMesh.CreateCube(new Vector3(1, 1, 1));
-            NewSimpleMaterial mat = new NewSimpleMaterial();
+            SimpleMaterial mat = new SimpleMaterial();
             NewTexturedMaterial mat1 = new NewTexturedMaterial();
 
             Texture2D tex = new Texture2D(16, 16);
@@ -94,7 +91,6 @@ namespace SampleGame
 
             nmr.Material = mats[0];
             nmr.Mesh = m;
-            nmr.TargetRenderpass = drp;
 
             double scaleMod = 1f / (length - 1);
             for (int i = 1; i < armDirections.Length; i++)
@@ -114,7 +110,6 @@ namespace SampleGame
                     Meshrenderer cnmr = ge.AddComponent<Meshrenderer>();
                     cnmr.Mesh = m;
                     cnmr.Material = mats[matCntr];
-                    cnmr.TargetRenderpass = drp;
                     ge.AddComponent<ObjectRotator>();
 
                     Vector3 pos = armDirections[j] * posMod;

@@ -8,34 +8,29 @@ namespace S3DE.Components
     {
         public Mesh Mesh { get => m; set { m = value; UpdateDrawcall(); } }
         public Material Material { get => mat; set { mat = value; UpdateDrawcall(); } }
-        public Renderpass TargetRenderpass { get => trgRenderpass; set { trgRenderpass = value; UpdateDrawcall(); } }
+        //public Renderpass TargetRenderpass { get => trgRenderpass; set { trgRenderpass = value; UpdateDrawcall(); } }
 
         Drawcall drawcall;
-        Renderpass trgRenderpass;
         Material mat;
         Mesh m;
 
         void UpdateDrawcall()
         {
-            if (trgRenderpass == null && drawcall.ParentContainer != null)
-                drawcall.RemoveFromRenderpass();
-            else if (trgRenderpass != null)
+            if (drawcall.ParentContainer != null)
             {
-                if (drawcall.ParentContainer != null)
-                {
-                    //Check if Material or Renderpass changed.
-                    //Or if Material or Mesh has been set to null.
+                if (Material != null && 
+                    (Material.RenderpassChanged || Material.ShaderProgramID != drawcall.ParentContainer.ShaderProgramID))
+                    drawcall.RemoveFromRenderpass();
+                else if (Material == null || Mesh == null)
+                    drawcall.RemoveFromRenderpass();
+            }
 
-                    if (drawcall.ParentContainer.RenderpassID != trgRenderpass.ID)
-                        drawcall.RemoveFromRenderpass();
-                    else if (Material != null && Material.ShaderProgramID != drawcall.ParentContainer.ShaderProgramID)
-                        drawcall.RemoveFromRenderpass();
-                    else if (Material == null || Mesh == null)
-                        drawcall.RemoveFromRenderpass();
-                }
+            if (Material != null && Mesh != null)
+            {
+                if (Material.TargetRenderpass == null)
+                    throw new System.Exception("Material does not have a target renderpass!");
 
-                if (Mesh != null && Material != null)
-                    drawcall.AddToRenderpass(trgRenderpass);
+                drawcall.AddToRenderpass(Material.TargetRenderpass, Scene);
             }
             
         }
@@ -51,9 +46,10 @@ namespace S3DE.Components
             }
         }
 
-        protected override void Render()
+        protected override void PreRender()
         {
-
+            if (Material.RenderpassChanged)
+                UpdateDrawcall();
         }
 
         protected override void OnCreation()

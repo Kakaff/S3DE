@@ -58,6 +58,13 @@ namespace S3DE.Graphics
         {
             this.mr = mr;
         }
+        
+        public void AddToRenderpass(Type trpt, GameScene scene)
+        {
+            Renderpass rp = scene.GetRenderpass(trpt);
+
+            rp.AddDrawcall(this);
+        }
 
         public void AddToRenderpass(Renderpass rp)
         {

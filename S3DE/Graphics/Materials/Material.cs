@@ -17,6 +17,9 @@ namespace S3DE.Graphics.Materials
         ShaderProgram shadProg;
         
         public int ShaderProgramID => shadProg.GetInstanceID();
+        public Type TargetRenderpass { get; private set; }
+        public bool RenderpassChanged => renderpassChanged;
+        bool renderpassChanged;
         Transform trgTrans;
 
         protected Transform transform => trgTrans;
@@ -43,6 +46,7 @@ namespace S3DE.Graphics.Materials
 
             shadProg.Use();
 
+            renderpassChanged = false;
         }
 
         void GetShaderProgram()
@@ -73,6 +77,8 @@ namespace S3DE.Graphics.Materials
 
                 if (!shadProg.Link())
                     throw new Exception("Error linking shaderprogram!");
+
+                ShaderPrograms.Add(GetType(), shadProg);
             }
 
             OnCompilationSuccess();
@@ -81,6 +87,11 @@ namespace S3DE.Graphics.Materials
         protected abstract void OnCompilationSuccess();
         protected abstract void UpdateUniforms();
 
+        protected void SetTargetRenderpass<T>() where T : Renderpass
+        {
+            TargetRenderpass = typeof(T);
+            renderpassChanged = true;
+        }
 
         protected int GetUniformLocation(string uniformName)
         {

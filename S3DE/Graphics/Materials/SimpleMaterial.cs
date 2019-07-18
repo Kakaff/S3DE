@@ -19,7 +19,10 @@ namespace S3DE.Graphics.Materials
         protected override ShaderSource[] ShaderSources => new ShaderSource[]
             {new SimpleVertexShaderSource(), new SimpleFragmentShadeSource()};
 
-        public SimpleMaterial() : base() { Color = new Color(255, 255, 255, 0); }
+        public SimpleMaterial() : base() {
+            Color = new Color(255, 255, 255, 0);
+            SetTargetRenderpass<DeferredRenderpass>();
+        }
 
         protected override void OnCompilationSuccess()
         {

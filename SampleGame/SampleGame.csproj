@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Debug\Debug_FrameMonitor.cs" />
-    <Compile Include="Debug\NewSimpleMaterial.cs" />
     <Compile Include="Debug\NewTexturedMaterial.cs" />
     <Compile Include="Debug\ObjectRotator.cs" />
     <Compile Include="MyGame.cs" />

@@ -17,7 +17,8 @@ namespace S3DE.Scenes
         
         List<GameEntity> entitiesToAdd = new List<GameEntity>();
 
-        List<Renderpass> renderPasses = new List<Renderpass>();
+        Dictionary<Type, Renderpass> renderPasses = new Dictionary<Type, Renderpass>();
+        List<Renderpass> renderPassList = new List<Renderpass>();
         Camera activeCamera;
 
         public Camera ActiveCamera
@@ -97,7 +98,7 @@ namespace S3DE.Scenes
             }
 
             for (int i = 0; i < renderPasses.Count; i++)
-                renderPasses[i].Draw();
+                renderPassList[i].Draw();
 
             PresentFrame();
             for (int i = 0; i < activeEntities.Count; i++)
@@ -108,10 +109,10 @@ namespace S3DE.Scenes
         
         internal void PresentFrame()
         {
-            if (renderPasses.Count == 0)
+            if (renderPassList.Count == 0)
                 throw new Exception("Scene does not contain any Renderpasses!");
 
-            Framebuffer fb = renderPasses[renderPasses.Count - 1].FinalFramebuffer;
+            Framebuffer fb = renderPassList[renderPassList.Count - 1].FinalFramebuffer;
 
             if (fb == null)
                 throw new Exception("The final Framebuffer for the final Renderpass is null!");
@@ -148,47 +149,80 @@ namespace S3DE.Scenes
 
             return activeCamera;
         }
+
         
         protected T AddRenderpass<T>() where T : Renderpass
         {
-            T rp = Activator.CreateInstance<T>();
-            rp.Index = renderPasses.Count;
-            renderPasses.Add(rp);
+            if (renderPasses.TryGetValue(typeof(T), out Renderpass rp))
+                throw new Exception($"Scene already contains a renderpass of type {rp.GetType().Name}");
+
+            rp = Activator.CreateInstance<T>();
+
+            renderPasses.Add(typeof(T), rp);
+            rp.Index = renderPassList.Count;
             rp.Scene = this;
+            renderPassList.Add(rp);
+            return (T)rp;
+        }
+        
+
+        internal Renderpass AddRenderpass(Type t)
+        {
+            if (renderPasses.TryGetValue(t, out Renderpass rp))
+                throw new Exception($"Scene already contains a renderpass of type {t.Name}");
+            
+            rp = (Renderpass)Activator.CreateInstance(t);
+
+            renderPasses.Add(t, rp);
+            rp.Index = renderPassList.Count;
+            rp.Scene = this;
+            renderPassList.Add(rp);
             return rp;
         }
 
+        
         protected T AddRenderpass<T>(int targetIndex) where T : Renderpass
         {
-            T rp = Activator.CreateInstance<T>();
-            rp.Index = renderPasses.Count;
-            renderPasses.Add(rp);
-            rp.Scene = this;
+            T rp = AddRenderpass<T>();
             ChangeRenderpassIndex(rp, targetIndex);
             return rp;
         }
+        
 
         public Renderpass GetRenderpass(int index)
         {
-            return renderPasses[index];
+            return renderPassList[index];
+        }
+        
+        internal Renderpass GetRenderpass(Type t)
+        {
+            if (!renderPasses.TryGetValue(t, out Renderpass rp))
+                rp = AddRenderpass(t);
+                
+            return rp;
         }
 
+        
         public void ChangeRenderpassIndex(Renderpass rp, int newIndex)
         {
-            for (int i = rp.Index + 1; i < newIndex; i++)
-                renderPasses[i].Index--;
+            for (int i = rp.Index + 1; i <= newIndex; i++)
+                renderPassList[i].Index--;
 
-            renderPasses.Insert(newIndex, rp);
-            renderPasses.RemoveAt(rp.Index);
+            for (int i = newIndex; i < rp.Index; i++)
+                renderPassList[i].Index++;
+
+            renderPassList.Insert(newIndex, rp);
+            renderPassList.RemoveAt(rp.Index);
             rp.Index = newIndex;
         }
+        
 
         public void RemoveRenderpass(Renderpass rp)
         {
             for (int i = rp.Index + 1; i < renderPasses.Count; i++)
-                renderPasses[i].Index--;
+                renderPassList[i].Index--;
 
-            renderPasses.RemoveAt(rp.Index);
+            renderPassList.RemoveAt(rp.Index);
         }
 
         protected GameEntity CreateEntity() => CreateGameEntity_Internal();
